@@ -9,6 +9,10 @@ omit =
     # CI has neither, so it can't be imported/measured here. Behavior is covered by
     # test_audio_decode.py wherever PyAV is installed.
     services/api/providers/audio_decode.py
+    # Real acoustic analyzer needs librosa/scipy/numpy (requirements-local, demo
+    # machine only); CI has none of these, so it can't be imported/measured here.
+    # Behavior is covered by test_acoustic_librosa.py wherever librosa is installed.
+    services/api/providers/acoustic_librosa.py
 
 [report]
 show_missing = True
