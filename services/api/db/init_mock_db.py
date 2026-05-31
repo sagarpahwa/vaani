@@ -31,6 +31,7 @@ COLLECTION_SPECS = [
     {"name": "users", "unique": [("user_id", 1)], "indexes": []},
     {"name": "learner_profiles", "unique": [("user_id", 1)], "indexes": []},
     {"name": "guided_scripts", "unique": [("script_id", 1)], "indexes": [[("language", 1)]]},
+    {"name": "personas", "unique": [("persona_id", 1)], "indexes": [[("role", 1)]]},
     {
         "name": "practice_sessions",
         "unique": [("session_id", 1)],

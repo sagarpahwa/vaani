@@ -34,6 +34,7 @@ SEED_SPECS = [
     ("users.json", "users", "user_id"),
     ("learner_profiles.json", "learner_profiles", "user_id"),
     ("guided_scripts.json", "guided_scripts", "script_id"),
+    ("personas.json", "personas", "persona_id"),
 ]
 
 

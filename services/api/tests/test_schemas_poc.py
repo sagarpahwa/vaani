@@ -1,4 +1,4 @@
-"""Validate the 10 POC collection schemas: well-formed, structurally correct."""
+"""Validate the 11 POC collection schemas: well-formed, structurally correct."""
 
 import json
 from pathlib import Path
@@ -9,6 +9,7 @@ EXPECTED_SCHEMAS = {
     "users",
     "learner_profiles",
     "guided_scripts",
+    "personas",
     "practice_sessions",
     "session_utterances",
     "coaching_feedback",
@@ -90,6 +91,19 @@ def test_guided_scripts_lines_structure():
     line_props = props["lines"]["items"]["properties"]
     assert "line_index" in line_props
     assert "text" in line_props
+
+
+def test_personas_schema_structure():
+    schema = _load("personas")["$jsonSchema"]
+    for field in ("persona_id", "name", "speech", "rubric"):
+        assert field in schema["required"], f"personas must require {field}"
+    props = schema["properties"]
+    line_props = props["speech"]["properties"]["lines"]["items"]["properties"]
+    assert "line_index" in line_props and "text" in line_props
+    rubric = props["rubric"]["properties"]
+    assert "capability_weights" in rubric and "target_pace_sps" in rubric
+    assert set(rubric["expressiveness"]["enum"]) == {"monotone", "balanced", "high-contrast"}
+    assert set(rubric["pause_style"]["enum"]) == {"steady", "dramatic", "brisk"}
 
 
 def test_score_fields_are_bounded():

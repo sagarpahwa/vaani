@@ -70,10 +70,10 @@ You were told: *"implement this plan"* (pointing at this file or at
 |---|---|---|---|---|
 | P1.1 | Research the 20 (confirm top reference video + distill speaking qualities) → notes feed P1.2 | DONE | (P1.2 commit) | profiles drafted for all 20 (Jobs…Kelly) — embodied in personas.json |
 | P1.2 | Author `services/api/db/seed_data/personas.json` — 20 records (persona_id, name, role, archetype, reference, goal_line, signature_qualities, speech.lines, rubric) | DONE | _next commit_ | `python3 -c "import json;d=json.load(open('services/api/db/seed_data/personas.json'));assert len(d)==20"` |
-| P1.3 | Schema `services/api/db/schemas/personas.json` (`$jsonSchema`, required fields) | TODO | | file parses; has `$jsonSchema`; `required` lists persona_id/name/speech/rubric |
-| P1.4 | Register `personas` in `COLLECTION_SPECS` (`services/api/db/init_mock_db.py`) + indexes | TODO | | `grep personas services/api/db/init_mock_db.py` |
-| P1.5 | Seed personas in `services/api/db/seed_mock.py` (upsert by `persona_id`) | TODO | | `make poc-db-setup` seeds 20 personas |
-| P1.6 | Schema test case in `services/api/tests/test_schemas_poc.py` | TODO | | `make poc-api-test` (new persona schema case green) |
+| P1.3 | Schema `services/api/db/schemas/personas.json` (`$jsonSchema`, required fields) | DONE | _next commit_ | file parses; has `$jsonSchema`; `required` lists persona_id/name/speech/rubric |
+| P1.4 | Register `personas` in `COLLECTION_SPECS` (`services/api/db/init_mock_db.py`) + indexes | DONE | _next commit_ | `grep personas services/api/db/init_mock_db.py` |
+| P1.5 | Seed personas in `services/api/db/seed_mock.py` (upsert by `persona_id`) | DONE | _next commit_ | init+seed on mongomock → 20 personas, idempotent re-seed inserts 0 |
+| P1.6 | Schema test case in `services/api/tests/test_schemas_poc.py` | DONE | _next commit_ | `pytest services/api/tests/test_schemas_poc.py` → 10 passed |
 | P1.7 | Repo accessors `list_personas` / `get_persona` in `services/api/repository.py` | TODO | | unit test for both green |
 | P1.8 | Pydantic `PersonaSummary` / `PersonaDetail` in `services/api/models.py` | TODO | | import in `python -c` works; fields match seed |
 | P1.9 | `services/api/routes/personas.py` (`GET /personas`, `GET /personas/{id}`) + register in app | TODO | | `GET /personas` → 20; `GET /personas/steve-jobs` → 200 |

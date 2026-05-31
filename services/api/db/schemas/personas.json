@@ -1,0 +1,71 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["persona_id", "name", "speech", "rubric", "created_at", "schema_version"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":                  { "bsonType": "objectId" },
+      "persona_id":           { "bsonType": "string", "minLength": 1 },
+      "name":                 { "bsonType": "string", "minLength": 1 },
+      "role":                 { "bsonType": "string" },
+      "archetype":            { "bsonType": "string" },
+      "reference": {
+        "bsonType": "object",
+        "properties": {
+          "title":     { "bsonType": "string" },
+          "video_url": { "bsonType": ["string", "null"] }
+        }
+      },
+      "goal_line":            { "bsonType": "string" },
+      "signature_qualities":  { "bsonType": "array", "items": { "bsonType": "string" } },
+      "speech": {
+        "bsonType": "object",
+        "required": ["lines"],
+        "properties": {
+          "estimated_duration_seconds": { "bsonType": ["int", "null"] },
+          "lines": {
+            "bsonType": "array",
+            "items": {
+              "bsonType": "object",
+              "required": ["line_index", "text"],
+              "properties": {
+                "line_index":     { "bsonType": "int" },
+                "text":           { "bsonType": "string", "minLength": 1 },
+                "coaching_focus": { "bsonType": "array", "items": { "bsonType": "string" } }
+              }
+            }
+          }
+        }
+      },
+      "rubric": {
+        "bsonType": "object",
+        "required": ["capability_weights", "target_pace_sps"],
+        "properties": {
+          "capability_weights": {
+            "bsonType": "object",
+            "properties": {
+              "clarity":     { "bsonType": ["double", "int"] },
+              "pace":        { "bsonType": ["double", "int"] },
+              "fluency":     { "bsonType": ["double", "int"] },
+              "confidence":  { "bsonType": ["double", "int"] },
+              "engagement":  { "bsonType": ["double", "int"] },
+              "conciseness": { "bsonType": ["double", "int"] }
+            }
+          },
+          "target_pace_sps": {
+            "bsonType": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": { "bsonType": ["double", "int"] }
+          },
+          "expressiveness": { "bsonType": "string", "enum": ["monotone", "balanced", "high-contrast"] },
+          "pause_style":    { "bsonType": "string", "enum": ["steady", "dramatic", "brisk"] },
+          "feedback_notes": { "bsonType": "object" }
+        }
+      },
+      "created_at":           { "bsonType": "date" },
+      "updated_at":           { "bsonType": "date" },
+      "schema_version":       { "bsonType": "string" }
+    }
+  }
+}
