@@ -30,6 +30,9 @@ router = APIRouter(tags=["sessions"])
 
 @router.post("/sessions", response_model=SessionDetail, status_code=201)
 def create_session(req: CreateSessionRequest, db=Depends(get_db)):
+    if req.mode == "persona":
+        return _create_persona_session(req, db)
+
     expected_units, script_id = resolve_expected_units(db, req.mode, req.script_id, req.script_text)
     if expected_units is None:
         raise HTTPException(status_code=404, detail="guided script not found")
@@ -51,6 +54,38 @@ def create_session(req: CreateSessionRequest, db=Depends(get_db)):
         doc["user_script_text"] = req.script_text or ""
     repo.create_session(db, doc)
     Telemetry(db).session_started(session_id, mode=req.mode, attempt=1)
+    return SessionDetail(**assemble_detail(db, repo.get_session(db, session_id)))
+
+
+def _create_persona_session(req: CreateSessionRequest, db):
+    """Create a persona session: the speaker's speech becomes the script to record.
+
+    The full rubric (weights + bands + feedback notes) is stashed on the session
+    so scoring can judge the recording against *this* speaker without a re-fetch.
+    """
+    persona = repo.get_persona(db, req.persona_id) if req.persona_id else None
+    if not persona:
+        raise HTTPException(status_code=404, detail="persona not found")
+    lines = sorted(persona.get("speech", {}).get("lines", []), key=lambda x: x["line_index"])
+    expected_units = [ln["text"] for ln in lines]
+    if not expected_units:
+        raise HTTPException(status_code=422, detail="persona has no speech lines")
+
+    session_id = uuid4().hex
+    doc = {
+        "session_id": session_id,
+        "user_id": req.user_id,
+        "mode": "persona",
+        "status": "created",
+        "persona_id": persona["persona_id"],
+        "persona_name": persona["name"],
+        "persona_rubric": persona.get("rubric", {}),
+        "expected_units": expected_units,
+        "goal_signature": (req.goal_signature.model_dump() if req.goal_signature else {}),
+        "attempt": 1,
+    }
+    repo.create_session(db, doc)
+    Telemetry(db).session_started(session_id, mode="persona", attempt=1)
     return SessionDetail(**assemble_detail(db, repo.get_session(db, session_id)))
 
 
@@ -118,6 +153,11 @@ def retry_session(
     }
     if parent.get("user_script_text"):
         child["user_script_text"] = parent["user_script_text"]
+    if parent.get("mode") == "persona":
+        # Carry the persona context so the retry still scores acoustically vs the same speaker.
+        child["persona_id"] = parent.get("persona_id")
+        child["persona_name"] = parent.get("persona_name")
+        child["persona_rubric"] = parent.get("persona_rubric") or {}
     repo.create_session(db, child)
     telemetry = Telemetry(db)
     telemetry.session_started(child_id, mode=child["mode"], attempt=child["attempt"])

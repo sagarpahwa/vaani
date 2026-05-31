@@ -8,6 +8,8 @@ numbers are an implementation detail.
 
 import base64
 
+from services.api import repository as repo
+
 B64_AUDIO = base64.b64encode(b"fake-recording-bytes").decode()
 
 
@@ -99,6 +101,69 @@ def test_retry_reports_delta_and_increments_attempt(client):
     assert body["status"] == "scored"
     assert body["delta"] is not None
     assert "overall" in body["delta"]
+
+
+# ---- persona path (Mode "persona": acoustic scoring vs a speaker's rubric) -
+
+
+def _create_persona(client, persona_id="steve-jobs"):
+    r = client.post(
+        "/sessions",
+        json={"user_id": "demo-user", "mode": "persona", "persona_id": persona_id},
+    )
+    assert r.status_code == 201, r.text
+    return r.json()
+
+
+def test_create_persona_session_carries_rubric(client, seeded_db):
+    body = _create_persona(client)
+    assert body["mode"] == "persona"
+    assert body["status"] == "created"
+    assert body["persona_id"] == "steve-jobs"
+    assert body["persona_name"] == "Steve Jobs"
+    assert len(body["expected_units"]) >= 1
+    # The full rubric (weights + band + notes) is stashed on the stored session,
+    # not exposed on the wire — scoring reads it without re-fetching the persona.
+    stored = repo.get_session(seeded_db, body["session_id"])
+    assert stored["persona_rubric"]["target_pace_sps"]
+    assert stored["persona_rubric"]["capability_weights"]
+
+
+def test_persona_full_flow_scores_acoustically(client):
+    session = _create_persona(client)
+    r = _submit_all_lines(client, session)
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["status"] == "scored"
+    assert 0.0 <= body["overall_score"] <= 1.0
+    # The persona path returns a style match + an acoustic readout; Mode A/B never do.
+    assert body["style_match"] is not None and 0.0 <= body["style_match"] <= 1.0
+    assert body["acoustic"] is not None
+    assert body["acoustic"]["speech_rate_sps"] > 0.0
+    # It is scored by the acoustic stamp, never the Mode A/B transcript scorer.
+    assert body["versions"]["scoring_model_version"] == "persona-acoustic-1.0.0"
+
+
+def test_persona_retry_preserves_persona_and_reports_delta(client):
+    session = _create_persona(client)
+    n = len(session["expected_units"])
+    _submit_all_lines(client, session)
+    retry = client.post(
+        f"/sessions/{session['session_id']}/retry",
+        json={"utterances": [{"line_index": i, "audio_base64": B64_AUDIO} for i in range(n)]},
+    )
+    assert retry.status_code == 201, retry.text
+    body = retry.json()
+    assert body["attempt"] == 2
+    assert body["mode"] == "persona"
+    assert body["persona_id"] == "steve-jobs"
+    assert body["style_match"] is not None
+    assert body["delta"] is not None and "overall" in body["delta"]
+
+
+def test_create_persona_unknown_404(client):
+    r = client.post("/sessions", json={"user_id": "u", "mode": "persona", "persona_id": "nobody"})
+    assert r.status_code == 404
 
 
 # ---- error paths -----------------------------------------------------------

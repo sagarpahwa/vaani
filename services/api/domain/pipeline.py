@@ -8,9 +8,16 @@ identical input yields identical output.
 
 from ..providers.registry import ProviderBundle
 from .goal_signature import GoalSignature, capability_weights
+from .persona import (
+    PersonaRubric,
+    aggregate_acoustic,
+    build_persona_feedback,
+    compute_style_match,
+    score_persona,
+)
 from .text import stable_seed
-from .types import PipelineResult, Transcript, UtteranceAnalysis
-from .versions import version_stamp
+from .types import DeliveryFeatures, PipelineResult, Transcript, UtteranceAnalysis
+from .versions import persona_version_stamp, version_stamp
 
 
 def compute_delta(old: dict[str, float] | None, new: dict[str, float]) -> dict[str, float]:
@@ -176,6 +183,83 @@ class CoachingPipeline:
             versions=version_stamp(),
             delta=delta,
             analyses=analyses,
+        )
+
+    def run_persona(
+        self,
+        *,
+        session_id: str,
+        persona_name: str,
+        rubric: PersonaRubric,
+        expected_units: list[str],
+        utterances: list[dict],
+        parent_scores: dict[str, float] | None = None,
+    ) -> PipelineResult:
+        """Persona run: score the raw waveform against a speaker's rubric — **no STT**.
+
+        The transcript-free counterpart to ``run``: analyze each line's acoustics,
+        aggregate to a session profile, score the six capabilities against the
+        persona's bands, compute the style match, and ground per-line corrections
+        in the measured events. Ideal-clip TTS is the same best-effort step as
+        Mode A/B. Returns a ``failed`` result when nothing was recorded.
+        """
+        if not utterances:
+            return self._empty_result("failed")
+
+        analyses = self.analyze_utterances_acoustic(
+            session_id=session_id, expected_units=expected_units, utterances=utterances
+        )
+        profile = aggregate_acoustic(analyses)
+        scores = score_persona(profile, rubric)
+        scores.style_match = compute_style_match(profile, rubric)
+        feedback, corrections = build_persona_feedback(
+            persona_name=persona_name,
+            profile=profile,
+            scores=scores,
+            analyses=analyses,
+            rubric=rubric,
+        )
+
+        # Same best-effort ideal-clip synthesis as Mode A/B — a TTS failure leaves
+        # the card without an ideal clip rather than failing the whole run.
+        for c in corrections:
+            try:
+                audio = self.p.tts.synthesize(c.corrected_text)
+                key = f"sessions/{session_id}/corrections/{c.line_index}-ideal.wav"
+                self.p.store.put(key, audio)
+                c.ideal_audio_key = key
+            except Exception:
+                c.ideal_audio_key = None
+
+        new_scores = {"overall": scores.overall_score, **scores.capabilities}
+        delta = compute_delta(parent_scores, new_scores) if parent_scores else None
+
+        # The persona truth lives in `acoustic` + `style_match`; the generic
+        # `features` block carries only the acoustic analogues that fit its slots.
+        features = DeliveryFeatures(
+            word_count=0,
+            expected_word_count=0,
+            duration_seconds=profile.duration_s,
+            words_per_minute=0.0,
+            filler_count=0,
+            filler_rate=0.0,
+            accuracy=profile.coverage_ratio,
+            stumble_count=0,
+            long_pause_count=profile.pause_count,
+        )
+
+        return PipelineResult(
+            status="scored",
+            overall_score=scores.overall_score,
+            capability_scores=scores.capabilities,
+            features=features,
+            feedback=feedback,
+            corrections=corrections,
+            versions=persona_version_stamp(),
+            delta=delta,
+            analyses=analyses,
+            style_match=scores.style_match,
+            acoustic=profile,
         )
 
     def retry(

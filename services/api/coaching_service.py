@@ -12,6 +12,7 @@ import time
 
 from . import repository as repo
 from .domain.goal_signature import GoalSignature
+from .domain.persona import PersonaRubric
 from .domain.pipeline import CoachingPipeline
 from .domain.text import split_script_text
 from .providers.registry import ProviderBundle
@@ -92,15 +93,26 @@ def process_session(
         }
         for u in stored
     ]
-    goal = GoalSignature.from_dict(session.get("goal_signature"))
     started = time.perf_counter()
-    result = pipeline.run(
-        session_id=session_id,
-        goal=goal,
-        expected_units=expected_units,
-        utterances=pipe_utterances,
-        parent_scores=parent_scores,
-    )
+    if session.get("mode") == "persona":
+        # Persona path: score the raw waveform against this speaker's rubric — no STT.
+        result = pipeline.run_persona(
+            session_id=session_id,
+            persona_name=session.get("persona_name", ""),
+            rubric=PersonaRubric.from_dict(session.get("persona_rubric") or {}),
+            expected_units=expected_units,
+            utterances=pipe_utterances,
+            parent_scores=parent_scores,
+        )
+    else:
+        goal = GoalSignature.from_dict(session.get("goal_signature"))
+        result = pipeline.run(
+            session_id=session_id,
+            goal=goal,
+            expected_units=expected_units,
+            utterances=pipe_utterances,
+            parent_scores=parent_scores,
+        )
     latency_ms = (time.perf_counter() - started) * 1000.0
     scored = result.status == "scored"
     tel.transcription(session_id, success=scored, count=len(stored))
@@ -161,6 +173,11 @@ def process_session(
         "capability_scores": result.capability_scores,
         **result.versions,
     }
+    # Persona path only — absent for Mode A/B, so their persisted shape is unchanged.
+    if result.style_match is not None:
+        update["style_match"] = result.style_match
+    if result.acoustic is not None:
+        update["acoustic"] = result.acoustic.to_dict()
     if result.delta is not None:
         update["delta"] = result.delta
         repo.save_progress_snapshot(
@@ -214,4 +231,9 @@ def assemble_detail(db, session: dict) -> dict:
         "corrections": corrections,
         "delta": session.get("delta"),
         "created_at": session.get("created_at"),
+        # Persona path only — None/absent for Mode A/B.
+        "persona_id": session.get("persona_id"),
+        "persona_name": session.get("persona_name"),
+        "style_match": session.get("style_match"),
+        "acoustic": session.get("acoustic"),
     }

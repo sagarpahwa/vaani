@@ -22,9 +22,10 @@ class GoalSignatureModel(BaseModel):
 
 class CreateSessionRequest(BaseModel):
     user_id: str
-    mode: Literal["guided", "user_script"]
+    mode: Literal["guided", "user_script", "persona"]
     script_id: str | None = None  # required for mode="guided"
     script_text: str | None = None  # required for mode="user_script"
+    persona_id: str | None = None  # required for mode="persona"
     goal_signature: GoalSignatureModel | None = None
 
 
@@ -89,6 +90,11 @@ class SessionDetail(BaseModel):
     corrections: list[CorrectionModel] = []
     delta: dict[str, float] | None = None
     created_at: datetime | None = None
+    # Persona path only (mode="persona"); None/absent for Mode A/B.
+    persona_id: str | None = None
+    persona_name: str | None = None
+    style_match: float | None = None
+    acoustic: dict | None = None
 
 
 class ScriptLineModel(BaseModel):
