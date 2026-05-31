@@ -56,9 +56,9 @@ You were told: *"implement this plan"* (pointing at this file or at
 
 | # | Sub-task | Status | Commit | Verify |
 |---|---|---|---|---|
-| P0.1 | In-repo copy of full plan → [`poc-personas-plan.md`](poc-personas-plan.md) | DONE | (this commit) | `test -f docs/plans/poc-personas-plan.md` |
-| P0.2 | This resumable tracker → `poc-personas-progress.md` | DONE | (this commit) | `test -f docs/plans/poc-personas-progress.md` |
-| P0.3 | Link this milestone from [`poc-implementation-progress.md`](poc-implementation-progress.md) | DONE | (this commit) | grep finds "poc-personas-progress" in that file |
+| P0.1 | In-repo copy of full plan → [`poc-personas-plan.md`](poc-personas-plan.md) | DONE | `3baf934` | `test -f docs/plans/poc-personas-plan.md` |
+| P0.2 | This resumable tracker → `poc-personas-progress.md` | DONE | `3baf934` | `test -f docs/plans/poc-personas-progress.md` |
+| P0.3 | Link this milestone from [`poc-implementation-progress.md`](poc-implementation-progress.md) | DONE | `3baf934` | grep finds "poc-personas-progress" in that file |
 
 ---
 
@@ -68,17 +68,17 @@ You were told: *"implement this plan"* (pointing at this file or at
 
 | # | Sub-task | Status | Commit | Verify |
 |---|---|---|---|---|
-| P1.1 | Research the 20 (confirm top reference video + distill speaking qualities) → notes feed P1.2 | DONE | (P1.2 commit) | profiles drafted for all 20 (Jobs…Kelly) — embodied in personas.json |
-| P1.2 | Author `services/api/db/seed_data/personas.json` — 20 records (persona_id, name, role, archetype, reference, goal_line, signature_qualities, speech.lines, rubric) | DONE | _next commit_ | `python3 -c "import json;d=json.load(open('services/api/db/seed_data/personas.json'));assert len(d)==20"` |
-| P1.3 | Schema `services/api/db/schemas/personas.json` (`$jsonSchema`, required fields) | DONE | _next commit_ | file parses; has `$jsonSchema`; `required` lists persona_id/name/speech/rubric |
-| P1.4 | Register `personas` in `COLLECTION_SPECS` (`services/api/db/init_mock_db.py`) + indexes | DONE | _next commit_ | `grep personas services/api/db/init_mock_db.py` |
-| P1.5 | Seed personas in `services/api/db/seed_mock.py` (upsert by `persona_id`) | DONE | _next commit_ | init+seed on mongomock → 20 personas, idempotent re-seed inserts 0 |
-| P1.6 | Schema test case in `services/api/tests/test_schemas_poc.py` | DONE | _next commit_ | `pytest services/api/tests/test_schemas_poc.py` → 10 passed |
-| P1.7 | Repo accessors `list_personas` / `get_persona` in `services/api/repository.py` | DONE | _next commit_ | test_repository green |
-| P1.8 | Pydantic `PersonaSummary` / `PersonaDetail` in `services/api/models.py` | DONE | _next commit_ | route returns typed payloads (test_api_personas) |
-| P1.9 | `services/api/routes/personas.py` (`GET /personas`, `GET /personas/{id}`) + register in app | DONE | _next commit_ | `GET /personas` → 20; `GET /personas/steve-jobs` → 200 |
-| P1.10 | Route tests in `services/api/tests/` (list + detail + 404) | DONE | _next commit_ | `pytest test_api_personas.py` → 5 passed |
-| P1.11 | Add `personas` row to CLAUDE.md POC Data Model table | DONE | _next commit_ | `grep personas CLAUDE.md` |
+| P1.1 | Research the 20 (confirm top reference video + distill speaking qualities) → notes feed P1.2 | DONE | `96dcc51` | profiles drafted for all 20 (Jobs…Kelly) — embodied in personas.json |
+| P1.2 | Author `services/api/db/seed_data/personas.json` — 20 records (persona_id, name, role, archetype, reference, goal_line, signature_qualities, speech.lines, rubric) | DONE | `96dcc51` | `python3 -c "import json;d=json.load(open('services/api/db/seed_data/personas.json'));assert len(d)==20"` |
+| P1.3 | Schema `services/api/db/schemas/personas.json` (`$jsonSchema`, required fields) | DONE | `531ed44` | file parses; has `$jsonSchema`; `required` lists persona_id/name/speech/rubric |
+| P1.4 | Register `personas` in `COLLECTION_SPECS` (`services/api/db/init_mock_db.py`) + indexes | DONE | `531ed44` | `grep personas services/api/db/init_mock_db.py` |
+| P1.5 | Seed personas in `services/api/db/seed_mock.py` (upsert by `persona_id`) | DONE | `531ed44` | init+seed on mongomock → 20 personas, idempotent re-seed inserts 0 |
+| P1.6 | Schema test case in `services/api/tests/test_schemas_poc.py` | DONE | `531ed44` | `pytest services/api/tests/test_schemas_poc.py` → 10 passed |
+| P1.7 | Repo accessors `list_personas` / `get_persona` in `services/api/repository.py` | DONE | `3f6dfae` | test_repository green |
+| P1.8 | Pydantic `PersonaSummary` / `PersonaDetail` in `services/api/models.py` | DONE | `3f6dfae` | route returns typed payloads (test_api_personas) |
+| P1.9 | `services/api/routes/personas.py` (`GET /personas`, `GET /personas/{id}`) + register in app | DONE | `3f6dfae` | `GET /personas` → 20; `GET /personas/steve-jobs` → 200 |
+| P1.10 | Route tests in `services/api/tests/` (list + detail + 404) | DONE | `3f6dfae` | `pytest test_api_personas.py` → 5 passed |
+| P1.11 | Add `personas` row to CLAUDE.md POC Data Model table | DONE | `3f6dfae` | `grep personas CLAUDE.md` |
 
 ---
 
