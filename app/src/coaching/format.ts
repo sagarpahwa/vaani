@@ -48,6 +48,14 @@ export function deltaColor(delta: number | null | undefined): string {
   return { good: colors.good, warn: colors.textMuted, bad: colors.bad }[deltaBand(delta)];
 }
 
+/** Milliseconds as a m:ss clock for the recording indicator. */
+export function formatClock(ms: number | null | undefined): string {
+  const totalSeconds = Math.max(0, Math.floor((ms ?? 0) / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${String(seconds).padStart(2, '0')}`;
+}
+
 const SEVERITY_COLORS: Record<string, string> = {
   high: colors.bad,
   medium: colors.warn,

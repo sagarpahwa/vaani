@@ -16,8 +16,9 @@ export interface RecorderControls {
   isRecording: boolean;
   durationMs: number;
   error: RecorderError;
-  /** Begin capturing; sets `error` instead of throwing on permission/availability problems. */
-  start: () => Promise<void>;
+  /** Begin capturing. Resolves `true` when capture started, `false` (and sets
+   *  `error`) on permission/availability problems — never throws. */
+  start: () => Promise<boolean>;
   /** Stop and resolve to the captured audio as base64, or null when unavailable. */
   stop: () => Promise<string | null>;
 }
@@ -31,13 +32,13 @@ export function useRecorder(): RecorderControls {
   const state = useAudioRecorderState(recorder);
   const [error, setError] = useState<RecorderError>(null);
 
-  const start = useCallback(async () => {
+  const start = useCallback(async (): Promise<boolean> => {
     setError(null);
     try {
       const permission = await requestRecordingPermissionsAsync();
       if (!permission.granted) {
         setError('denied');
-        return;
+        return false;
       }
       try {
         await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
@@ -46,8 +47,10 @@ export function useRecorder(): RecorderControls {
       }
       await recorder.prepareToRecordAsync();
       recorder.record();
+      return true;
     } catch {
       setError('unavailable');
+      return false;
     }
   }, [recorder]);
 

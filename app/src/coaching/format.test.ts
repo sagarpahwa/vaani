@@ -6,6 +6,7 @@ import {
   clamp01,
   deltaBand,
   deltaColor,
+  formatClock,
   scoreBand,
   scoreColor,
   severityColor,
@@ -69,6 +70,21 @@ describe('signedPercent / deltaBand', () => {
     expect(deltaColor(0.05)).toBe(colors.good);
     expect(deltaColor(-0.05)).toBe(colors.bad);
     expect(deltaColor(0)).toBe(colors.textMuted);
+  });
+});
+
+describe('formatClock', () => {
+  it('formats milliseconds as m:ss', () => {
+    expect(formatClock(0)).toBe('0:00');
+    expect(formatClock(5000)).toBe('0:05');
+    expect(formatClock(65000)).toBe('1:05');
+    expect(formatClock(600000)).toBe('10:00');
+  });
+
+  it('floors partial seconds and treats nullish/negative as zero', () => {
+    expect(formatClock(1999)).toBe('0:01');
+    expect(formatClock(null)).toBe('0:00');
+    expect(formatClock(-500)).toBe('0:00');
   });
 });
 

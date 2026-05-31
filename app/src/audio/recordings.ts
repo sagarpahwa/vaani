@@ -19,3 +19,20 @@ export function toUtteranceInputs(lineCount: number, recordings: Recordings): Ut
 export function countRecorded(recordings: Recordings): number {
   return Object.values(recordings).filter((v) => typeof v === 'string').length;
 }
+
+/** Display state of a single line in the recorder UI. */
+export type LineState = 'idle' | 'recording' | 'recorded' | 'skipped';
+
+/** Derive a line's display state from which line is mid-recording and what's
+ *  been captured. A line is `skipped` only once explicitly skipped (present and
+ *  null); a line never touched is `idle`. */
+export function lineState(
+  index: number,
+  activeLine: number | null,
+  recordings: Recordings,
+): LineState {
+  if (activeLine === index) return 'recording';
+  if (typeof recordings[index] === 'string') return 'recorded';
+  if (index in recordings) return 'skipped';
+  return 'idle';
+}

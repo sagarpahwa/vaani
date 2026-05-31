@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { countRecorded, toUtteranceInputs, type Recordings } from './recordings';
+import { countRecorded, lineState, toUtteranceInputs, type Recordings } from './recordings';
 
 describe('toUtteranceInputs', () => {
   it('emits one entry per line, in line order', () => {
@@ -31,5 +31,25 @@ describe('countRecorded', () => {
 
   it('is zero for an empty map', () => {
     expect(countRecorded({})).toBe(0);
+  });
+});
+
+describe('lineState', () => {
+  it('is recording for the active line regardless of prior capture', () => {
+    expect(lineState(1, 1, {})).toBe('recording');
+    expect(lineState(1, 1, { 1: 'AAA' })).toBe('recording');
+  });
+
+  it('is recorded when audio was captured and the line is idle', () => {
+    expect(lineState(0, null, { 0: 'AAA' })).toBe('recorded');
+  });
+
+  it('is skipped when explicitly present and null', () => {
+    expect(lineState(0, null, { 0: null })).toBe('skipped');
+  });
+
+  it('is idle when never touched', () => {
+    expect(lineState(2, 1, { 0: 'AAA' })).toBe('idle');
+    expect(lineState(0, null, {})).toBe('idle');
   });
 });

@@ -1,15 +1,19 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { api, errorMessage } from '@/api/client';
 import type { SessionDetail } from '@/api/types';
+import { useClientReady } from '@/hooks/useClientReady';
 import { colors, radius, spacing } from '@/theme';
 import { Banner } from '@/ui/Banner';
+import { Recorder } from '@/ui/Recorder';
 import { Screen } from '@/ui/Screen';
 
 export default function RecordScreen() {
+  const router = useRouter();
   const { sessionId } = useLocalSearchParams<{ sessionId?: string }>();
+  const ready = useClientReady();
   const [session, setSession] = useState<SessionDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,19 +58,25 @@ export default function RecordScreen() {
       <Text style={styles.title}>Rehearse your lines</Text>
       <Text style={styles.body}>
         {session.expected_units.length} line{session.expected_units.length === 1 ? '' : 's'} to
-        practice. Recording controls arrive next.
+        practice.
       </Text>
 
-      <View style={styles.lines}>
-        {session.expected_units.map((text, index) => (
-          <View key={index} style={styles.line}>
-            <Text style={styles.lineNum}>{index + 1}</Text>
-            <Text style={styles.lineText}>{text}</Text>
-          </View>
-        ))}
-      </View>
-
-      <Banner tone="info" message={`Session ${session.session_id.slice(0, 8)} · ${session.mode}`} />
+      {ready ? (
+        <Recorder
+          sessionId={session.session_id}
+          lines={session.expected_units}
+          onSubmitted={() => router.push({ pathname: '/feedback', params: { sessionId } })}
+        />
+      ) : (
+        <View style={styles.lines}>
+          {session.expected_units.map((text, index) => (
+            <View key={index} style={styles.line}>
+              <Text style={styles.lineNum}>{index + 1}</Text>
+              <Text style={styles.lineText}>{text}</Text>
+            </View>
+          ))}
+        </View>
+      )}
     </Screen>
   );
 }
