@@ -80,7 +80,7 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 | P4 | API endpoints + contract/integration tests | ✅ DONE | `feat(poc-api): coaching endpoints + contract/integration tests` (09ebbe0) | `make poc-api-test-all` green (99 tests, 97% cov) |
 | P5 | Expo app scaffold + CI + API client | ✅ DONE | `feat(poc-app): Expo universal app scaffold + typed API client + CI` (56bed0d) | `make poc-app-test` green (22 tests + tsc + lint); web bundle exports |
 | P6 | Screens: Mode A & B full coaching flows | ✅ DONE | P6a–P6e (debe97e…72302a3) | `make poc-app-test` green (80 tests + tsc + lint); web export 8 routes |
-| P7 | Reliability artifacts (SLO, rollback, telemetry, golden) | ⬜ TODO | — | docs present; golden regression test in CI |
+| P7 | Reliability artifacts (SLO, rollback, telemetry, golden) | ✅ DONE | `feat(poc-api): reliability artifacts — telemetry, golden regression, SLO docs (P7)` (62aa1ed) | `make poc-api-test` green (109 tests incl. golden + telemetry, 97.37% cov); docs/reliability/* present |
 | P8 | E2E verify (web) + Android compat + push + PR | ⬜ TODO | — | both modes pass on web; PR open |
 
 ---
@@ -181,13 +181,15 @@ Feature checklist (the user-visible surface these sub-milestones add up to):
 - [x] **P6e-2:** read-aloud (expo-speech) + A/B correction audio (expo-audio `useAudioPlayer`, client-gated); backend already populates `ideal_audio_key`/`user_audio_key`/`read_aloud_text`; 80 app tests, web export 8 routes (72302a3)
 - [x] **P6 COMPLETE** — all of P6a–P6e done; both Mode A & B flows record→processing→feedback→A/B→retry on web
 
-### P7 — Reliability artifacts  ⬜
-- [ ] `docs/reliability/slos.md` (SLO set + error budget policy)
-- [ ] `docs/reliability/rollback-runbook.md` + progressive rollout + incident/on-call + privacy/retention
-- [ ] Extend `quality-baseline.json` (or `quality-baseline.poc.json`) with latency/failure-rate/golden-score floors
-- [ ] `services/api/telemetry.py` — telemetry event emitters (plan §11.1)
-- [ ] `services/api/tests/golden/` dataset + model regression test; wire into CI
-- [ ] Commit
+### P7 — Reliability artifacts  ✅ (62aa1ed)
+- [x] `docs/reliability/slos.md` (SLO set + error budget policy + telemetry→SLO mapping + dashboards/alerting)
+- [x] `docs/reliability/rollback-runbook.md` (env ladder + progressive rollout + release gates + rollback playbook + incident runbooks + privacy/retention)
+- [x] `quality-baseline.poc.json` — SLO targets + model-quality floor (min_overall_score, max MAE) + coverage floor
+- [x] `services/api/telemetry.py` — `Telemetry` emitter for all 8 plan-§11.1 event types → `release_health_events` (best-effort; never fails the request). Wired into `coaching_service.process_session` (transcription/scoring/feedback_latency) + `routes/sessions.py` (session_started/completed/retry_delta). `repository.save_event`/`save_eval_run` added.
+- [x] `services/api/tests/golden/{dataset.json,test_golden_regression.py}` — pins deterministic overall+capability scores; fails on drift > tolerance (0.0005), below floor, MAE breach, or a `*_version` bump without regenerated golden. Auto-discovered by `make poc-api-test` (= CI-wired). Records a `model_eval_runs` doc.
+- [x] `test_telemetry.py` (6 tests) — build/persist/best-effort/severity coercion/named emitters
+- [x] Verified live: all 6 event types + an eval-run pass the **real** `:27018` `$jsonSchema` validators (probe, then cleaned up); 106 unit + 2 integration green, lint clean
+- [x] Commit (62aa1ed) + CLAUDE.md updated (backend tree, reliability section, Adding-POC-code rules)
 
 ### P8 — E2E verify + ship  ⬜
 - [ ] Start mock Mongo + API + Expo web; walk Mode A E2E in browser (screenshots)
@@ -297,6 +299,19 @@ make poc-app-test
   full record→feedback flow is demoable on web with no microphone. Line display state is derived by
   the pure `lineState(index, activeLine, recordings)` in `audio/recordings.ts` (unit-tested), keeping
   `LineRecorder` presentational.
+- 2026-05-31 (P7): telemetry is **best-effort** — `Telemetry.emit` wraps the DB write in
+  try/except and swallows, so a validator rejection or DB blip never breaks a coaching request
+  (reliability > observability on the hot path). Consequence: mongomock (no validators) can't catch
+  a schema mismatch, so a one-off probe inserted all 6 event types + an eval-run against the **real**
+  `:27018` validators and confirmed acceptance, then deleted them. `latency_ms` is coerced to a
+  non-negative `int` (schema bsonType) and unknown severities fall back to `info` for the same
+  reason. Telemetry is wired **minimally** (backend session lifecycle/scoring/latency/retry);
+  `ab_playback`/`api_error`/`mobile_crash` emitters exist but are client/edge-reported (no ingest
+  endpoint in the POC) — unit-tested, not auto-wired. Golden test is the single enforcement point
+  tying `domain/versions.py` ↔ `dataset.json` ↔ `quality-baseline.poc.json`: bumping a model version
+  without regenerating the golden values fails CI by design (the `*_version` audit trail, plan §13.4).
+  Golden values were generated by running the real pipeline once (deterministic mock stack) and baked
+  in; lowest overall is 0.8615, floor set conservatively at 0.30 to catch a wholly-broken pipeline.
 - 2026-05-31 (P6a): jest needs `moduleNameMapper: { '^@/(.*)$': '<rootDir>/src/$1' }` to resolve the
   `@/` alias — Metro reads tsconfig `paths` but jest does not. Component tests use bare
   `react-test-renderer` (no @testing-library/react-native installed): wrap `TestRenderer.create` in
