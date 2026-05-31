@@ -1,6 +1,13 @@
 """Tests for pure text utilities, including Mode B script splitting."""
 
-from services.api.domain.text import normalize, split_script_text, stable_seed, tokenize
+from services.api.domain.text import (
+    count_syllables,
+    estimate_syllables,
+    normalize,
+    split_script_text,
+    stable_seed,
+    tokenize,
+)
 
 
 def test_tokenize_strips_punctuation_and_lowercases():
@@ -22,6 +29,31 @@ def test_stable_seed_is_deterministic_and_order_sensitive():
     assert stable_seed("a", 1) == stable_seed("a", 1)
     assert stable_seed("a", 1) != stable_seed("1", "a")
     assert 0 <= stable_seed("x") <= 0xFFFFFFFF
+
+
+def test_count_syllables_basic_words():
+    assert count_syllables("hello") == 2
+    assert count_syllables("cat") == 1
+    assert count_syllables("banana") == 3
+
+
+def test_count_syllables_drops_silent_e_but_keeps_le_endings():
+    assert count_syllables("make") == 1  # silent trailing e
+    assert count_syllables("code") == 1
+    assert count_syllables("simple") == 2  # -le ending keeps the vowel group
+    assert count_syllables("the") == 1  # single group never drops below 1
+
+
+def test_count_syllables_empty_or_nonalpha_is_zero():
+    assert count_syllables("") == 0
+    assert count_syllables("123") == 0
+    assert count_syllables(None) == 0
+
+
+def test_estimate_syllables_sums_over_tokens():
+    # hello(2) world(1) → 3
+    assert estimate_syllables("Hello, world!") == 3
+    assert estimate_syllables("") == 0
 
 
 def test_split_script_uses_explicit_newlines():

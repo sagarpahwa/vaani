@@ -33,19 +33,21 @@ class STTProvider(ABC):
 
 
 class AcousticAnalyzer(ABC):
-    """Measures delivery acoustics from a raw mono PCM waveform — no transcript.
+    """Measures delivery acoustics from the learner's *raw recording* — no transcript.
 
-    The persona path scores *how the learner actually sounded* (pace, pauses,
-    pitch, energy), so this consumes audio samples, not text. ``pcm`` is left
-    unannotated on purpose: the real impl takes a numpy float32 array, but base.py
-    must stay import-clean in CI (numpy is a demo-machine-only dep). ``expected_text``
-    is used solely to compute syllable coverage (skip/truncation), never to grade
-    wording.
+    Mirrors ``STTProvider.transcribe``: it takes the recorded ``audio_ref`` bytes
+    (webm/opus | m4a | wav) so the pipeline never has to know whether the active
+    impl decodes audio. The deterministic mock ignores the bytes' content (features
+    come from ``expected_text`` + ``seed``, keeping CI/golden offline and stable);
+    the real impl decodes internally (PyAV) and measures the waveform — pace,
+    pauses, pitch, energy. An empty/non-bytes ``audio_ref`` is the no-recording
+    path and yields zeroed features (a skipped line reads as missed, not faked).
+    ``expected_text`` feeds only syllable *coverage*, never the grading of wording.
     """
 
     @abstractmethod
     def analyze(
-        self, pcm, sample_rate: int, *, expected_text: str, seed: int = 0
+        self, audio_ref: bytes | str, *, expected_text: str, seed: int = 0
     ) -> AcousticFeatures: ...
 
 

@@ -89,9 +89,9 @@ You were told: *"implement this plan"* (pointing at this file or at
 | # | Sub-task | Status | Commit | Verify |
 |---|---|---|---|---|
 | P2.1 | `services/api/providers/audio_decode.py` — bytes (webm/opus \| m4a) → mono 16 kHz float32 PCM via PyAV | DONE | `62cdb57` | unit test decodes a tiny fixture to non-empty PCM |
-| P2.2 | `AcousticFeatures` dataclass in `services/api/domain/types.py` (rate, pauses, pitch, energy, syllables, coverage) | DONE | `pending` | import works; fields per plan B.3 |
-| P2.3 | `AcousticAnalyzer` ABC in `services/api/providers/base.py` (`analyze(pcm, sr, expected_text) -> AcousticFeatures`) | DONE | `pending` | import works |
-| P2.4 | Mock acoustic impl (deterministic from expected_text + seed) in `services/api/providers/acoustic.py` | TODO | | same input → identical features (unit test) |
+| P2.2 | `AcousticFeatures` dataclass in `services/api/domain/types.py` (rate, pauses, pitch, energy, syllables, coverage) | DONE | `ffcb02e` | import works; fields per plan B.3 |
+| P2.3 | `AcousticAnalyzer` ABC in `services/api/providers/base.py` — refined to `analyze(audio_ref, *, expected_text, seed)` to mirror `STTProvider` (real impl decodes internally; mock ignores content), so the pipeline never branches on provider type | DONE | `ffcb02e` | import works |
+| P2.4 | Mock acoustic impl (deterministic from expected_text + seed; empty recording → skipped-line zeros) in `services/api/providers/acoustic.py`; syllable estimator added to `domain/text.py` | DONE | `pending` | same input → identical features (unit test) |
 | P2.5 | Real librosa impl (speech_rate_sps via syllable-nuclei, pauses via RMS, pitch via pyin) in `acoustic.py` | TODO | | unit test on synthetic tone-burst / silence-gap signal |
 | P2.6 | Wire `PROVIDER_ACOUSTIC` in `registry.py` + `config.py` (mock default, librosa real; raise on unknown) | TODO | | `grep PROVIDER_ACOUSTIC services/api/config.py services/api/providers/registry.py` |
 | P2.7 | Unit tests: syllable-nuclei rate, pause detection, mock determinism | TODO | | `make poc-api-test` green |
