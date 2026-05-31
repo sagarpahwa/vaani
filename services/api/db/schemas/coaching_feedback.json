@@ -1,0 +1,36 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["feedback_id", "session_id", "created_at", "schema_version"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":             { "bsonType": "objectId" },
+      "feedback_id":     { "bsonType": "string", "minLength": 1 },
+      "session_id":      { "bsonType": "string", "minLength": 1 },
+      "summary":         { "bsonType": "string" },
+      "read_aloud_text": { "bsonType": "string" },
+      "strengths":       { "bsonType": "array", "items": { "bsonType": "string" } },
+      "improvements": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "properties": {
+            "capability": { "bsonType": "string" },
+            "message":    { "bsonType": "string" },
+            "severity":   { "bsonType": "string", "enum": ["low", "medium", "high"] },
+            "line_index": { "bsonType": ["int", "null"] }
+          }
+        }
+      },
+      "capability_scores":        { "bsonType": "object" },
+      "overall_score":            { "bsonType": ["double", "null"], "minimum": 0, "maximum": 1 },
+      "rubric_version":           { "bsonType": ["string", "null"] },
+      "scoring_model_version":    { "bsonType": ["string", "null"] },
+      "feature_extractor_version":{ "bsonType": ["string", "null"] },
+      "prompt_version":           { "bsonType": ["string", "null"] },
+      "created_at":               { "bsonType": "date" },
+      "updated_at":               { "bsonType": "date" },
+      "schema_version":           { "bsonType": "string" }
+    }
+  }
+}

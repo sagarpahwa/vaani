@@ -75,8 +75,8 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 |---|-----------|--------|-----------|-------------|
 | P0 | Isolated infra + branch + this tracker | ✅ DONE | `chore(poc): isolated infra + progress tracker` | `docker ps` shows vaani_poc_mongo:27018; `make poc-db-up` |
 | P1 | FastAPI backend scaffold + CI + `.venv-poc` | ✅ DONE | `feat(poc-api): FastAPI backend scaffold + CI wiring` | `make poc-api-run` → GET /health 200; `make poc-api-test` |
-| P2 | Data model: 10 collections + mock DB seed | 🔄 IN PROGRESS | — | `make poc-db-setup` → collections+seed present in mock DB |
-| P3 | Domain: providers + Goal Signature + scoring + pipeline | ⬜ TODO | — | `make poc-api-test` (unit) green |
+| P2 | Data model: 10 collections + mock DB seed | ✅ DONE | `feat(poc-db): 10 collection schemas + mock DB init/seed` | `make poc-db-setup` → collections+seed present in mock DB |
+| P3 | Domain: providers + Goal Signature + scoring + pipeline | 🔄 IN PROGRESS | — | `make poc-api-test` (unit) green |
 | P4 | API endpoints + contract/integration tests | ⬜ TODO | — | `make poc-api-test-all` green |
 | P5 | Expo app scaffold + CI + API client | ⬜ TODO | — | `make poc-app-web` serves; `make poc-app-test` |
 | P6 | Screens: Mode A & B full coaching flows | ⬜ TODO | — | web E2E: record→feedback→A/B→retry |
@@ -107,13 +107,14 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 - [x] New Layer Protocol: `.github/workflows/reusable-python-api.yml` + `reusable-node-app.yml` (placeholder) wired into `ci.yml`; Makefile `poc-*` targets; updated CLAUDE.md (architecture map + CI table + POC section); `.coveragerc` isolates backend coverage
 - [x] Commit
 
-### P2 — Data model + mock DB  ⬜
-- [ ] `schemas/` JSON for: users, learner_profiles, guided_scripts, practice_sessions, session_utterances, coaching_feedback, audio_corrections, progress_snapshots, model_eval_runs, release_health_events (each `$jsonSchema`, created_at/updated_at/schema_version)
-- [ ] `services/api/db/init_mock_db.py` — create collections + indexes in mock DB (idempotent)
-- [ ] `seed/guided_scripts.json` (3–5 scripts across goal profiles) + demo user/profile seed
-- [ ] `services/api/db/seed_mock.py` — upsert seeds into mock DB
-- [ ] Tests: schema JSON valid; seed upsert idempotent (mongomock)
-- [ ] Commit
+### P2 — Data model + mock DB  ✅
+- [x] **`services/api/db/schemas/` JSON** (NOT shared `schemas/`, for isolation) for all 10: users, learner_profiles, guided_scripts, practice_sessions, session_utterances, coaching_feedback, audio_corrections, progress_snapshots, model_eval_runs, release_health_events (each `$jsonSchema`, created_at/updated_at/schema_version; version fields on sessions+feedback)
+- [x] `services/api/db/init_mock_db.py` — create collections + validators + 19 indexes in mock DB (idempotent); `assert_mock_target` guard refuses non-`_mock` DB / port 27017
+- [x] `services/api/db/seed_data/{guided_scripts,users,learner_profiles}.json` (4 scripts across goal profiles + demo user/profile)
+- [x] `services/api/db/seed_mock.py` — `update_one` upsert into mock DB (mongomock-portable)
+- [x] Tests (25 total, 96.97% cov): schema JSON valid; init idempotent; seed upsert idempotent; isolation guard
+- [x] Verified live: `make poc-db-setup` created 10 collections + validators on :27018; real DB (27017) confirmed untouched (still only its 12 collections, no `*_mock` DB)
+- [x] Commit
 
 ### P3 — Domain logic  ⬜
 - [ ] `services/api/domain/versions.py` — rubric/scoring/feature/prompt version constants
@@ -189,3 +190,11 @@ make poc-app-test
 - 2026-05-31: Tracker created. Backend=FastAPI (see decisions table). Android emulator not
   available in this dev env per host capabilities, so Android verified by bundling + cross-platform
   API discipline; user to confirm on device. Web is fully verified here.
+- 2026-05-31 (P2): **POC schemas live in `services/api/db/schemas/`, NOT the shared `schemas/`.**
+  Why: the shared dir is wired into the data-foundation Node scripts (`db_init.js` COLLECTIONS) and
+  the `json-validate`/`test_schemas_json.py` gates that run against the **real** DB. Keeping POC
+  schemas separate guarantees the real DB can never accidentally get POC collections. The
+  `assert_mock_target` guard in `init_mock_db.py` is the runtime backstop.
+- 2026-05-31 (P2): seeder uses per-doc `update_one` (not `bulk_write`) — pymongo 4.17 passes a
+  `sort` kwarg that this mongomock version rejects in bulk ops. `update_one` is portable across
+  mock + real Mongo and fine for tiny seed sets.

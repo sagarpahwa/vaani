@@ -1,0 +1,22 @@
+[
+  {
+    "user_id": "demo-user",
+    "preferred_language": "en",
+    "default_goal_signature": {
+      "objective": "introduce yourself memorably",
+      "occasion": "networking event",
+      "audience": "industry peers",
+      "style": "warm and confident",
+      "language": "en",
+      "duration_seconds": 60
+    },
+    "capability_levels": {
+      "clarity": 0.6,
+      "confidence": 0.55,
+      "pacing": 0.5,
+      "storytelling": 0.45,
+      "vocal_variety": 0.5,
+      "emotional_connection": 0.55
+    }
+  }
+]

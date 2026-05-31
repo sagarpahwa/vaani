@@ -295,6 +295,31 @@ Rules:
 3. Separate pure logic (testable) from DB/IO. Co-locate tests in `services/api/tests`.
 4. Run: `make poc-db-up && make poc-db-setup && make poc-api-run` → http://localhost:8090/docs.
 
+### POC Data Model (10 collections, mock DB only)
+
+POC schemas live in **`services/api/db/schemas/`** (deliberately NOT the shared `schemas/`), so the
+data-foundation Node scripts (`scripts/node/*`) and the real DB can never pick them up.
+`services/api/db/init_mock_db.py` creates them with `$jsonSchema` validators + indexes in the mock
+DB; `services/api/db/seed_mock.py` seeds demo data from `services/api/db/seed_data/`. Both refuse to
+run unless the target database name ends in `_mock` and the URI is not on port 27017
+(`assert_mock_target` guard).
+
+| Collection | Upsert key | Purpose |
+|---|---|---|
+| `users` | `user_id` | POC demo accounts |
+| `learner_profiles` | `user_id` | per-user Goal Signature defaults + capability levels |
+| `guided_scripts` | `script_id` | Mode A scripts (seeded from `seed_data/guided_scripts.json`) |
+| `practice_sessions` | `session_id` | one coaching session (Mode A/B); carries the four `*_version` fields |
+| `session_utterances` | `utterance_id` | per-utterance transcript + `audio_key` (object store, not raw audio) |
+| `coaching_feedback` | `feedback_id` | generated feedback + read-aloud text + capability scores |
+| `audio_corrections` | `correction_id` | A/B pairs: user vs ideal-voice `*_audio_key` |
+| `progress_snapshots` | `snapshot_id` | per-user score history + deltas |
+| `model_eval_runs` | `run_id` | golden-dataset regression results |
+| `release_health_events` | `event_id` | telemetry / SLO events |
+
+Every document carries `created_at` / `updated_at` / `schema_version` (same core data-model rules as
+the data foundation).
+
 ### Frontend (`app`, Expo + Expo Router)
 
 One universal codebase for **web + Android** (iOS best-effort for the POC). Audio capture/playback
@@ -305,8 +330,9 @@ Run: `make poc-app-install && make poc-app-web`.
 
 - New backend module in `services/api/`: keep pure logic separate, co-locate a test, keep
   `make poc-api-lint` + `make poc-api-test` green (coverage ≥70% via `services/api/.coveragerc`).
-- New collection for the POC: add a `schemas/<name>.json`, register it in
-  `services/api/db/init_mock_db.py`, add to the collections table below, add a schema test.
+- New collection for the POC: add a `services/api/db/schemas/<name>.json` (NOT the shared
+  `schemas/`), register it in `COLLECTION_SPECS` in `services/api/db/init_mock_db.py`, add it to
+  the POC Data Model table above, and add a case to `services/api/tests/test_schemas_poc.py`.
 - New screen in `app/`: co-locate a component/logic test; keep `make poc-app-test` green.
 
 ---

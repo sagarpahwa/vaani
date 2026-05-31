@@ -1,0 +1,22 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["run_id", "scoring_model_version", "created_at", "schema_version"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":                   { "bsonType": "objectId" },
+      "run_id":                { "bsonType": "string", "minLength": 1 },
+      "scoring_model_version": { "bsonType": "string" },
+      "rubric_version":        { "bsonType": "string" },
+      "golden_set_id":         { "bsonType": "string" },
+      "sample_count":          { "bsonType": ["int", "null"], "minimum": 0 },
+      "mean_absolute_error":   { "bsonType": ["double", "null"], "minimum": 0 },
+      "min_golden_score":      { "bsonType": ["double", "null"], "minimum": 0, "maximum": 1 },
+      "passed":                { "bsonType": "bool" },
+      "metrics":               { "bsonType": "object" },
+      "created_at":            { "bsonType": "date" },
+      "updated_at":            { "bsonType": "date" },
+      "schema_version":        { "bsonType": "string" }
+    }
+  }
+}
