@@ -7,6 +7,7 @@ import {
   deltaBand,
   deltaColor,
   formatClock,
+  initials,
   scoreBand,
   scoreColor,
   severityColor,
@@ -85,6 +86,25 @@ describe('formatClock', () => {
     expect(formatClock(1999)).toBe('0:01');
     expect(formatClock(null)).toBe('0:00');
     expect(formatClock(-500)).toBe('0:00');
+  });
+});
+
+describe('initials', () => {
+  it('takes first + last initial for a multi-word name', () => {
+    expect(initials('Steve Jobs')).toBe('SJ');
+    expect(initials('Jensen Huang')).toBe('JH');
+    expect(initials('Martin Luther King')).toBe('MK'); // first + last, not middle
+  });
+
+  it('takes the first two letters of a single-word name', () => {
+    expect(initials('Oprah')).toBe('OP');
+    expect(initials('x')).toBe('X'); // shorter than two letters
+  });
+
+  it('is whitespace-tolerant and falls back to ? when empty', () => {
+    expect(initials('  Steve   Jobs  ')).toBe('SJ');
+    expect(initials('')).toBe('?');
+    expect(initials('   ')).toBe('?');
   });
 });
 

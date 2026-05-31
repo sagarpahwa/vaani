@@ -4,19 +4,12 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 
 import { api, errorMessage } from '@/api/client';
 import type { PersonaDetail, PersonaSummary } from '@/api/types';
+import { initials } from '@/coaching/format';
 import { DEMO_USER_ID } from '@/config';
 import { colors, radius, spacing } from '@/theme';
 import { Banner } from '@/ui/Banner';
 import { Button } from '@/ui/Button';
 import { Screen } from '@/ui/Screen';
-
-/** Two-letter monogram from a display name ("Steve Jobs" → "SJ"). Exported for tests. */
-export function initials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return '?';
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
 
 export default function PersonasScreen() {
   const router = useRouter();
