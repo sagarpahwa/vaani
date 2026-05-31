@@ -70,7 +70,7 @@ def test_practice_sessions_has_version_fields():
 
 def test_practice_sessions_mode_and_status_enums():
     props = _load("practice_sessions")["$jsonSchema"]["properties"]
-    assert set(props["mode"]["enum"]) == {"guided", "user_script"}
+    assert set(props["mode"]["enum"]) == {"guided", "user_script", "persona"}
     for expected in ("created", "processing", "scored", "failed"):
         assert expected in props["status"]["enum"]
 

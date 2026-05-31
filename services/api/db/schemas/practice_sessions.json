@@ -7,7 +7,7 @@
       "_id":                      { "bsonType": "objectId" },
       "session_id":               { "bsonType": "string", "minLength": 1 },
       "user_id":                  { "bsonType": "string", "minLength": 1 },
-      "mode":                     { "bsonType": "string", "enum": ["guided", "user_script"] },
+      "mode":                     { "bsonType": "string", "enum": ["guided", "user_script", "persona"] },
       "script_id":                { "bsonType": ["string", "null"] },
       "user_script_text":         { "bsonType": ["string", "null"] },
       "goal_signature": {
