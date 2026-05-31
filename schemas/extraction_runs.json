@@ -1,0 +1,37 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["run_type", "started_at", "status"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":              { "bsonType": "objectId" },
+      "run_type":         { "bsonType": "string", "enum": [
+        "wikidata_candidates","pantheon_import","speech_archive_ingest",
+        "source_crawl","scoring","deduplication","export","manual_import"
+      ]},
+      "started_at":       { "bsonType": "date" },
+      "completed_at":     { "bsonType": ["date","null"] },
+      "status":           { "bsonType": "string", "enum": [
+        "running","completed","failed","partial","cancelled"
+      ]},
+      "sources_used":     { "bsonType": "array", "items": { "bsonType": "string" } },
+      "query":            { "bsonType": "string" },
+      "records_found":    { "bsonType": ["int","null"] },
+      "records_inserted": { "bsonType": ["int","null"] },
+      "records_updated":  { "bsonType": ["int","null"] },
+      "records_skipped":  { "bsonType": ["int","null"] },
+      "errors": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "properties": {
+            "error_type": { "bsonType": "string" },
+            "message":    { "bsonType": "string" },
+            "count":      { "bsonType": "int" }
+          }
+        }
+      },
+      "notes":            { "bsonType": "string" }
+    }
+  }
+}

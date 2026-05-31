@@ -1,0 +1,43 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["speech_id", "speaker_id", "language", "created_at"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":                  { "bsonType": "objectId" },
+      "speech_id":            { "bsonType": "objectId" },
+      "speaker_id":           { "bsonType": "objectId" },
+      "source_id":            { "bsonType": "string" },
+      "language":             { "bsonType": "string" },
+      "transcript_text":      { "bsonType": "string" },
+      "transcript_text_hash": { "bsonType": "string" },
+      "word_count":           { "bsonType": ["int","null"] },
+      "license":              { "bsonType": "string", "enum": [
+        "public_domain","cc0","cc_by","cc_by_sa","cc_by_nc","fair_use","proprietary","unknown"
+      ]},
+      "copyright_status":     { "bsonType": "string", "enum": [
+        "public_domain","copyrighted","likely_public_domain","unclear","unknown"
+      ]},
+      "storage_policy":       { "bsonType": "string", "enum": [
+        "full_text","excerpt_only","metadata_only","no_storage"
+      ]},
+      "excerpt_only":         { "bsonType": "bool" },
+      "cleaned_text":         { "bsonType": "string" },
+      "segments": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "properties": {
+            "start_time":  { "bsonType": ["double","null"] },
+            "end_time":    { "bsonType": ["double","null"] },
+            "text":        { "bsonType": "string" },
+            "speaker":     { "bsonType": "string" },
+            "confidence":  { "bsonType": ["double","null"] }
+          }
+        }
+      },
+      "created_at": { "bsonType": "date" },
+      "updated_at": { "bsonType": "date" }
+    }
+  }
+}

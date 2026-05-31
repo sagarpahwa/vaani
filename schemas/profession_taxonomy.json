@@ -1,0 +1,19 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["profession_id", "label", "created_at"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":                { "bsonType": "objectId" },
+      "profession_id":      { "bsonType": "string", "pattern": "^[a-z_]+$" },
+      "label":              { "bsonType": "string" },
+      "description":        { "bsonType": "string" },
+      "typical_contexts":   { "bsonType": "array", "items": { "bsonType": "string" } },
+      "example_speakers":   { "bsonType": "array", "items": { "bsonType": "string" } },
+      "wikidata_occupation_ids": { "bsonType": "array", "items": { "bsonType": "string" } },
+      "parent_category":    { "bsonType": "string" },
+      "created_at":         { "bsonType": "date" },
+      "updated_at":         { "bsonType": "date" }
+    }
+  }
+}

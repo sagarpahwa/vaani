@@ -1,0 +1,108 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["speaker_id", "title", "created_at", "schema_version"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":               { "bsonType": "objectId" },
+      "speaker_id":        { "bsonType": "objectId" },
+      "title":             { "bsonType": "string", "minLength": 1 },
+      "normalized_title":  { "bsonType": "string" },
+      "date":              { "bsonType": ["date", "null"] },
+      "year":              { "bsonType": ["int", "null"] },
+      "location":          { "bsonType": "string" },
+      "event_name":        { "bsonType": "string" },
+      "speech_context":    { "bsonType": "string", "enum": [
+        "political_address", "campaign_rally", "acceptance_speech", "inaugural_address",
+        "state_funeral", "commencement", "sermon", "lecture", "ted_talk", "debate",
+        "trial_argument", "united_nations", "parliament", "press_conference",
+        "interview", "documentary", "ceremony", "protest_rally", "motivational",
+        "comedy", "performance", "other", "unknown"
+      ]},
+      "language":          { "bsonType": "string" },
+      "transcript_id":     { "bsonType": ["objectId", "null"] },
+      "media_asset_ids":   { "bsonType": "array", "items": { "bsonType": "objectId" } },
+      "source_ids":        { "bsonType": "array", "items": { "bsonType": "string" } },
+      "audience_size_estimate": { "bsonType": ["int", "null"] },
+      "known_impact":      { "bsonType": "string" },
+      "rhetorical_devices": {
+        "bsonType": "object",
+        "properties": {
+          "repetition":         { "bsonType": "bool" },
+          "contrast":           { "bsonType": "bool" },
+          "metaphor":           { "bsonType": "bool" },
+          "analogy":            { "bsonType": "bool" },
+          "triads":             { "bsonType": "bool" },
+          "parallelism":        { "bsonType": "bool" },
+          "rhetorical_question":{ "bsonType": "bool" },
+          "direct_address":     { "bsonType": "bool" },
+          "moral_framing":      { "bsonType": "bool" },
+          "identity_framing":   { "bsonType": "bool" },
+          "vision_framing":     { "bsonType": "bool" },
+          "humor":              { "bsonType": "bool" },
+          "silence":            { "bsonType": "bool" },
+          "callback":           { "bsonType": "bool" },
+          "escalation":         { "bsonType": "bool" },
+          "compression":        { "bsonType": "bool" },
+          "sloganization":      { "bsonType": "bool" }
+        }
+      },
+      "content_structure": {
+        "bsonType": "object",
+        "properties": {
+          "opening_style":       { "bsonType": "string" },
+          "argument_pattern":    { "bsonType": "string" },
+          "storytelling_pattern":{ "bsonType": "string" },
+          "emotional_arc":       { "bsonType": "string" },
+          "closing_style":       { "bsonType": "string" },
+          "call_to_action_type": { "bsonType": "string" }
+        }
+      },
+      "delivery_profile": {
+        "bsonType": "object",
+        "properties": {
+          "pace":            { "bsonType": "string", "enum": ["slow","measured","moderate","fast","variable","unknown"] },
+          "volume":          { "bsonType": "string" },
+          "pause_usage":     { "bsonType": "string" },
+          "gesture_style":   { "bsonType": "string" },
+          "eye_contact":     { "bsonType": "string" },
+          "body_movement":   { "bsonType": "string" },
+          "vocal_texture":   { "bsonType": "string" },
+          "intensity_curve": { "bsonType": "string" }
+        }
+      },
+      "language_style": {
+        "bsonType": "object",
+        "properties": {
+          "simplicity":         { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+          "imagery_level":      { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+          "quotability":        { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+          "technical_density":  { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+          "poetic_density":     { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+          "sentence_rhythm":    { "bsonType": "string" },
+          "repetition_density": { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 }
+        }
+      },
+      "emotional_profile": {
+        "bsonType": "object",
+        "properties": {
+          "primary_emotion":   { "bsonType": "string" },
+          "secondary_emotions":{ "bsonType": "array", "items": { "bsonType": "string" } },
+          "emotional_range":   { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+          "emotional_arc":     { "bsonType": "string" }
+        }
+      },
+      "persuasion_modes":   { "bsonType": "array", "items": { "bsonType": "string" } },
+      "audience_effects":   { "bsonType": "array", "items": { "bsonType": "string" } },
+      "influence_type":     { "bsonType": "string" },
+      "memorability":       { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+      "famous_lines":       { "bsonType": "array", "items": { "bsonType": "string" } },
+      "ethical_risk_flags": { "bsonType": "array", "items": { "bsonType": "string" } },
+      "analysis_status":    { "bsonType": "string", "enum": ["pending","partial","complete","needs_review"] },
+      "needs_review":       { "bsonType": "bool" },
+      "created_at":         { "bsonType": "date" },
+      "updated_at":         { "bsonType": "date" },
+      "schema_version":     { "bsonType": "string" }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["speaker_id", "source_id", "claim_type", "claim", "confidence", "created_at"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":                    { "bsonType": "objectId" },
+      "speaker_id":             { "bsonType": "objectId" },
+      "speech_id":              { "bsonType": ["objectId","null"] },
+      "source_id":              { "bsonType": "string" },
+      "claim_type":             { "bsonType": "string", "enum": [
+        "capability","delivery","rhetoric","audience_effect","historical_impact",
+        "ethical_risk","biographical","speech_context","famous_line","influence"
+      ]},
+      "claim":                  { "bsonType": "string", "minLength": 1 },
+      "evidence_text_excerpt":  { "bsonType": "string" },
+      "evidence_location":      { "bsonType": "string" },
+      "confidence":             { "bsonType": "double", "minimum": 0, "maximum": 1 },
+      "extraction_method":      { "bsonType": "string", "enum": [
+        "manual","llm_extraction","rule_based","sparql","api","heuristic"
+      ]},
+      "human_review_status":    { "bsonType": "string", "enum": [
+        "pending","approved","rejected","needs_context"
+      ]},
+      "created_at":             { "bsonType": "date" }
+    }
+  }
+}

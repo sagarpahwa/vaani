@@ -1,0 +1,34 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["source_type", "url", "domain", "created_at"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":               { "bsonType": "objectId" },
+      "source_type":       { "bsonType": "string", "enum": [
+        "academic_paper","news_article","official_archive","government_document",
+        "book","encyclopedia","museum","biography_site","video","audio","speech_archive",
+        "wikidata","wikipedia","openalex","pantheon","ted","youtube","other"
+      ]},
+      "title":             { "bsonType": "string" },
+      "url":               { "bsonType": "string" },
+      "domain":            { "bsonType": "string" },
+      "publisher":         { "bsonType": "string" },
+      "author":            { "bsonType": "string" },
+      "publication_date":  { "bsonType": ["date","null"] },
+      "access_date":       { "bsonType": "date" },
+      "license":           { "bsonType": "string" },
+      "copyright_notes":   { "bsonType": "string" },
+      "reliability_score": { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+      "source_tier":       { "bsonType": "string", "enum": [
+        "tier_1_official","tier_2_academic","tier_3_reputable","tier_4_general","tier_5_unverified"
+      ]},
+      "raw_content_hash":  { "bsonType": "string" },
+      "crawl_status":      { "bsonType": "string", "enum": ["pending","crawled","failed","skipped","not_applicable"] },
+      "robots_allowed":    { "bsonType": ["bool","null"] },
+      "terms_notes":       { "bsonType": "string" },
+      "created_at":        { "bsonType": "date" },
+      "updated_at":        { "bsonType": "date" }
+    }
+  }
+}
