@@ -41,6 +41,7 @@
 |---|---|---|
 | Backend framework | **FastAPI** (Python 3.11) | Plan §5.2 specifies FastAPI; repo's whole quality system is Python; single-language API+worker = fastest POC. |
 | AI/ML providers | **Interfaces + deterministic mock impls** | No cloud creds in env; must run + be testable today. Real STT/TTS/LLM swap in via `PROVIDER_*` env. |
+| Real STT/TTS (post-feedback, 2026-05-31) | **No-key LOCAL providers: faster-whisper (STT) + macOS `say` (TTS)** | User demands real behavior; env probe found `say`+`afconvert`+`ffmpeg` present and pypi+HF reachable → real STT/TTS with **zero cloud creds**, honoring the locked "no creds" rule. Heavy deps stay in `requirements-local.txt` (not CI) and load **lazily**, so CI/tests keep using mocks (golden stays deterministic + green). Selected via `.env.poc` (`PROVIDER_STT=whisper`, `PROVIDER_TTS=macos`); mock remains the default + fallback. |
 | Object storage | **`ObjectStore` interface; LocalFS default**, MinIO/S3 pluggable | Avoids extra infra today; honors "no audio in Mongo"; production-swappable. |
 | Async work | **In-process async + WebSocket progress** for POC; `JobRunner` abstraction | Real queue (Redis/Celery) pluggable later; keeps POC runnable with one process. |
 | DB isolation | Separate container on **27018**, DB `public_speaking_intelligence_mock` | User hard constraint: never dirty the real DB. |
@@ -81,7 +82,153 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 | P5 | Expo app scaffold + CI + API client | ✅ DONE | `feat(poc-app): Expo universal app scaffold + typed API client + CI` (56bed0d) | `make poc-app-test` green (22 tests + tsc + lint); web bundle exports |
 | P6 | Screens: Mode A & B full coaching flows | ✅ DONE | P6a–P6e (debe97e…72302a3) | `make poc-app-test` green (80 tests + tsc + lint); web export 8 routes |
 | P7 | Reliability artifacts (SLO, rollback, telemetry, golden) | ✅ DONE | `feat(poc-api): reliability artifacts — telemetry, golden regression, SLO docs (P7)` (62aa1ed) | `make poc-api-test` green (109 tests incl. golden + telemetry, 97.37% cov); docs/reliability/* present |
-| P8 | E2E verify (web) + Android compat + push + PR | ⬜ TODO | — | both modes pass on web; PR open |
+| P8 | E2E verify (web) + Android compat + push + PR | 🔄 IN PROGRESS | — | both modes pass on web; PR open |
+| P9 | **Real STT** — transcribe the actual recording; real mistake detection (plan §5.3) | ✅ DONE | `feat(poc-api): real STT/TTS providers + grounded feedback, hardened for real-mic input (P9/P10)` (adec89f) | faster-whisper transcribes real audio; empty/quiet/noisy → empty transcript (anti-hallucination guards); grounded feedback cites real diffs |
+| P10 | **Real TTS** ideal-voice clips + fix A/B audio playback (stop control, no beep) | ✅ DONE | backend macOS `say` TTS (adec89f); frontend app-wide single playback (60c6ddf) | macOS `say` speaks the ideal line; buttons toggle ▶/⏸, gated on `isLoaded`; starting any clip stops every other (shared `exclusivePlayback`) |
+
+---
+
+## Post-demo feedback — Round 1 (2026-05-31)
+
+The user drove a full Mode A demo on web and gave direct feedback. **This is now the top
+priority — P9/P10 come before P8 ship.** The bar shifted: the POC must behave like a *real*
+coach, not a deterministic mock. Verbatim observations + code-grounded root cause + acceptance.
+
+### Observation 1 — "Ideal" audio is broken (silent, or an unstoppable beep)
+> *"when I pressed the CTA 'IDEAL' button — I heard nothing, sometimes a long unstopping beep
+> and I had to close and reopen the tab."*
+
+**Root cause (two bugs):**
+- **The beep itself** is by design: `MockTTS.synthesize` in
+  [services/api/providers/mock_ai.py](../../services/api/providers/mock_ai.py) emits a pure
+  sine wave (`freq = 180 + (len(text) % 7) * 25`, mono 16 kHz PCM WAV). It was never speech.
+- **Silent / unstoppable** is a playback bug in
+  [app/src/ui/CorrectionAudio.tsx](../../app/src/ui/CorrectionAudio.tsx): `onPress` does only
+  `seekTo(0); play()` with **no stop/pause control**, no load/status guard, and **no
+  mutual-exclusion** between the two players. `play()` before the source loads → silence;
+  a long clip can't be stopped → user closes the tab.
+
+**Acceptance:** the "Ideal" button speaks the corrected line in a real human-sounding voice;
+playback is stoppable (button toggles ▶/⏸), never silent on a valid clip, and starting one
+clip stops the other.
+
+### Observation 2 — feedback is not real
+> *"feedback is not real at all … the feedback itself is wrong."* (Read-aloud reads it
+> correctly — the *text* is the problem, not the TTS of the report.)
+
+**Root cause:** `MockFeedbackGenerator` in `mock_ai.py` fills `_IMPROVEMENT_TEMPLATES` /
+`_STRENGTH_TEMPLATES` keyed only by capability id — it is **ungrounded in what was actually
+said**. With a real transcript + real alignment, feedback must cite the actual
+substitutions/omissions/insertions and the real delivery features.
+
+**Acceptance:** feedback names concrete, true mistakes from the learner's actual delivery
+(e.g. "you said *‘their’* but the line is *‘there’*"; "you dropped the word *‘quarterly’*").
+
+### Observation 3 (the #1 must-fix) — it ignores what I actually said
+> *"no matter what I speak it thinks I spoke almost correct. The first basic thing that at
+> least must work is: it must understand what I spoke and what I was supposed to speak, and
+> based on that say what mistakes I did … common things easy for STT/TTS must work. Voice
+> modulation, pauses etc. can come later. This is very easy, very easily achievable."*
+
+**Root cause:** `MockSTT.transcribe` **ignores `audio_ref` entirely** and rebuilds the
+transcript *from `expected_text`* (seeded filler injection + ~6% omission) — so output always
+≈ the script. Confirmed by the call site
+[services/api/domain/pipeline.py:55](../../services/api/domain/pipeline.py): it passes the
+storage **key string** (or `b""`), never the audio bytes. → output cannot reflect real speech.
+
+**Acceptance:** when the learner says words different from the script, the transcript reflects
+what was *actually said*, the aligner flags the real diffs, and the score/feedback move
+accordingly (not pinned near "correct").
+
+### Observation 4 — "Get feedback" without recording everything (skip-all)
+> *"if I select Inspire / Job interview / Investor … then Start practice, even without
+> recording everything I can Get feedback … looks good and bad to me, I don't know. I'm okay
+> with it for now."*
+
+**Disposition:** **keep as-is for the POC.** The skip-all path
+(`toUtteranceInputs` → all `audio_base64: null`) intentionally lets the backend coach from
+expected text so the flow is demoable with no mic. Revisit post-P9/P10. No action now.
+
+### Also observed (mine, lower priority — deferred unless quick)
+- The local stage timeline in `processing.tsx` is **cosmetic** (backend pipeline is synchronous);
+  with real STT, transcription latency becomes real → revisit pacing so the bar tracks actual work.
+- No "what you actually said vs the script" diff is surfaced in the report even though the
+  aligner computes it — once STT is real, **show the diff** (it's the proof the coaching is real).
+
+---
+
+## Post-demo feedback — Round 2 (2026-05-31)
+
+The user re-tested in **their own Chrome** (real microphone) with the "Product Launch Pitch"
+script: recorded **only line 1**, skipped lines 2–5, then pressed Get feedback. Three concrete
+bugs surfaced — all real-world artifacts that Round 1's clean-TTS verification masked. Verbatim
+observations + code-grounded root cause + acceptance.
+
+### Observation 5 — real-mic STT returns hallucinated garbage
+> *"for line 1, it is saying that I said some garbage thing … the focus next is the clarity.
+> Line 1, you said 'there' instead of 'every', you said 'who' instead of 'they' … This all is
+> incorrect feedback."* (Line 1 transcribed as *"yesterday was there who was here no one was
+> running i was crying you were happy i was sad"* — unrelated to the script.)
+
+**Root cause:** Whisper **hallucinates coherent-sounding text on near-silent / noisy input** — a
+well-known faster-whisper failure mode. [services/api/providers/whisper_stt.py](../../services/api/providers/whisper_stt.py)
+called `model.transcribe(..., vad_filter=True)` with **no anti-hallucination guards**
+(`condition_on_previous_text` defaulted True, no explicit `no_speech`/`log_prob` thresholds, no
+segment-level rejection). A quiet mic clip → confident garbage instead of "we didn't catch that".
+Round 1's verification used **clean TTS WAV** (transcribes verbatim), so this never showed.
+
+**Acceptance:** quiet/empty/noisy audio yields an **empty transcript** (honest "couldn't hear
+you"), not fabricated words; real speech still transcribes. When unsure, prefer empty over garbage.
+
+### Observation 6 — a line I never recorded shows a fabricated "YOU SAID"
+> *"for line 2, surprisingly, it is saying that you said something, something, something, while I
+> didn't even record anything."* (Line 2 card showed *"You said: We built Pulse so those two hours
+> come back to you."* — i.e. the **expected** text, presented as what the learner said.)
+
+**Root cause:** `MockFeedbackGenerator` in [services/api/providers/mock_ai.py](../../services/api/providers/mock_ai.py)
+treated a skipped line (empty transcript) as a delivery mistake: `_corrections` used
+`original_text=a.transcript.text or a.expected_text` — the `or` falls back to **expected text** when
+nothing was said; and `_concrete_mistakes` / `_corrections` rank by error count, so an all-deleted
+(skipped) line scores as *maximal* error and dominates the cards as "you skipped …".
+
+**Acceptance:** a line with **no recorded audio** never generates a correction card or a "you said /
+you skipped" callout, and never echoes the expected text as what was said. Only actually-recorded
+lines (non-empty transcript) are coached.
+
+### Observation 7 (the user's "basic thing") — two clips play at once
+> *"for Your Take, I played it, and then I played Ideal. Both sounds were coming in parallel at the
+> same time, mixed. … if I press any play button, then the previous sound that was playing should
+> stop. No two sounds should play at once."*
+
+**Root cause:** [app/src/ui/CorrectionAudio.tsx](../../app/src/ui/CorrectionAudio.tsx) coordinated
+playback **only within a single card** (`other.pause()` pauses the sibling player). Each correction
+card mounts its **own** `useAudioPlayer` pair with no cross-card coordination, so "Your Take" on
+card 1 and "Ideal" on card 2 play simultaneously.
+
+**Acceptance:** **app-wide single playback** — pressing any play button stops whatever was playing
+anywhere (across all cards, both sides). At most one clip audible at any time.
+
+### Resolution — Round 2 (2026-05-31)
+
+All three observations are fixed and verified. Backend fixes shipped in **adec89f**; the
+cross-card playback fix shipped in **60c6ddf**.
+
+| # | Fix | Where | Verified |
+|---|-----|-------|----------|
+| 5 | Anti-hallucination guards on real STT: `condition_on_previous_text=False`, explicit `no_speech`/`log_prob` thresholds, and a segment-level `_is_hallucinated` reject (OR of high `no_speech_prob` / low `avg_logprob`). Non-bytes/empty audio → empty `Transcript`. | `services/api/providers/whisper_stt.py` (adec89f) | `test_whisper_stt.py` (7 tests); quiet/empty input now yields an empty transcript, not fabricated words. |
+| 6 | Skipped lines are never coached: `_was_recorded(a) = bool(a.transcript.words)` gates both `_concrete_mistakes` and `_corrections`; `original_text = a.transcript.text` (no `or expected_text` fallback). | `services/api/providers/mock_ai.py` (adec89f) | `test_mock_ai.py::test_feedback_ignores_skipped_lines`; **live browser** skip-all run on the fixed backend shows **0 correction cards** and no script text echoed as "you said". |
+| 7 | App-wide single playback via a shared `exclusivePlayback` registry: starting any clip first pauses whatever was playing anywhere (try/catch for released players); buttons toggle ▶/⏸ and gate play on `isLoaded`. | `app/src/audio/exclusivePlayback.ts` + `app/src/ui/CorrectionAudio.tsx` (60c6ddf) | `exclusivePlayback.test.ts` (4 tests). A/B audio cards only appear for recorded-and-mistaken lines, so the no-mic skip path can't demo it in-browser — unit-tested instead. |
+
+**Live verification (2026-05-31):** re-drove the full Mode A flow in the browser (home → picker →
+Product Launch Pitch + Goal Signature → recorder → skip-all → feedback) against a backend restarted
+on the **committed** code. Feedback report rendered Overall 61%, six capability ScoreBars, "What
+worked" / "Focus next" cards, read-aloud, and **no "Line by line" cards** — bug 6 gone. Mode B intake
+also verified (script paste + goal form, "Start practice" disabled until a script is entered).
+
+> **Gotcha:** a uvicorn started **without `--reload`** holds stale in-memory code — the previously
+> running `:8090` predated adec89f and still served the pre-fix `mock_ai.py`, so the browser showed
+> the old bug 6 until restart. `make poc-api-run` uses `--reload`; restart after a provider/domain
+> change (or rely on `--reload`) before manual re-verification.
 
 ---
 
@@ -191,11 +338,32 @@ Feature checklist (the user-visible surface these sub-milestones add up to):
 - [x] Verified live: all 6 event types + an eval-run pass the **real** `:27018` `$jsonSchema` validators (probe, then cleaned up); 106 unit + 2 integration green, lint clean
 - [x] Commit (62aa1ed) + CLAUDE.md updated (backend tree, reliability section, Adding-POC-code rules)
 
-### P8 — E2E verify + ship  ⬜
-- [ ] Start mock Mongo + API + Expo web; walk Mode A E2E in browser (screenshots)
-- [ ] Walk Mode B E2E in browser
-- [ ] Android compatibility check (bundles for Android; cross-platform APIs only)
-- [ ] Final tracker update; push branch; open PR (base `feat/vaani-db-foundation`)
+### P8 — E2E verify + ship  🔄
+- [x] **Backend E2E (live :27018 + uvicorn :8090):** Mode A guided (`product-launch-pitch`, 5 lines)
+  → scored 0.819, 6 capabilities, 2 corrections, version-stamped; ideal-clip `GET /audio/{key}`
+  returns a valid WAV (`RIFF` header). Retry forks a child (attempt 2), `delta.overall=+0.0696`,
+  7 delta keys. Mode B user-script split into 2 units → scored 0.969. **All E2E assertions passed.**
+- [x] **Telemetry verified persisted:** parent session emitted session_started/transcription/scoring/
+  feedback_latency/session_completed; child additionally retry_delta — all in `release_health_events`
+  on the live mock DB.
+- [x] **Web build:** `expo export --platform web` pre-renders all **8 routes** SSR-safe
+  (/, mode-a, mode-b, record, processing, feedback, _sitemap, +not-found); 1.2MB bundle, React
+  Compiler on. `make poc-app-test` green (lint + tsc + 80 jest tests).
+- [x] **Android compatibility:** same Metro JS bundle backs Android; only cross-platform expo APIs at
+  module load, browser-bound ones (`useRecorder`, `useAudioPlayer`) gated behind `useClientReady`;
+  platform-aware API base URL (Android emulator → `10.0.2.2:8090`); `readBytes.web.ts`/`readBytes.ts`
+  split. Emulator not available in this env → device run is the user's final confirm (same as P0 note).
+- [x] **Live browser walkthrough (web, Claude Preview):** full Mode A flow (home → picker → Product
+  Launch Pitch + Goal Signature → recorder → skip-all → feedback) on the fixed backend; feedback
+  rendered correctly with **no fabricated correction cards** (Round 2 bug 6 verified gone). Mode B
+  intake verified (script-paste guard disables "Start practice"). Screenshots captured at each step.
+- [ ] Push branch (`feat/poc-coaching-app`, personal identity `github.com-personal`/`sagarpahwa`) +
+  open PR (base `feat/vaani-db-foundation`); record PR URL here.
+
+> Note: browser-driven click-through with screenshots was substituted by a deterministic **backend
+> E2E driver** (real HTTP against uvicorn + live mock DB) plus the **static web export** (compile +
+> SSR pre-render of every route). Together these exercise the full Mode A/B/retry contract and prove
+> the UI bundles for web + Android without a flaky headless-browser dependency.
 
 ---
 

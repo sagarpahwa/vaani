@@ -281,11 +281,15 @@ services/api/
 ├── db/               # mock-DB init + seed (targets public_speaking_intelligence_mock)
 ├── domain/           # pure logic: text, types, versions, goal_signature, pipeline
 ├── providers/        # base (ABCs), object_store, analysis (align/features/score),
-│                     #   mock_ai (STT/TTS/feedback), registry (build_providers)
+│                     #   mock_ai (deterministic STT/TTS/feedback — default, offline),
+│                     #   whisper_stt (real STT via faster-whisper), macos_tts (real TTS
+│                     #   via macOS `say`), registry (build_providers from PROVIDER_*)
 ├── routes/           # API routers (sessions, scripts, utterances, retry, audio, ws)
 ├── telemetry.py      # release-health event emitters (plan §11.1) → release_health_events
 ├── models.py         # Pydantic request/response models (carry *_version fields)
-├── requirements.txt  # installed into .venv-poc
+├── requirements.txt        # mock stack — installed into .venv-poc (lean, offline, CI)
+├── requirements-local.txt  # OPTIONAL demo-machine deps for the REAL providers
+│                           #   (faster-whisper, truststore) — never in CI
 └── tests/            # pytest (unit + @pytest.mark.integration), .coveragerc gate ≥70%
     └── golden/       # frozen dataset.json + regression test (scoring drift gate)
 ```
@@ -306,7 +310,10 @@ services/api/
 
 Rules:
 1. AI is accessed only through `providers/` interfaces. Default impls are deterministic mocks so
-   the app runs and tests pass with no cloud credentials. Real providers swap in via `PROVIDER_*`.
+   the app runs and tests pass with no cloud credentials. Real providers swap in via `PROVIDER_*`
+   (`PROVIDER_STT=whisper`, `PROVIDER_TTS=macos`) and need `requirements-local.txt`; the registry
+   raises on an unknown name (no silent fallback). Real STT decodes the learner's *actual* audio and
+   guards against Whisper's silence-hallucination so an unrecorded line scores as missed, not faked.
 2. Every scored/feedback output carries version fields: `rubric_version`, `scoring_model_version`,
    `feature_extractor_version`, `prompt_version` (see `domain/versions.py`).
 3. Separate pure logic (testable) from DB/IO. Co-locate tests in `services/api/tests`.
