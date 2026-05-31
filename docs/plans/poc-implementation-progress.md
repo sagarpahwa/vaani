@@ -4,6 +4,11 @@
 > the original prompt (below), then read this file top-to-bottom and continue from the
 > **first task that is not `✅ DONE`**. Every `✅ DONE` task is committed to git — do not redo it.
 
+> **▶ ACTIVE MILESTONE — Iteration 1 "20 Legends Speaking Coach" (personas, acoustic-first).**
+> Its own plan + tracker live in [`poc-personas-plan.md`](poc-personas-plan.md) and
+> [`poc-personas-progress.md`](poc-personas-progress.md). To resume that work, read those two
+> files and continue from the first non-`DONE` sub-task there.
+
 ---
 
 ## How to resume (read this first)
