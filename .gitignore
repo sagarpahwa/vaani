@@ -6,3 +6,4 @@ __pycache__/
 logs/*.log
 exports/*.jsonl
 .DS_Store
+logs/mongo/mongod.log
