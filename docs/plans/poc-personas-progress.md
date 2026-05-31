@@ -88,7 +88,7 @@ You were told: *"implement this plan"* (pointing at this file or at
 
 | # | Sub-task | Status | Commit | Verify |
 |---|---|---|---|---|
-| P2.1 | `services/api/providers/audio_decode.py` — bytes (webm/opus \| m4a) → mono 16 kHz float32 PCM via PyAV | TODO | | unit test decodes a tiny fixture to non-empty PCM |
+| P2.1 | `services/api/providers/audio_decode.py` — bytes (webm/opus \| m4a) → mono 16 kHz float32 PCM via PyAV | DONE | `pending` | unit test decodes a tiny fixture to non-empty PCM |
 | P2.2 | `AcousticFeatures` dataclass in `services/api/domain/types.py` (rate, pauses, pitch, energy, syllables, coverage) | TODO | | import works; fields per plan B.3 |
 | P2.3 | `AcousticAnalyzer` ABC in `services/api/providers/base.py` (`analyze(pcm, sr, expected_text) -> AcousticFeatures`) | TODO | | import works |
 | P2.4 | Mock acoustic impl (deterministic from expected_text + seed) in `services/api/providers/acoustic.py` | TODO | | same input → identical features (unit test) |

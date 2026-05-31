@@ -5,6 +5,10 @@ source = services/api
 omit =
     services/api/tests/*
     services/api/main.py
+    # Real-audio decode needs PyAV + numpy (requirements-local, demo machine only);
+    # CI has neither, so it can't be imported/measured here. Behavior is covered by
+    # test_audio_decode.py wherever PyAV is installed.
+    services/api/providers/audio_decode.py
 
 [report]
 show_missing = True
