@@ -68,8 +68,8 @@ You were told: *"implement this plan"* (pointing at this file or at
 
 | # | Sub-task | Status | Commit | Verify |
 |---|---|---|---|---|
-| P1.1 | Research the 20 (confirm top reference video + distill speaking qualities) → notes feed P1.2 | TODO | | profiles drafted for all 20 (Jobs…Kelly) |
-| P1.2 | Author `services/api/db/seed_data/personas.json` — 20 records (persona_id, name, role, archetype, reference, goal_line, signature_qualities, speech.lines, rubric) | TODO | | `python3 -c "import json;d=json.load(open('services/api/db/seed_data/personas.json'));assert len(d)==20"` |
+| P1.1 | Research the 20 (confirm top reference video + distill speaking qualities) → notes feed P1.2 | DONE | (P1.2 commit) | profiles drafted for all 20 (Jobs…Kelly) — embodied in personas.json |
+| P1.2 | Author `services/api/db/seed_data/personas.json` — 20 records (persona_id, name, role, archetype, reference, goal_line, signature_qualities, speech.lines, rubric) | DONE | _next commit_ | `python3 -c "import json;d=json.load(open('services/api/db/seed_data/personas.json'));assert len(d)==20"` |
 | P1.3 | Schema `services/api/db/schemas/personas.json` (`$jsonSchema`, required fields) | TODO | | file parses; has `$jsonSchema`; `required` lists persona_id/name/speech/rubric |
 | P1.4 | Register `personas` in `COLLECTION_SPECS` (`services/api/db/init_mock_db.py`) + indexes | TODO | | `grep personas services/api/db/init_mock_db.py` |
 | P1.5 | Seed personas in `services/api/db/seed_mock.py` (upsert by `persona_id`) | TODO | | `make poc-db-setup` seeds 20 personas |
