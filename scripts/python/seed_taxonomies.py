@@ -49,7 +49,6 @@ def upsert_capabilities(db, records: list) -> tuple[int, int]:
     ops = []
     for rec in records:
         doc = {**rec, "updated_at": NOW, "schema_version": SCHEMA_VERSION}
-        doc.setdefault("created_at", NOW)
         ops.append(
             UpdateOne(
                 {"capability_id": rec["capability_id"]},
@@ -71,7 +70,6 @@ def upsert_professions(db, records: list) -> tuple[int, int]:
     ops = []
     for rec in records:
         doc = {**rec, "updated_at": NOW, "schema_version": SCHEMA_VERSION}
-        doc.setdefault("created_at", NOW)
         ops.append(
             UpdateOne(
                 {"profession_id": rec["profession_id"]},
