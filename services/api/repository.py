@@ -37,6 +37,17 @@ def get_script(db, script_id: str) -> dict | None:
     return db.guided_scripts.find_one({"script_id": script_id}, {"_id": 0})
 
 
+# ---- personas (read-only here; seeded separately) --------------------------
+
+
+def list_personas(db) -> list[dict]:
+    return list(db.personas.find({}, {"_id": 0}).sort("persona_id", 1))
+
+
+def get_persona(db, persona_id: str) -> dict | None:
+    return db.personas.find_one({"persona_id": persona_id}, {"_id": 0})
+
+
 # ---- sessions --------------------------------------------------------------
 
 

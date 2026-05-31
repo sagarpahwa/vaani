@@ -115,3 +115,40 @@ class ScriptDetail(BaseModel):
     goal_profile: dict | None = None
     target_capabilities: list[str] = []
     lines: list[ScriptLineModel]
+
+
+# ---- personas (20 Legends) -------------------------------------------------
+
+
+class PersonaReference(BaseModel):
+    title: str | None = None
+    video_url: str | None = None
+
+
+class PersonaSummary(BaseModel):
+    persona_id: str
+    name: str
+    role: str | None = None
+    archetype: str | None = None
+    line_count: int
+
+
+class PersonaRubricView(BaseModel):
+    """The demo-relevant slice of a persona rubric (scoring weights stay server-side)."""
+
+    target_pace_sps: list[float] = []
+    expressiveness: str | None = None
+    pause_style: str | None = None
+
+
+class PersonaDetail(BaseModel):
+    persona_id: str
+    name: str
+    role: str | None = None
+    archetype: str | None = None
+    reference: PersonaReference | None = None
+    goal_line: str | None = None
+    signature_qualities: list[str] = []
+    estimated_duration_seconds: int | None = None
+    lines: list[ScriptLineModel]
+    rubric: PersonaRubricView | None = None

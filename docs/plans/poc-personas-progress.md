@@ -74,11 +74,11 @@ You were told: *"implement this plan"* (pointing at this file or at
 | P1.4 | Register `personas` in `COLLECTION_SPECS` (`services/api/db/init_mock_db.py`) + indexes | DONE | _next commit_ | `grep personas services/api/db/init_mock_db.py` |
 | P1.5 | Seed personas in `services/api/db/seed_mock.py` (upsert by `persona_id`) | DONE | _next commit_ | init+seed on mongomock → 20 personas, idempotent re-seed inserts 0 |
 | P1.6 | Schema test case in `services/api/tests/test_schemas_poc.py` | DONE | _next commit_ | `pytest services/api/tests/test_schemas_poc.py` → 10 passed |
-| P1.7 | Repo accessors `list_personas` / `get_persona` in `services/api/repository.py` | TODO | | unit test for both green |
-| P1.8 | Pydantic `PersonaSummary` / `PersonaDetail` in `services/api/models.py` | TODO | | import in `python -c` works; fields match seed |
-| P1.9 | `services/api/routes/personas.py` (`GET /personas`, `GET /personas/{id}`) + register in app | TODO | | `GET /personas` → 20; `GET /personas/steve-jobs` → 200 |
-| P1.10 | Route tests in `services/api/tests/` (list + detail + 404) | TODO | | `make poc-api-test` green |
-| P1.11 | Add `personas` row to CLAUDE.md POC Data Model table | TODO | | `grep personas CLAUDE.md` |
+| P1.7 | Repo accessors `list_personas` / `get_persona` in `services/api/repository.py` | DONE | _next commit_ | test_repository green |
+| P1.8 | Pydantic `PersonaSummary` / `PersonaDetail` in `services/api/models.py` | DONE | _next commit_ | route returns typed payloads (test_api_personas) |
+| P1.9 | `services/api/routes/personas.py` (`GET /personas`, `GET /personas/{id}`) + register in app | DONE | _next commit_ | `GET /personas` → 20; `GET /personas/steve-jobs` → 200 |
+| P1.10 | Route tests in `services/api/tests/` (list + detail + 404) | DONE | _next commit_ | `pytest test_api_personas.py` → 5 passed |
+| P1.11 | Add `personas` row to CLAUDE.md POC Data Model table | DONE | _next commit_ | `grep personas CLAUDE.md` |
 
 ---
 

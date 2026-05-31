@@ -319,7 +319,7 @@ Rules:
 3. Separate pure logic (testable) from DB/IO. Co-locate tests in `services/api/tests`.
 4. Run: `make poc-db-up && make poc-db-setup && make poc-api-run` → http://localhost:8090/docs.
 
-### POC Data Model (10 collections, mock DB only)
+### POC Data Model (11 collections, mock DB only)
 
 POC schemas live in **`services/api/db/schemas/`** (deliberately NOT the shared `schemas/`), so the
 data-foundation Node scripts (`scripts/node/*`) and the real DB can never pick them up.
@@ -333,6 +333,7 @@ run unless the target database name ends in `_mock` and the URI is not on port 2
 | `users` | `user_id` | POC demo accounts |
 | `learner_profiles` | `user_id` | per-user Goal Signature defaults + capability levels |
 | `guided_scripts` | `script_id` | Mode A scripts (seeded from `seed_data/guided_scripts.json`) |
+| `personas` | `persona_id` | 20 Legends: in-style ~60s speech + acoustic rubric (seeded from `seed_data/personas.json`) |
 | `practice_sessions` | `session_id` | one coaching session (Mode A/B); carries the four `*_version` fields |
 | `session_utterances` | `utterance_id` | per-utterance transcript + `audio_key` (object store, not raw audio) |
 | `coaching_feedback` | `feedback_id` | generated feedback + read-aloud text + capability scores |
