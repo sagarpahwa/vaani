@@ -1,0 +1,135 @@
+{
+  "_comment": "Persona-path golden regression fixture. Separate from dataset.json so the Mode A/B golden is never coupled to persona scoring. Values are produced by the deterministic mock acoustic stack and are exact (no randomness). Regenerate ONLY when a persona *_version in domain/versions.py is intentionally bumped: run the snippet in test_persona_golden.py's module docstring, paste the new `expected` blocks, and bump the version fields here + in quality-baseline.poc.json. A diff here is a scoring-behavior change and must be reviewed.",
+  "scoring_model_version": "persona-acoustic-1.0.0",
+  "rubric_version": "persona-rubric-2026.05.1",
+  "tolerance": 0.0005,
+  "golden_set_id": "poc-persona-golden-v1",
+  "cases": [
+    {
+      "id": "persona-jobs-clean",
+      "persona_name": "Steve Jobs",
+      "rubric": {
+        "capability_weights": {
+          "clarity": 1.2,
+          "pace": 1.3,
+          "engagement": 1.3,
+          "confidence": 1.2,
+          "fluency": 0.8,
+          "conciseness": 1.2
+        },
+        "target_pace_sps": [2.8, 3.6],
+        "expressiveness": "high-contrast",
+        "pause_style": "dramatic",
+        "feedback_notes": {
+          "too_fast": "You rushed the reveal. Jobs lets a long silence do the work.",
+          "too_slow": "You drifted below his measured pace. Keep it deliberate.",
+          "monotone": "Flat delivery kills the contrast. Drop the setup, lift the reveal.",
+          "hesitation": "A stumble broke the spell. The Jobs pause is intentional, not a fumble.",
+          "skipped": "That line carries the contrast. Don't drop it."
+        }
+      },
+      "expected_units": [
+        "Every once in a while, a product comes along that changes everything.",
+        "Today, we are going to do exactly that, not once, but three times.",
+        "This is one device, and we are calling it iPhone."
+      ],
+      "recorded_lines": [0, 1, 2],
+      "expected": {
+        "overall": 0.9312,
+        "style_match": 0.8134,
+        "capabilities": {
+          "clarity": 1.0,
+          "pace": 1.0,
+          "fluency": 0.7417,
+          "confidence": 1.0,
+          "engagement": 0.9318,
+          "conciseness": 0.845
+        }
+      }
+    },
+    {
+      "id": "persona-buffett-clean",
+      "persona_name": "Warren Buffett",
+      "rubric": {
+        "capability_weights": {
+          "clarity": 1.3,
+          "pace": 1.3,
+          "engagement": 1.1,
+          "confidence": 1.1,
+          "fluency": 1.0,
+          "conciseness": 1.2
+        },
+        "target_pace_sps": [2.4, 3.0],
+        "expressiveness": "balanced",
+        "pause_style": "steady",
+        "feedback_notes": {
+          "too_fast": "You hurried Buffett, the one thing he never does. Slow down.",
+          "too_slow": "Even unhurried has a heartbeat. Keep the folksy rhythm moving.",
+          "monotone": "Add the wry smile. The humor lands when your tone lifts a little.",
+          "hesitation": "Buffett is fine with silence, but a stumble is different. Settle in.",
+          "skipped": "Plain lines still need to land. Don't drop it."
+        }
+      },
+      "expected_units": [
+        "Someone is sitting in the shade today because someone planted a tree long ago.",
+        "That is really all investing is. You plant, and then you wait.",
+        "The stock market is a device for transferring money to the patient."
+      ],
+      "recorded_lines": [0, 1, 2],
+      "expected": {
+        "overall": 0.8648,
+        "style_match": 0.5935,
+        "capabilities": {
+          "clarity": 1.0,
+          "pace": 0.9173,
+          "fluency": 0.5583,
+          "confidence": 0.9835,
+          "engagement": 0.9448,
+          "conciseness": 0.735
+        }
+      }
+    },
+    {
+      "id": "persona-jobs-skip-line",
+      "persona_name": "Steve Jobs",
+      "rubric": {
+        "capability_weights": {
+          "clarity": 1.2,
+          "pace": 1.3,
+          "engagement": 1.3,
+          "confidence": 1.2,
+          "fluency": 0.8,
+          "conciseness": 1.2
+        },
+        "target_pace_sps": [2.8, 3.6],
+        "expressiveness": "high-contrast",
+        "pause_style": "dramatic",
+        "feedback_notes": {
+          "too_fast": "You rushed the reveal. Jobs lets a long silence do the work.",
+          "too_slow": "You drifted below his measured pace. Keep it deliberate.",
+          "monotone": "Flat delivery kills the contrast. Drop the setup, lift the reveal.",
+          "hesitation": "A stumble broke the spell. The Jobs pause is intentional, not a fumble.",
+          "skipped": "That line carries the contrast. Don't drop it."
+        }
+      },
+      "expected_units": [
+        "Every once in a while, a product comes along that changes everything.",
+        "Today, we are going to do exactly that, not once, but three times.",
+        "This is one device, and we are calling it iPhone."
+      ],
+      "recorded_lines": [0, 2],
+      "expected": {
+        "overall": 0.81,
+        "style_match": 0.7532,
+        "capabilities": {
+          "clarity": 0.7669,
+          "pace": 1.0,
+          "fluency": 0.7,
+          "confidence": 0.8501,
+          "engagement": 0.8194,
+          "conciseness": 0.6702
+        }
+      }
+    }
+  ]
+}
