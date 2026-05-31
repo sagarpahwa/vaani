@@ -22,6 +22,10 @@ export const API_BASE_URL = stripTrailingSlashes(
   process.env.EXPO_PUBLIC_API_URL || defaultBaseUrl(),
 );
 
+/** Demo account seeded in the mock DB (services/api/db/seed_data/users.json).
+ *  The POC has no auth; every session is created for this user. */
+export const DEMO_USER_ID = 'demo-user';
+
 /** WebSocket origin for live progress events (http→ws, https→wss). */
 export function wsBaseUrl(): string {
   return API_BASE_URL.replace(/^http/, 'ws');

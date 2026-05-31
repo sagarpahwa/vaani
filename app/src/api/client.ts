@@ -72,6 +72,16 @@ export const api = {
     }),
 };
 
+/** Turn any thrown value into a user-facing message. `ApiError.message` already
+ *  carries the backend `detail`; a bare `TypeError` from `fetch` means the
+ *  server was unreachable. */
+export function errorMessage(e: unknown): string {
+  if (e instanceof ApiError) return e.message;
+  if (e instanceof TypeError) return 'Cannot reach the coaching server (is it running on :8090?).';
+  if (e instanceof Error) return e.message;
+  return 'Something went wrong.';
+}
+
 /** Absolute URL for a stored audio artifact (object-store key). */
 export function audioUrl(key: string): string {
   const encoded = key.split('/').map(encodeURIComponent).join('/');
