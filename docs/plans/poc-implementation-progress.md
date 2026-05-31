@@ -79,7 +79,7 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 | P3 | Domain: providers + Goal Signature + scoring + pipeline | ✅ DONE | `feat(poc-domain): coaching pipeline + providers + Goal Signature` | `make poc-api-test` green (68 tests, 97.7% cov) |
 | P4 | API endpoints + contract/integration tests | ✅ DONE | `feat(poc-api): coaching endpoints + contract/integration tests` (09ebbe0) | `make poc-api-test-all` green (99 tests, 97% cov) |
 | P5 | Expo app scaffold + CI + API client | ✅ DONE | `feat(poc-app): Expo universal app scaffold + typed API client + CI` (56bed0d) | `make poc-app-test` green (22 tests + tsc + lint); web bundle exports |
-| P6 | Screens: Mode A & B full coaching flows | 🔄 IN PROGRESS | — | web E2E: record→feedback→A/B→retry |
+| P6 | Screens: Mode A & B full coaching flows | ✅ DONE | P6a–P6e (debe97e…72302a3) | `make poc-app-test` green (80 tests + tsc + lint); web export 8 routes |
 | P7 | Reliability artifacts (SLO, rollback, telemetry, golden) | ⬜ TODO | — | docs present; golden regression test in CI |
 | P8 | E2E verify (web) + Android compat + push + PR | ⬜ TODO | — | both modes pass on web; PR open |
 
@@ -160,7 +160,7 @@ only when **all** of P6a–P6e are done.
 | P6b | Mode A script-list + Goal Signature form; Mode B intake (paste script + occasion/purpose); wire `createSession` → navigate to record | ✅ DONE | `feat(poc-app): Mode A & B setup screens + Goal Signature form` (96ed825) |
 | P6c | Cross-platform recorder (expo-audio: web MediaRecorder + native file→base64; no-mic fallback → `audio_base64=null`) + per-line record screen | ✅ DONE | `feat(poc-app): per-line recorder + record/feedback screens` (d63081b) |
 | P6d | Flow store for audio handoff + processing screen (submit/retry, animate STAGES, WS behind `liveProgress` flag) → feedback | ✅ DONE | `feat(poc-app): processing screen + audio handoff flow store` (2251ea6) |
-| P6e | Feedback report (overall + capability ScoreBars, strengths, improvements, read-aloud behind `readAloud` flag, A/B correction cards, retry showing `delta`) | 🔄 IN PROGRESS | P6e-1 ✅ full report + retry + delta (78b7c60); P6e-2 ⬜ read-aloud + A/B audio |
+| P6e | Feedback report (overall + capability ScoreBars, strengths, improvements, read-aloud behind `readAloud` flag, A/B correction cards, retry showing `delta`) | ✅ DONE | P6e-1 full report + retry + delta (78b7c60); P6e-2 read-aloud + A/B audio (72302a3) |
 
 Feature checklist (the user-visible surface these sub-milestones add up to):
 - [x] Home / mode select (P5 `index.tsx`; mode-B card behind `flags.modeB`)
@@ -171,13 +171,15 @@ Feature checklist (the user-visible surface these sub-milestones add up to):
 - [x] Minimal feedback report: overall + capability ScoreBars + summary (P6c; full report = P6e)
 - [x] Processing screen: staged timeline + real submit/retry → feedback; WS behind `liveProgress` (P6d)
 - [x] Feedback report: written feedback (summary, strengths, severity-coded improvements, line-by-line correction cards) — P6e-1 (78b7c60)
-- [ ] Read-aloud (expo-speech) + A/B correction audio (expo-audio play user vs ideal) — P6e-2
+- [x] Read-aloud (expo-speech) + A/B correction audio (expo-audio play user vs ideal) — P6e-2 (72302a3)
 - [x] Retry flow: re-record flagged line → rescore → delta display (overall + per-capability) — P6e-1 (78b7c60)
 - [x] **P6a:** coaching helpers + UI primitives + 44 tests green (debe97e)
 - [x] **P6b:** Mode A/B setup + Goal Signature form; createSession → /record loads session (96ed825)
 - [x] **P6c:** per-line recorder + record/feedback screens; 64 app tests green, web export 7 routes (d63081b)
 - [x] **P6d:** flow store + processing screen (record→processing→feedback); 71 app tests, web export 8 routes (2251ea6)
 - [x] **P6e-1:** full feedback report (overall+per-capability delta, strengths, severity improvements, correction cards) + retry flow (flagged-lines hint, processing routes to forked child session id); 76 app tests, web export 8 routes (78b7c60)
+- [x] **P6e-2:** read-aloud (expo-speech) + A/B correction audio (expo-audio `useAudioPlayer`, client-gated); backend already populates `ideal_audio_key`/`user_audio_key`/`read_aloud_text`; 80 app tests, web export 8 routes (72302a3)
+- [x] **P6 COMPLETE** — all of P6a–P6e done; both Mode A & B flows record→processing→feedback→A/B→retry on web
 
 ### P7 — Reliability artifacts  ⬜
 - [ ] `docs/reliability/slos.md` (SLO set + error budget policy)
@@ -272,6 +274,17 @@ make poc-app-test
   **presentational with an `actions?: ReactNode` slot** — P6e-2 injects A/B audio buttons there so the
   card itself never touches browser globals and stays SSR-exportable + unit-testable (text flattened
   in the test because interpolated `Line {n}` splits into separate string children).
+- 2026-05-31 (P6e-2): audio playback mirrors the recorder's SSR gate. `CorrectionAudio`
+  (`useAudioPlayer` from expo-audio, browser-bound on web) is mounted **only when `ready`** in
+  feedback.tsx, and renders a play button per side only when that key exists — so the no-mic skip
+  path (no `user_audio_key`) still offers the ideal clip (backend always sets `ideal_audio_key` via
+  mock TTS in `domain/pipeline.py`). It self-returns `null` after the two hooks when both keys are
+  absent (hooks stay unconditional). `ReadAloudButton` does **not** need the client gate — it only
+  imports the `audio/speech.ts` wrapper and calls `expo-speech` from the press handler (never at
+  render), so it ships in the static HTML; it's behind the `readAloud` flag and toggles Stop using
+  speech's `onDone`/`onStopped`/`onError` callbacks. expo-speech installed via `expo install` to pin
+  the SDK-56-matched version (~56.0.3). Like `useRecorder`, the browser-bound `CorrectionAudio` has
+  no unit test (jest-expo has no audio backend); the static export is the SSR safety net instead.
 - 2026-05-31 (P6c): the recorder is a child component (`ui/Recorder`) mounted **only when
   `useClientReady()` is true** — `useRecorder` calls expo-audio hooks (browser-only on web), so
   mounting it during static export (Node SSR) crashes. `record.tsx` renders a read-only line list
