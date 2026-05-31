@@ -4,6 +4,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { api, errorMessage } from '@/api/client';
 import type { SessionDetail } from '@/api/types';
+import { stashSubmission } from '@/audio/flowStore';
 import { useClientReady } from '@/hooks/useClientReady';
 import { colors, radius, spacing } from '@/theme';
 import { Banner } from '@/ui/Banner';
@@ -63,9 +64,11 @@ export default function RecordScreen() {
 
       {ready ? (
         <Recorder
-          sessionId={session.session_id}
           lines={session.expected_units}
-          onSubmitted={() => router.push({ pathname: '/feedback', params: { sessionId } })}
+          onSubmit={(inputs) => {
+            stashSubmission(session.session_id, { kind: 'submit', inputs });
+            router.push({ pathname: '/processing', params: { sessionId } });
+          }}
         />
       ) : (
         <View style={styles.lines}>

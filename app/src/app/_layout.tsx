@@ -19,6 +19,7 @@ export default function RootLayout() {
         <Stack.Screen name="mode-a" options={{ title: 'Guided Practice' }} />
         <Stack.Screen name="mode-b" options={{ title: 'Your Own Script' }} />
         <Stack.Screen name="record" options={{ title: 'Rehearse' }} />
+        <Stack.Screen name="processing" options={{ title: 'Processing' }} />
         <Stack.Screen name="feedback" options={{ title: 'Coaching' }} />
       </Stack>
     </>
