@@ -18,7 +18,15 @@ Aggregation rules (each chosen so the number means what a coach would expect):
 from dataclasses import dataclass
 
 from .goal_signature import CANONICAL_CAPABILITIES
-from .types import AcousticProfile, ScoreResult, UtteranceAnalysis
+from .types import (
+    AcousticFeatures,
+    AcousticProfile,
+    CorrectionDraft,
+    FeedbackResult,
+    Improvement,
+    ScoreResult,
+    UtteranceAnalysis,
+)
 
 
 def aggregate_acoustic(analyses: list[UtteranceAnalysis]) -> AcousticProfile:
@@ -201,3 +209,160 @@ def compute_style_match(profile: AcousticProfile, rubric: PersonaRubric) -> floa
     )
     score = 0.45 * pace_match + 0.35 * expr_match + 0.20 * pause_match
     return round(_clamp01(score), 4)
+
+
+# ---- persona feedback: acoustic-grounded, per-line corrections -------------
+
+# Each detectable line-level issue maps to the capability it hurts, the
+# ``feedback_notes`` key that voices it, and its severity. Priority is the list
+# order: a skipped line outranks a stall, which outranks pace, which outranks a
+# flat read — we surface the single most actionable event per line.
+_ISSUE_CAPABILITY = {
+    "skipped": "clarity",
+    "hesitation": "fluency",
+    "too_fast": "pace",
+    "too_slow": "pace",
+    "monotone": "engagement",
+}
+_ISSUE_SEVERITY = {
+    "skipped": "high",
+    "hesitation": "high",
+    "too_fast": "medium",
+    "too_slow": "medium",
+    "monotone": "low",
+}
+_SEVERITY_RANK = {"high": 0, "medium": 1, "low": 2}
+_COVERAGE_SKIP_THRESHOLD = 0.6
+_MAX_CORRECTIONS = 3
+
+
+def _classify_line(af: AcousticFeatures, rubric: PersonaRubric) -> str | None:
+    """The single dominant delivery problem on one line, judged vs the persona.
+
+    Returns ``None`` for a clean line. Everything here is read off the waveform —
+    coverage, pace, pause length, pitch movement — never a transcript.
+    """
+    lo, hi = rubric.target_pace_sps
+    if af.duration_s <= 0 or af.coverage_ratio < _COVERAGE_SKIP_THRESHOLD:
+        return "skipped"
+    tol_long = _PAUSE_TOL_LONG_S.get(rubric.pause_style, 1.2)
+    if af.longest_pause_s > tol_long + 0.6:
+        return "hesitation"
+    if af.speech_rate_sps > hi * 1.15:
+        return "too_fast"
+    if af.speech_rate_sps < lo * 0.85:
+        return "too_slow"
+    if rubric.expressiveness != "monotone":
+        target_expr = _EXPRESSIVENESS_TARGET.get(rubric.expressiveness, 1.8)
+        if af.pitch_variation < 0.4 * target_expr:
+            return "monotone"
+    return None
+
+
+def _explain(issue: str, af: AcousticFeatures, rubric: PersonaRubric, persona_name: str) -> str:
+    """The persona-voiced note plus the *measured* number that triggered it.
+
+    The cited value is the whole point — a correction must name the real acoustic
+    event ("ran at 5.1 syll/s", "a 2.4s stall") so the learner can trust it came
+    from their actual recording, not a generic tip.
+    """
+    note = rubric.feedback_notes.get(issue, "")
+    lo, hi = rubric.target_pace_sps
+    if issue == "too_fast":
+        detail = (
+            f"You ran this line at {af.speech_rate_sps:.1f} syll/s — "
+            f"above {persona_name}'s {lo:.1f}–{hi:.1f} band."
+        )
+    elif issue == "too_slow":
+        detail = (
+            f"This line crawled at {af.speech_rate_sps:.1f} syll/s — "
+            f"below {persona_name}'s {lo:.1f}–{hi:.1f} band."
+        )
+    elif issue == "hesitation":
+        detail = f"A {af.longest_pause_s:.1f}s stall broke the line."
+    elif issue == "monotone":
+        detail = (
+            f"Pitch barely moved ({af.pitch_variation:.1f} semitones) — flat for {persona_name}."
+        )
+    elif issue == "skipped":
+        detail = (
+            f"Only {af.est_syllables} of {af.expected_syllables} expected syllables "
+            f"landed — most of this line dropped."
+        )
+    else:
+        detail = ""
+    return f"{note} {detail}".strip()
+
+
+def build_persona_feedback(
+    *,
+    persona_name: str,
+    profile: AcousticProfile,
+    scores: ScoreResult,
+    analyses: list[UtteranceAnalysis],
+    rubric: PersonaRubric,
+) -> tuple[FeedbackResult, list[CorrectionDraft]]:
+    """Persona feedback: a summary, strengths, and per-line A/B corrections.
+
+    Each correction is grounded in a real, measured event on that exact line and
+    voiced through the persona's ``feedback_notes``. The A/B ``corrected_text`` is
+    the line itself, so the pipeline's ideal-clip TTS re-reads it well. Only the
+    most actionable few lines become cards, sorted by severity.
+    """
+    scored: list[tuple[int, int, CorrectionDraft, Improvement]] = []
+    for a in analyses:
+        af = a.acoustic
+        if af is None:
+            continue
+        issue = _classify_line(af, rubric)
+        if issue is None:
+            continue
+        cap = _ISSUE_CAPABILITY[issue]
+        sev = _ISSUE_SEVERITY[issue]
+        explanation = _explain(issue, af, rubric, persona_name)
+        draft = CorrectionDraft(
+            line_index=a.line_index,
+            focus_capability=cap,
+            original_text=a.expected_text,
+            corrected_text=a.expected_text,
+            explanation=explanation,
+            user_audio_key=a.audio_key,
+        )
+        imp = Improvement(
+            capability=cap, message=explanation, severity=sev, line_index=a.line_index
+        )
+        scored.append((_SEVERITY_RANK[sev], a.line_index, draft, imp))
+
+    scored.sort(key=lambda t: (t[0], t[1]))
+    top = scored[:_MAX_CORRECTIONS]
+    corrections = [t[2] for t in top]
+    improvements = [t[3] for t in top]
+
+    strengths = [
+        f"Strong {cap} ({val:.0%})." for cap, val in scores.capabilities.items() if val >= 0.75
+    ][:3]
+
+    sm = scores.style_match
+    sm_txt = f" Your style match to {persona_name} is {sm:.0%}." if sm is not None else ""
+    if corrections:
+        next_focus = f" Focus next on {corrections[0].focus_capability}."
+    else:
+        next_focus = " Clean delivery — nothing major to fix."
+    summary = (
+        f"You practiced like {persona_name} and scored {scores.overall_score:.0%} overall."
+        f"{sm_txt}{next_focus}"
+    )
+
+    read_aloud = (
+        f"{summary} Your overall pace was {profile.speech_rate_sps:.1f} syllables per second."
+    )
+    if corrections:
+        read_aloud = f"{read_aloud} {corrections[0].explanation}"
+
+    feedback = FeedbackResult(
+        summary=summary,
+        strengths=strengths,
+        improvements=improvements,
+        read_aloud_text=read_aloud,
+    )
+    return feedback, corrections
