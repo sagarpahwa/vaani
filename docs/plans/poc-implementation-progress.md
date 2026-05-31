@@ -160,7 +160,7 @@ only when **all** of P6a–P6e are done.
 | P6b | Mode A script-list + Goal Signature form; Mode B intake (paste script + occasion/purpose); wire `createSession` → navigate to record | ✅ DONE | `feat(poc-app): Mode A & B setup screens + Goal Signature form` (96ed825) |
 | P6c | Cross-platform recorder (expo-audio: web MediaRecorder + native file→base64; no-mic fallback → `audio_base64=null`) + per-line record screen | ✅ DONE | `feat(poc-app): per-line recorder + record/feedback screens` (d63081b) |
 | P6d | Flow store for audio handoff + processing screen (submit/retry, animate STAGES, WS behind `liveProgress` flag) → feedback | ✅ DONE | `feat(poc-app): processing screen + audio handoff flow store` (2251ea6) |
-| P6e | Feedback report (overall + capability ScoreBars, strengths, improvements, read-aloud behind `readAloud` flag, A/B correction cards, retry showing `delta`) | ⬜ TODO | — |
+| P6e | Feedback report (overall + capability ScoreBars, strengths, improvements, read-aloud behind `readAloud` flag, A/B correction cards, retry showing `delta`) | 🔄 IN PROGRESS | P6e-1 ✅ full report + retry + delta (78b7c60); P6e-2 ⬜ read-aloud + A/B audio |
 
 Feature checklist (the user-visible surface these sub-milestones add up to):
 - [x] Home / mode select (P5 `index.tsx`; mode-B card behind `flags.modeB`)
@@ -170,12 +170,14 @@ Feature checklist (the user-visible surface these sub-milestones add up to):
 - [x] Per-line recorder: record/stop/skip/re-record; skip-everything path submits all-null (P6c)
 - [x] Minimal feedback report: overall + capability ScoreBars + summary (P6c; full report = P6e)
 - [x] Processing screen: staged timeline + real submit/retry → feedback; WS behind `liveProgress` (P6d)
-- [ ] Feedback report: written feedback + read-aloud (expo-speech) + A/B correction cards (expo-audio play user vs ideal) — P6e
-- [ ] Retry flow: re-record flagged line → rescore → delta display — P6e
+- [x] Feedback report: written feedback (summary, strengths, severity-coded improvements, line-by-line correction cards) — P6e-1 (78b7c60)
+- [ ] Read-aloud (expo-speech) + A/B correction audio (expo-audio play user vs ideal) — P6e-2
+- [x] Retry flow: re-record flagged line → rescore → delta display (overall + per-capability) — P6e-1 (78b7c60)
 - [x] **P6a:** coaching helpers + UI primitives + 44 tests green (debe97e)
 - [x] **P6b:** Mode A/B setup + Goal Signature form; createSession → /record loads session (96ed825)
 - [x] **P6c:** per-line recorder + record/feedback screens; 64 app tests green, web export 7 routes (d63081b)
 - [x] **P6d:** flow store + processing screen (record→processing→feedback); 71 app tests, web export 8 routes (2251ea6)
+- [x] **P6e-1:** full feedback report (overall+per-capability delta, strengths, severity improvements, correction cards) + retry flow (flagged-lines hint, processing routes to forked child session id); 76 app tests, web export 8 routes (78b7c60)
 
 ### P7 — Reliability artifacts  ⬜
 - [ ] `docs/reliability/slos.md` (SLO set + error budget policy)
@@ -257,6 +259,19 @@ make poc-app-test
   reload of /processing finds an empty store → recover by re-fetching the session (feedback/score
   present → go to feedback; else error). Same `react-hooks/set-state-in-effect` gotcha as P6b: the
   missing-`sessionId` banner is derived at render, not set in the effect.
+- 2026-05-31 (P6e-1): a **retry forks a child session with a new `session_id`** (backend
+  `routes/sessions.py` returns the child `SessionDetail`), so `processing.tsx` now navigates to the
+  **response's** id, not the route param — tracked as `resultId` (submit returns the same id; the
+  hard-reload recover path uses the re-fetched session's id). `submitDone` is **derived** from
+  `resultId != null` rather than a separate state, sidestepping the `set-state-in-effect` rule.
+  `delta` keys are `overall` + each capability (backend `compute_delta`), present only on retries;
+  the feedback screen shows the overall delta under the big score and wires per-capability deltas into
+  the existing `ScoreBar` `deltaText`/`deltaColor`. "Practice again" routes to `/record?retry=1` with
+  the **parent** `sessionId` (the parent carries `corrections`, so `flaggedLineNumbers()` can render a
+  focus hint); record stashes `kind: 'retry'` so processing calls `retrySession`. `CorrectionCard` is
+  **presentational with an `actions?: ReactNode` slot** — P6e-2 injects A/B audio buttons there so the
+  card itself never touches browser globals and stays SSR-exportable + unit-testable (text flattened
+  in the test because interpolated `Line {n}` splits into separate string children).
 - 2026-05-31 (P6c): the recorder is a child component (`ui/Recorder`) mounted **only when
   `useClientReady()` is true** — `useRecorder` calls expo-audio hooks (browser-only on web), so
   mounting it during static export (Node SSR) crashes. `record.tsx` renders a read-only line list
