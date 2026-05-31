@@ -6,17 +6,22 @@ import { api, errorMessage } from '@/api/client';
 import type { SessionDetail } from '@/api/types';
 import { capabilityLabel, orderedCapabilityScores } from '@/coaching/capabilities';
 import { deltaColor, severityColor, signedPercent, toPercent } from '@/coaching/format';
+import { isEnabled } from '@/featureFlags';
+import { useClientReady } from '@/hooks/useClientReady';
 import { colors, spacing } from '@/theme';
 import { Banner } from '@/ui/Banner';
 import { Button } from '@/ui/Button';
 import { Card } from '@/ui/Card';
+import { CorrectionAudio } from '@/ui/CorrectionAudio';
 import { CorrectionCard } from '@/ui/CorrectionCard';
+import { ReadAloudButton } from '@/ui/ReadAloudButton';
 import { ScoreBar } from '@/ui/ScoreBar';
 import { Screen } from '@/ui/Screen';
 
 export default function FeedbackScreen() {
   const router = useRouter();
   const { sessionId } = useLocalSearchParams<{ sessionId?: string }>();
+  const ready = useClientReady();
   const [session, setSession] = useState<SessionDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,6 +80,10 @@ export default function FeedbackScreen() {
       </View>
 
       {feedback?.summary ? <Text style={styles.summary}>{feedback.summary}</Text> : null}
+
+      {isEnabled('readAloud') && feedback?.read_aloud_text ? (
+        <ReadAloudButton text={feedback.read_aloud_text} />
+      ) : null}
 
       {capabilities.length > 0 ? (
         <View style={styles.scores}>
@@ -135,6 +144,11 @@ export default function FeedbackScreen() {
               originalText={c.original_text}
               correctedText={c.corrected_text}
               explanation={c.explanation}
+              actions={
+                ready && (c.user_audio_key || c.ideal_audio_key) ? (
+                  <CorrectionAudio userAudioKey={c.user_audio_key} idealAudioKey={c.ideal_audio_key} />
+                ) : undefined
+              }
             />
           ))}
         </View>
