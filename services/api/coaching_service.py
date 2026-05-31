@@ -8,12 +8,14 @@ storage are reached through the injected `pipeline` and `providers`.
 
 import base64
 import binascii
+import time
 
 from . import repository as repo
 from .domain.goal_signature import GoalSignature
 from .domain.pipeline import CoachingPipeline
 from .domain.text import split_script_text
 from .providers.registry import ProviderBundle
+from .telemetry import Telemetry
 
 
 def resolve_expected_units(
@@ -67,13 +69,16 @@ def process_session(
     pipeline: CoachingPipeline,
     session: dict,
     parent_scores: dict[str, float] | None = None,
+    telemetry: Telemetry | None = None,
 ) -> dict:
     """Run the pipeline over a session's stored utterances and persist results.
 
     Returns the freshly-read session doc (status `scored` or `failed`). On a
     successful scored run, writes the feedback, correction cards, version stamp,
-    and (when `parent_scores` is given) the delta + a progress snapshot.
+    and (when `parent_scores` is given) the delta + a progress snapshot. Emits
+    transcription / scoring / feedback-latency telemetry when `telemetry` is given.
     """
+    tel = telemetry or Telemetry(None)
     session_id = session["session_id"]
     repo.update_session(db, session_id, {"status": "processing"})
 
@@ -88,6 +93,7 @@ def process_session(
         for u in stored
     ]
     goal = GoalSignature.from_dict(session.get("goal_signature"))
+    started = time.perf_counter()
     result = pipeline.run(
         session_id=session_id,
         goal=goal,
@@ -95,6 +101,16 @@ def process_session(
         utterances=pipe_utterances,
         parent_scores=parent_scores,
     )
+    latency_ms = (time.perf_counter() - started) * 1000.0
+    scored = result.status == "scored"
+    tel.transcription(session_id, success=scored, count=len(stored))
+    tel.scoring(
+        session_id,
+        success=scored,
+        latency_ms=latency_ms,
+        overall_score=result.overall_score if scored else None,
+    )
+    tel.feedback_latency(session_id, latency_ms=latency_ms)
 
     if result.status != "scored":
         return repo.update_session(

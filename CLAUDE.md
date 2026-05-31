@@ -283,10 +283,26 @@ services/api/
 ├── providers/        # base (ABCs), object_store, analysis (align/features/score),
 │                     #   mock_ai (STT/TTS/feedback), registry (build_providers)
 ├── routes/           # API routers (sessions, scripts, utterances, retry, audio, ws)
+├── telemetry.py      # release-health event emitters (plan §11.1) → release_health_events
 ├── models.py         # Pydantic request/response models (carry *_version fields)
 ├── requirements.txt  # installed into .venv-poc
 └── tests/            # pytest (unit + @pytest.mark.integration), .coveragerc gate ≥70%
+    └── golden/       # frozen dataset.json + regression test (scoring drift gate)
 ```
+
+### Reliability artifacts (plan §9–§13)
+
+- **Telemetry:** `telemetry.py` emits the 8 plan-§11.1 event types to
+  `release_health_events` (best-effort — a telemetry write never fails a coaching
+  request). Wired into `coaching_service.process_session` (scoring/transcription/latency)
+  and the `/sessions` routes (lifecycle + retry delta).
+- **Golden regression:** `services/api/tests/golden/` pins exact deterministic scores;
+  the test fails CI on any drift beyond tolerance, below the quality floor, or on a
+  version bump without regenerated golden values. Runs automatically via `make poc-api-test`.
+- **Floors + policy:** [`quality-baseline.poc.json`](quality-baseline.poc.json) holds SLO
+  targets + the model-quality floor; [`docs/reliability/slos.md`](docs/reliability/slos.md)
+  and [`docs/reliability/rollback-runbook.md`](docs/reliability/rollback-runbook.md) are
+  the SLO/error-budget and release/rollback/incident/privacy playbooks.
 
 Rules:
 1. AI is accessed only through `providers/` interfaces. Default impls are deterministic mocks so
@@ -357,6 +373,11 @@ Rules:
   `schemas/`), register it in `COLLECTION_SPECS` in `services/api/db/init_mock_db.py`, add it to
   the POC Data Model table above, and add a case to `services/api/tests/test_schemas_poc.py`.
 - New screen in `app/`: co-locate a component/logic test; keep `make poc-app-test` green.
+- Bumping a `*_version` in `domain/versions.py`: regenerate `services/api/tests/golden/dataset.json`
+  (snippet in `test_golden_regression.py`) and the versions in `quality-baseline.poc.json`, else the
+  golden suite fails. A golden diff is a scoring-behavior change and must be reviewed.
+- New telemetry event: add an emitter to `services/api/telemetry.py`, cover it in
+  `test_telemetry.py`, and document the SLO it feeds in `docs/reliability/slos.md`.
 
 ---
 

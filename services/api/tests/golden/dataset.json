@@ -1,0 +1,79 @@
+{
+  "_comment": "Golden regression fixture for the coaching pipeline. Values are produced by the deterministic mock provider stack and are exact (no randomness). Regenerate ONLY when a *_version below is intentionally bumped: run the snippet in test_golden_regression.py's module docstring, paste the new `expected` blocks, and bump the version fields. A diff here is a model/scoring behavior change and must be reviewed.",
+  "scoring_model_version": "scoring-mock-1.0.0",
+  "rubric_version": "rubric-2026.05.1",
+  "tolerance": 0.0005,
+  "golden_set_id": "poc-coaching-golden-v1",
+  "cases": [
+    {
+      "id": "team-address-2line",
+      "goal": { "occasion": "team address" },
+      "expected_units": [
+        "hello everyone and welcome to the team",
+        "today we are launching our new product"
+      ],
+      "utterances": [{ "line_index": 0 }, { "line_index": 1 }],
+      "expected": {
+        "overall": 0.8615,
+        "capabilities": {
+          "clarity": 0.9375,
+          "pace": 0.8613,
+          "fluency": 0.775,
+          "confidence": 0.89,
+          "engagement": 0.8681,
+          "conciseness": 0.8232
+        }
+      }
+    },
+    {
+      "id": "investor-pitch",
+      "goal": {
+        "occasion": "investor pitch",
+        "objective": "persuade investors to fund us"
+      },
+      "expected_units": [
+        "our market is twenty billion dollars and growing",
+        "we have ten thousand paying customers already",
+        "join us in building the future of work"
+      ],
+      "utterances": [{ "line_index": 0 }, { "line_index": 1 }, { "line_index": 2 }],
+      "expected": {
+        "overall": 0.9341,
+        "capabilities": {
+          "clarity": 0.96,
+          "pace": 1.0,
+          "fluency": 0.92,
+          "confidence": 0.89,
+          "engagement": 0.96,
+          "conciseness": 0.8904
+        }
+      }
+    },
+    {
+      "id": "mode-b-inline",
+      "goal": { "objective": "user script" },
+      "expected_units": [],
+      "utterances": [
+        {
+          "line_index": 0,
+          "expected_text": "my fellow citizens we stand at a turning point in our history"
+        },
+        {
+          "line_index": 1,
+          "expected_text": "and together we will choose the harder right over the easier wrong"
+        }
+      ],
+      "expected": {
+        "overall": 0.8828,
+        "capabilities": {
+          "clarity": 0.8274,
+          "pace": 1.0,
+          "fluency": 0.9048,
+          "confidence": 0.66,
+          "engagement": 0.9524,
+          "conciseness": 0.9524
+        }
+      }
+    }
+  ]
+}

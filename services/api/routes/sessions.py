@@ -23,6 +23,7 @@ from ..models import (
     SessionDetail,
     SubmitUtterancesRequest,
 )
+from ..telemetry import Telemetry
 
 router = APIRouter(tags=["sessions"])
 
@@ -49,6 +50,7 @@ def create_session(req: CreateSessionRequest, db=Depends(get_db)):
     if req.mode == "user_script":
         doc["user_script_text"] = req.script_text or ""
     repo.create_session(db, doc)
+    Telemetry(db).session_started(session_id, mode=req.mode, attempt=1)
     return SessionDetail(**assemble_detail(db, repo.get_session(db, session_id)))
 
 
@@ -74,9 +76,13 @@ def submit_utterances(
     if not req.utterances:
         raise HTTPException(status_code=422, detail="no utterances submitted")
 
+    telemetry = Telemetry(db)
     repo.update_session(db, session_id, {"status": "recording"})
     store_utterances(providers, db, session_id, req.utterances, session.get("expected_units", []))
-    process_session(db, pipeline, repo.get_session(db, session_id))
+    scored = process_session(db, pipeline, repo.get_session(db, session_id), telemetry=telemetry)
+    telemetry.session_completed(
+        session_id, status=scored["status"], overall_score=scored.get("overall_score")
+    )
     return SessionDetail(**assemble_detail(db, repo.get_session(db, session_id)))
 
 
@@ -113,6 +119,20 @@ def retry_session(
     if parent.get("user_script_text"):
         child["user_script_text"] = parent["user_script_text"]
     repo.create_session(db, child)
+    telemetry = Telemetry(db)
+    telemetry.session_started(child_id, mode=child["mode"], attempt=child["attempt"])
     store_utterances(providers, db, child_id, req.utterances, child["expected_units"])
-    process_session(db, pipeline, repo.get_session(db, child_id), parent_scores=parent_scores)
+    scored = process_session(
+        db,
+        pipeline,
+        repo.get_session(db, child_id),
+        parent_scores=parent_scores,
+        telemetry=telemetry,
+    )
+    telemetry.session_completed(
+        child_id, status=scored["status"], overall_score=scored.get("overall_score")
+    )
+    delta = scored.get("delta") or {}
+    if "overall" in delta:
+        telemetry.retry_delta(child_id, overall_delta=delta["overall"])
     return SessionDetail(**assemble_detail(db, repo.get_session(db, child_id)))

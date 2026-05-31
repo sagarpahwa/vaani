@@ -95,3 +95,16 @@ def list_corrections(db, session_id: str) -> list[dict]:
 
 def save_progress_snapshot(db, doc: dict) -> dict:
     return _upsert(db.progress_snapshots, "snapshot_id", doc)
+
+
+# ---- reliability: telemetry events + model-eval runs -----------------------
+
+
+def save_event(db, doc: dict) -> dict:
+    """Persist one release-health telemetry event (keyed by `event_id`)."""
+    return _upsert(db.release_health_events, "event_id", doc)
+
+
+def save_eval_run(db, doc: dict) -> dict:
+    """Persist one golden-dataset model-eval run (keyed by `run_id`)."""
+    return _upsert(db.model_eval_runs, "run_id", doc)
