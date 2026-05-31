@@ -4,41 +4,42 @@ Queries one occupation QID at a time — avoids timeouts from large VALUES claus
 Rate-limited to 1.2 seconds between requests.
 """
 
-import time
 import logging
+import time
 import urllib.error
-from SPARQLWrapper import SPARQLWrapper, JSON
+
+from SPARQLWrapper import JSON, SPARQLWrapper
 
 log = logging.getLogger(__name__)
 
 ENDPOINT = "https://query.wikidata.org/sparql"
 USER_AGENT = "VaaniBot/1.0 (public-speaking-intelligence-research)"
-DELAY = 1.2     # seconds between requests
+DELAY = 1.2  # seconds between requests
 PAGE_SIZE = 200  # conservative page size — Wikidata is stable up to ~500 but 200 is safer
 
 # Wikidata occupation QID → our profession_category
 OCCUPATION_MAP: dict[str, str] = {
-    "Q82955":    "politician",
+    "Q82955": "politician",
     "Q15253558": "activist",
-    "Q1622272":  "academic",        # university professor
-    "Q2059704":  "academic",        # academic
-    "Q10697012": "academic",        # philosopher
-    "Q43845":    "business_leader", # businessperson
-    "Q1930187":  "journalist",
-    "Q36180":    "author",          # writer
-    "Q482980":   "author",          # author
-    "Q49757":    "author",          # poet
-    "Q245068":   "comedian",
-    "Q901":      "scientist",
-    "Q170790":   "scientist",       # mathematician
-    "Q40348":    "lawyer",
-    "Q193391":   "politician",      # diplomat
-    "Q11900058": "activist",        # human rights activist
-    "Q14467526": "activist",        # women's rights activist
-    "Q33999":    "entertainer",     # actor
-    "Q177220":   "entertainer",     # singer
-    "Q2526255":  "entertainer",     # film director
-    "Q3338853":  "religious_leader",
+    "Q1622272": "academic",  # university professor
+    "Q2059704": "academic",  # academic
+    "Q10697012": "academic",  # philosopher
+    "Q43845": "business_leader",  # businessperson
+    "Q1930187": "journalist",
+    "Q36180": "author",  # writer
+    "Q482980": "author",  # author
+    "Q49757": "author",  # poet
+    "Q245068": "comedian",
+    "Q901": "scientist",
+    "Q170790": "scientist",  # mathematician
+    "Q40348": "lawyer",
+    "Q193391": "politician",  # diplomat
+    "Q11900058": "activist",  # human rights activist
+    "Q14467526": "activist",  # women's rights activist
+    "Q33999": "entertainer",  # actor
+    "Q177220": "entertainer",  # singer
+    "Q2526255": "entertainer",  # film director
+    "Q3338853": "religious_leader",
 }
 
 # Query per occupation — avoids huge VALUES joins that cause Wikidata 504s
@@ -67,7 +68,9 @@ def _sparql_client() -> SPARQLWrapper:
     return s
 
 
-def fetch_page(occ_qid: str, offset: int, limit: int = PAGE_SIZE, max_retries: int = 3) -> list[dict]:
+def fetch_page(
+    occ_qid: str, offset: int, limit: int = PAGE_SIZE, max_retries: int = 3
+) -> list[dict]:
     """Fetch one page for a single occupation QID. Retries on 429 with 65s backoff."""
     query = _QUERY.format(occ_qid=occ_qid, limit=limit, offset=offset)
     for attempt in range(1, max_retries + 1):
@@ -80,7 +83,13 @@ def fetch_page(occ_qid: str, offset: int, limit: int = PAGE_SIZE, max_retries: i
         except urllib.error.HTTPError as e:
             if e.code == 429:
                 wait = 65  # Wikidata's 1 req/min rate limit during outage
-                log.warning("429 rate-limited [%s]. Waiting %ds (attempt %d/%d)…", occ_qid, wait, attempt, max_retries)
+                log.warning(
+                    "429 rate-limited [%s]. Waiting %ds (attempt %d/%d)…",
+                    occ_qid,
+                    wait,
+                    attempt,
+                    max_retries,
+                )
                 time.sleep(wait)
                 if attempt == max_retries:
                     raise

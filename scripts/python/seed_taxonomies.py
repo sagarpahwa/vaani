@@ -12,7 +12,7 @@ import json
 import logging
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -37,7 +37,7 @@ MONGO_URI = os.getenv(
 DB_NAME = os.getenv("MONGO_DB", "public_speaking_intelligence")
 
 SCHEMA_VERSION = "1.0"
-NOW = datetime.now(timezone.utc)
+NOW = datetime.now(UTC)
 
 
 def load_json(path: Path) -> list:
@@ -87,7 +87,7 @@ def upsert_professions(db, records: list) -> tuple[int, int]:
         raise
 
 
-def main():
+def main():  # pragma: no cover
     log.info("Connecting to MongoDB…")
     client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
     try:

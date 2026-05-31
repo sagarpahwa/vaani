@@ -12,7 +12,7 @@ import json
 import logging
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -37,7 +37,7 @@ MONGO_URI = os.getenv(
 DB_NAME = os.getenv("MONGO_DB", "public_speaking_intelligence")
 
 SCHEMA_VERSION = "1.0"
-NOW = datetime.now(timezone.utc)
+NOW = datetime.now(UTC)
 
 SEED_PATH = ROOT / "seed" / "speakers_100.json"
 
@@ -75,10 +75,18 @@ def validate_record(rec: dict, idx: int) -> list[str]:
     """Return list of validation errors for a speaker record."""
     errors = []
     required = [
-        "canonical_name", "slug", "era", "living_status",
-        "country_or_region", "profession", "profession_category",
-        "overall_speaker_score", "greatness_score", "ethical_alignment_score",
-        "speaking_capabilities", "schema_version",
+        "canonical_name",
+        "slug",
+        "era",
+        "living_status",
+        "country_or_region",
+        "profession",
+        "profession_category",
+        "overall_speaker_score",
+        "greatness_score",
+        "ethical_alignment_score",
+        "speaking_capabilities",
+        "schema_version",
     ]
     for field in required:
         if field not in rec:
@@ -88,9 +96,13 @@ def validate_record(rec: dict, idx: int) -> list[str]:
     if slug and not slug.replace("-", "").isalnum():
         errors.append(f"[{idx}] invalid slug: {slug!r}")
 
-    for score_field in ["overall_speaker_score", "greatness_score",
-                        "ethical_alignment_score", "evidence_strength_score",
-                        "data_completeness_score"]:
+    for score_field in [
+        "overall_speaker_score",
+        "greatness_score",
+        "ethical_alignment_score",
+        "evidence_strength_score",
+        "data_completeness_score",
+    ]:
         val = rec.get(score_field)
         if val is not None and not (0.0 <= val <= 1.0):
             errors.append(f"[{idx}] {score_field}={val} out of range [0, 1]")
@@ -106,7 +118,7 @@ def validate_record(rec: dict, idx: int) -> list[str]:
     return errors
 
 
-def main():
+def main():  # pragma: no cover
     log.info("Loading speakers from %s", SEED_PATH)
     speakers = load_speakers(SEED_PATH)
     log.info("  %d speakers found in seed file", len(speakers))

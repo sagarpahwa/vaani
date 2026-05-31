@@ -1,0 +1,79 @@
+name: Integration CI
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: integration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration-tests:
+    name: Integration Tests (MongoDB)
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7.0
+        env:
+          MONGO_INITDB_ROOT_USERNAME: vaani_admin
+          MONGO_INITDB_ROOT_PASSWORD: vaani_secret
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval \"db.adminCommand('ping')\""
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --health-start-period 20s
+
+    env:
+      MONGO_URI: mongodb://vaani_admin:vaani_secret@localhost:27017/public_speaking_intelligence?authSource=admin
+      MONGO_DB: public_speaking_intelligence
+      MONGO_ROOT_USER: vaani_admin
+      MONGO_ROOT_PASS: vaani_secret
+      LOG_LEVEL: WARNING
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install Python dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Initialize database (collections + validators)
+        run: node scripts/node/db_init.js
+
+      - name: Create indexes
+        run: node scripts/node/create_indexes.js
+
+      - name: Seed capability and profession taxonomies
+        run: python3 scripts/python/seed_taxonomies.py
+
+      - name: Seed verified speakers
+        run: python3 scripts/python/seed_speakers.py
+
+      - name: Verify database state
+        run: node scripts/node/verify.js
+
+      - name: Run integration test suite
+        run: pytest tests/integration/ -m integration -v --tb=short
+
+      - name: Verify idempotency (re-seed, counts must not change)
+        run: |
+          python3 scripts/python/seed_taxonomies.py
+          python3 scripts/python/seed_speakers.py
+          node scripts/node/verify.js

@@ -1,0 +1,71 @@
+name: Security Scan
+
+on:
+  schedule:
+    - cron: "0 9 * * 1"  # Every Monday at 09:00 UTC
+  workflow_dispatch:
+
+jobs:
+  python-audit:
+    name: Python Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pip-audit and project deps
+        run: pip install pip-audit && pip install -e ".[dev]"
+
+      - name: Audit Python dependencies for known CVEs
+        run: pip-audit --desc on --format markdown
+
+  node-audit:
+    name: Node.js Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Audit Node.js dependencies
+        run: npm audit --audit-level=moderate
+
+  secret-baseline-check:
+    name: Secret Baseline Drift
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install detect-secrets
+        run: pip install detect-secrets
+
+      - name: Scan for new secrets since last baseline
+        run: |
+          detect-secrets scan \
+            --exclude-files '\.env\.example' \
+            --exclude-files '\.secrets\.baseline' \
+            | python3 -c "
+          import json, sys
+          results = json.load(sys.stdin)
+          findings = {f: r for f, r in results.get('results', {}).items() if r}
+          if findings:
+              print('WARNING: Potential secrets detected in weekly scan:')
+              for f, hits in findings.items():
+                  for h in hits:
+                      print(f'  {f}:{h[\"line_number\"]} ({h[\"type\"]})')
+              sys.exit(1)
+          print('Weekly secret scan: no secrets detected')
+          "

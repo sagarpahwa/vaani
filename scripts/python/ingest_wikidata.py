@@ -14,7 +14,7 @@ import argparse
 import logging
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -24,10 +24,9 @@ from tqdm import tqdm
 
 ROOT = Path(__file__).parents[2]
 load_dotenv(ROOT / ".env")
-sys.path.insert(0, str(ROOT))
 
-from scripts.python.utils.wikidata import fetch_page, parse_row, OCCUPATION_MAP, PAGE_SIZE
-from scripts.python.utils.slugify_utils import make_slug
+from utils.slugify_utils import make_slug  # noqa: E402
+from utils.wikidata import OCCUPATION_MAP, PAGE_SIZE, fetch_page, parse_row  # noqa: E402
 
 logging.basicConfig(
     level=logging.INFO,
@@ -102,7 +101,9 @@ def upsert_batch(db, docs: list[dict], now: datetime) -> tuple[int, int]:
 def main():
     parser = argparse.ArgumentParser(description="Ingest Wikidata candidate speakers")
     parser.add_argument("--dry-run", action="store_true", help="Fetch and parse but skip DB writes")
-    parser.add_argument("--max-records", type=int, default=10_000, help="Max new candidates to process")
+    parser.add_argument(
+        "--max-records", type=int, default=10_000, help="Max new candidates to process"
+    )
     args = parser.parse_args()
 
     log.info("Connecting to MongoDB…")
@@ -114,7 +115,7 @@ def main():
         sys.exit(1)
 
     db = client[DB_NAME]
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     if args.dry_run:
         log.info("DRY RUN — no data will be written to the database")
@@ -125,18 +126,20 @@ def main():
     # Start extraction_run log entry
     run_id = None
     if not args.dry_run:
-        run_id = db.extraction_runs.insert_one({
-            "run_type": "wikidata_candidates",
-            "started_at": now,
-            "status": "running",
-            "sources_used": ["https://query.wikidata.org/sparql"],
-            "query": f"{len(OCCUPATION_MAP)} occupation QIDs, English Wikipedia required",
-            "records_found": None,
-            "records_inserted": None,
-            "records_updated": None,
-            "records_skipped": None,
-            "errors": [],
-        }).inserted_id
+        run_id = db.extraction_runs.insert_one(
+            {
+                "run_type": "wikidata_candidates",
+                "started_at": now,
+                "status": "running",
+                "sources_used": ["https://query.wikidata.org/sparql"],
+                "query": f"{len(OCCUPATION_MAP)} occupation QIDs, English Wikipedia required",
+                "records_found": None,
+                "records_inserted": None,
+                "records_updated": None,
+                "records_skipped": None,
+                "errors": [],
+            }
+        ).inserted_id
 
     total_found = total_inserted = total_updated = total_skipped = 0
     seen: set[str] = set()
@@ -155,7 +158,9 @@ def main():
                 try:
                     rows = fetch_page(occ_qid, offset)
                 except Exception as e:
-                    errors.append({"error_type": "sparql_error", "message": str(e)[:200], "count": 1})
+                    errors.append(
+                        {"error_type": "sparql_error", "message": str(e)[:200], "count": 1}
+                    )  # noqa: E501
                     log.warning("Skipping occupation %s after error: %s", occ_qid, e)
                     break
 
@@ -203,7 +208,7 @@ def main():
     finally:
         pbar.close()
 
-    completed_at = datetime.now(timezone.utc)
+    completed_at = datetime.now(UTC)
     status = "completed" if not errors else "partial"
 
     log.info("")
@@ -222,15 +227,17 @@ def main():
     if run_id:
         db.extraction_runs.update_one(
             {"_id": run_id},
-            {"$set": {
-                "completed_at": completed_at,
-                "status": status,
-                "records_found": total_found,
-                "records_inserted": total_inserted,
-                "records_updated": total_updated,
-                "records_skipped": total_skipped,
-                "errors": errors,
-            }},
+            {
+                "$set": {
+                    "completed_at": completed_at,
+                    "status": status,
+                    "records_found": total_found,
+                    "records_inserted": total_inserted,
+                    "records_updated": total_updated,
+                    "records_skipped": total_skipped,
+                    "errors": errors,
+                }
+            },
         )
 
     client.close()
