@@ -35,9 +35,12 @@ class Settings(BaseSettings):
     #   provider_stt: "mock" | "whisper" (local faster-whisper, no key)
     #   provider_tts: "mock" | "macos"   (macOS `say`, no key)
     #   provider_llm: "mock"             (only deterministic feedback in the POC)
+    #   provider_acoustic: "mock" | "librosa" (real waveform analysis, no key) — the
+    #     persona path scores delivery from raw audio, never a transcript.
     provider_stt: str = "mock"
     provider_tts: str = "mock"
     provider_llm: str = "mock"
+    provider_acoustic: str = "mock"
 
     # Real-provider knobs (used only when the matching provider_* is non-mock).
     poc_whisper_model: str = "base.en"  # tiny.en | base.en | small.en | …

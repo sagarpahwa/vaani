@@ -1,9 +1,10 @@
 """Wires concrete providers together based on settings.
 
 The deterministic mock stack is the default (and the only one CI/golden uses).
-For a real demo, `PROVIDER_STT=whisper` (local faster-whisper) and
-`PROVIDER_TTS=macos` (macOS `say`) swap in real speech-to-text and text-to-speech
-— both no-cloud, no-credential, and imported lazily so their optional dependencies
+For a real demo, `PROVIDER_STT=whisper` (local faster-whisper), `PROVIDER_TTS=macos`
+(macOS `say`), and `PROVIDER_ACOUSTIC=librosa` (real waveform delivery analysis for
+the persona path) swap in real speech-to-text, text-to-speech, and acoustic scoring
+— all no-cloud, no-credential, and imported lazily so their optional dependencies
 never affect the mock path. Any unrecognized `PROVIDER_*` value fails loudly
 (ValueError) rather than silently degrading, and `minio` object storage raises
 NotImplementedError until wired — so a misconfiguration can never quietly fall
@@ -12,8 +13,10 @@ back to a half-working state.
 
 from dataclasses import dataclass
 
+from .acoustic import MockAcousticAnalyzer
 from .analysis import DeliveryFeatureExtractor, RubricScorer, SequenceAligner
 from .base import (
+    AcousticAnalyzer,
     Aligner,
     FeatureExtractor,
     FeedbackGenerator,
@@ -36,6 +39,7 @@ class ProviderBundle:
     scorer: Scorer
     feedback: FeedbackGenerator
     tts: TTSProvider
+    acoustic: AcousticAnalyzer
     store: ObjectStore
 
 
@@ -66,6 +70,17 @@ def _build_tts(settings) -> TTSProvider:
             rate=getattr(settings, "poc_tts_rate", 0) or None,
         )
     raise ValueError(f"provider_tts={kind!r} is not supported; use 'mock' or 'macos'.")
+
+
+def _build_acoustic(settings) -> AcousticAnalyzer:
+    kind = getattr(settings, "provider_acoustic", "mock")
+    if kind == "mock":
+        return MockAcousticAnalyzer()
+    if kind == "librosa":
+        from .acoustic_librosa import LibrosaAcousticAnalyzer  # lazy: optional librosa dep
+
+        return LibrosaAcousticAnalyzer()
+    raise ValueError(f"provider_acoustic={kind!r} is not supported; use 'mock' or 'librosa'.")
 
 
 def _build_store(kind: str, settings) -> ObjectStore:
@@ -108,5 +123,6 @@ def build_providers(settings=None, store: ObjectStore | None = None) -> Provider
         scorer=RubricScorer(),
         feedback=MockFeedbackGenerator(),
         tts=_build_tts(settings),
+        acoustic=_build_acoustic(settings),
         store=store,
     )

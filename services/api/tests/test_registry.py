@@ -2,6 +2,7 @@
 
 import pytest
 
+from services.api.providers.acoustic import MockAcousticAnalyzer
 from services.api.providers.object_store import InMemoryObjectStore, LocalFSObjectStore
 from services.api.providers.registry import ProviderBundle, build_providers
 
@@ -10,6 +11,7 @@ class _Settings:
     provider_stt = "mock"
     provider_tts = "mock"
     provider_llm = "mock"
+    provider_acoustic = "mock"
     object_store = "memory"
     poc_storage_dir = "./.poc-storage"
 
@@ -18,6 +20,15 @@ def test_build_mock_bundle():
     bundle = build_providers(_Settings(), store=InMemoryObjectStore())
     assert isinstance(bundle, ProviderBundle)
     assert isinstance(bundle.store, InMemoryObjectStore)
+    # Persona path defaults to the deterministic, offline acoustic analyzer.
+    assert isinstance(bundle.acoustic, MockAcousticAnalyzer)
+
+
+def test_unknown_acoustic_provider_raises():
+    s = _Settings()
+    s.provider_acoustic = "praat"  # not 'mock' or 'librosa'
+    with pytest.raises(ValueError, match="not supported"):
+        build_providers(s, store=InMemoryObjectStore())
 
 
 def test_build_localfs_store(tmp_path):
