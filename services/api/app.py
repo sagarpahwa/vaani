@@ -5,9 +5,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from . import __version__
 from .config import Settings, get_settings
+from .routes import all_routers
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(settings: Settings | None = None, db=None, providers=None) -> FastAPI:
+    """Build the app. `db`/`providers` are injectable for tests; left unset in
+    production they are resolved lazily on first request (see `deps.py`)."""
     settings = settings or get_settings()
 
     app = FastAPI(
@@ -15,6 +18,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         version=__version__,
         summary="Universal public-speaking coaching backend — Mode A & Mode B.",
     )
+    app.state.settings = settings
+    app.state.db = db
+    app.state.providers = providers
 
     app.add_middleware(
         CORSMiddleware,
@@ -23,6 +29,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["*"],
         allow_credentials=False,
     )
+
+    for router in all_routers:
+        app.include_router(router)
 
     @app.get("/health", tags=["meta"])
     def health() -> dict:
