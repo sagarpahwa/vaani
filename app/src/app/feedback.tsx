@@ -14,6 +14,7 @@ import { Button } from '@/ui/Button';
 import { Card } from '@/ui/Card';
 import { CorrectionAudio } from '@/ui/CorrectionAudio';
 import { CorrectionCard } from '@/ui/CorrectionCard';
+import { PersonaReadout } from '@/ui/PersonaReadout';
 import { ReadAloudButton } from '@/ui/ReadAloudButton';
 import { ScoreBar } from '@/ui/ScoreBar';
 import { Screen } from '@/ui/Screen';
@@ -23,6 +24,7 @@ export default function FeedbackScreen() {
   const { sessionId } = useLocalSearchParams<{ sessionId?: string }>();
   const ready = useClientReady();
   const [session, setSession] = useState<SessionDetail | null>(null);
+  const [paceBand, setPaceBand] = useState<number[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,6 +38,21 @@ export default function FeedbackScreen() {
       active = false;
     };
   }, [sessionId]);
+
+  // Persona path only: fetch the speaker's target pace band to show "pace vs band".
+  // Optional enrichment — a failure leaves the readout without the band, never errors.
+  useEffect(() => {
+    const personaId = session?.persona_id;
+    if (!personaId) return;
+    let active = true;
+    api
+      .getPersona(personaId)
+      .then((p) => active && setPaceBand(p.rubric?.target_pace_sps ?? null))
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [session?.persona_id]);
 
   if (!sessionId) {
     return (
@@ -78,6 +95,15 @@ export default function FeedbackScreen() {
           </Text>
         ) : null}
       </View>
+
+      {session.style_match !== null && session.style_match !== undefined ? (
+        <PersonaReadout
+          personaName={session.persona_name ?? 'this speaker'}
+          styleMatch={session.style_match}
+          acoustic={session.acoustic}
+          targetBand={paceBand}
+        />
+      ) : null}
 
       {feedback?.summary ? <Text style={styles.summary}>{feedback.summary}</Text> : null}
 
