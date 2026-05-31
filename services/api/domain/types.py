@@ -63,6 +63,54 @@ class DeliveryFeatures:
 
 
 @dataclass
+class AcousticFeatures:
+    """Per-utterance measurements taken from the raw waveform — never a transcript.
+
+    This is the heart of the "judge my speech, not a cleaned-up transcript" rule:
+    every field is derived from the audio samples themselves. Pace comes from
+    syllable-nuclei peaks on the intensity envelope, pauses from the energy
+    contour, expressiveness from pitch (F0) and energy dynamics. ``expected_text``
+    feeds only ``coverage_ratio`` (did a line get skipped/truncated), never the
+    grading of wording. All fields default to zero so analyzers set them
+    explicitly and scorer/style tests can build targeted partials.
+    """
+
+    duration_s: float = 0.0
+    speech_rate_sps: float = 0.0  # syllables / total duration (incl. pauses)
+    articulation_rate_sps: float = 0.0  # syllables / voiced time (excl. pauses)
+    est_syllables: int = 0  # syllable nuclei detected in the audio
+    expected_syllables: int = 0  # syllables in the expected line text
+    coverage_ratio: float = 0.0  # est / expected (skipped line → well below 1)
+    pause_count: int = 0  # silences longer than the pause threshold
+    pause_total_s: float = 0.0
+    longest_pause_s: float = 0.0
+    pause_positions: list[tuple[float, float]] = field(default_factory=list)  # (start_s, end_s)
+    pitch_range_semitones: float = 0.0  # p95 − p5 of F0, in semitones
+    pitch_variation: float = 0.0  # F0 std in semitones (monotone ≈ 0)
+    energy_variation: float = 0.0  # coefficient of variation of frame RMS
+    voiced_ratio: float = 0.0  # fraction of frames carrying pitch
+
+    def to_dict(self) -> dict:
+        """Serialize to a JSON-friendly dict (tuples → lists) for API/golden use."""
+        return {
+            "duration_s": self.duration_s,
+            "speech_rate_sps": self.speech_rate_sps,
+            "articulation_rate_sps": self.articulation_rate_sps,
+            "est_syllables": self.est_syllables,
+            "expected_syllables": self.expected_syllables,
+            "coverage_ratio": self.coverage_ratio,
+            "pause_count": self.pause_count,
+            "pause_total_s": self.pause_total_s,
+            "longest_pause_s": self.longest_pause_s,
+            "pause_positions": [list(p) for p in self.pause_positions],
+            "pitch_range_semitones": self.pitch_range_semitones,
+            "pitch_variation": self.pitch_variation,
+            "energy_variation": self.energy_variation,
+            "voiced_ratio": self.voiced_ratio,
+        }
+
+
+@dataclass
 class ScoreResult:
     """Overall score plus per-capability breakdown and the weights used."""
 

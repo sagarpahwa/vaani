@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 
 from ..domain.goal_signature import GoalSignature
 from ..domain.types import (
+    AcousticFeatures,
     AlignOp,
     CorrectionDraft,
     DeliveryFeatures,
@@ -29,6 +30,23 @@ class STTProvider(ABC):
     def transcribe(
         self, audio_ref: bytes | str, *, expected_text: str, seed: int
     ) -> Transcript: ...
+
+
+class AcousticAnalyzer(ABC):
+    """Measures delivery acoustics from a raw mono PCM waveform — no transcript.
+
+    The persona path scores *how the learner actually sounded* (pace, pauses,
+    pitch, energy), so this consumes audio samples, not text. ``pcm`` is left
+    unannotated on purpose: the real impl takes a numpy float32 array, but base.py
+    must stay import-clean in CI (numpy is a demo-machine-only dep). ``expected_text``
+    is used solely to compute syllable coverage (skip/truncation), never to grade
+    wording.
+    """
+
+    @abstractmethod
+    def analyze(
+        self, pcm, sample_rate: int, *, expected_text: str, seed: int = 0
+    ) -> AcousticFeatures: ...
 
 
 class Aligner(ABC):
