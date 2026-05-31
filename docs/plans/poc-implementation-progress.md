@@ -78,8 +78,8 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 | P2 | Data model: 10 collections + mock DB seed | ✅ DONE | `feat(poc-db): 10 collection schemas + mock DB init/seed` | `make poc-db-setup` → collections+seed present in mock DB |
 | P3 | Domain: providers + Goal Signature + scoring + pipeline | ✅ DONE | `feat(poc-domain): coaching pipeline + providers + Goal Signature` | `make poc-api-test` green (68 tests, 97.7% cov) |
 | P4 | API endpoints + contract/integration tests | ✅ DONE | `feat(poc-api): coaching endpoints + contract/integration tests` (09ebbe0) | `make poc-api-test-all` green (99 tests, 97% cov) |
-| P5 | Expo app scaffold + CI + API client | 🔄 IN PROGRESS | — | `make poc-app-web` serves; `make poc-app-test` |
-| P6 | Screens: Mode A & B full coaching flows | ⬜ TODO | — | web E2E: record→feedback→A/B→retry |
+| P5 | Expo app scaffold + CI + API client | ✅ DONE | `feat(poc-app): Expo universal app scaffold + typed API client + CI` (56bed0d) | `make poc-app-test` green (22 tests + tsc + lint); web bundle exports |
+| P6 | Screens: Mode A & B full coaching flows | 🔄 IN PROGRESS | — | web E2E: record→feedback→A/B→retry |
 | P7 | Reliability artifacts (SLO, rollback, telemetry, golden) | ⬜ TODO | — | docs present; golden regression test in CI |
 | P8 | E2E verify (web) + Android compat + push + PR | ⬜ TODO | — | both modes pass on web; PR open |
 
@@ -139,14 +139,17 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 - [x] Coverage gate green (97.17% unit / 97% with integration; gate ≥70%)
 - [x] Commit (09ebbe0)
 
-### P5 — Expo app scaffold  ⬜
-- [ ] `app/` Expo + Expo Router project (TS), runs on web
-- [ ] API client (`app/src/api/client.ts`) + config (base URL from env) + feature-flag shell
-- [ ] First component/logic test (jest-expo) green
-- [ ] New Layer Protocol: `.github/workflows/reusable-node-app.yml` + wire into `ci.yml`; Makefile targets; **update CLAUDE.md**
-- [ ] Commit
+### P5 — Expo app scaffold  ✅
+- [x] `app/` Expo SDK 56 + Expo Router project (TS, `src/` layout), bundles + exports on web (5 static routes)
+- [x] API client (`app/src/api/client.ts`, typed, `ApiError` carries status+detail) + wire types (`api/types.ts`) + audio/WS URL helpers
+- [x] Config (`src/config.ts`, platform-aware base URL: Android emulator → 10.0.2.2:8090) + feature-flag shell (`src/featureFlags.ts`, EXPO_PUBLIC_FLAG_*)
+- [x] Router shell (`_layout.tsx`) + home (`index.tsx`) + Mode A/B route stubs; theme tokens
+- [x] 22 jest-expo logic tests green; `tsc --noEmit` clean (jest globals imported from `@jest/globals`); eslint flat config clean
+- [x] New Layer Protocol: `reusable-node-app.yml` now runs install+lint+typecheck+test; `make poc-app-test` mirrors CI; CLAUDE.md documents app/ structure
+- [x] Pruned unused tabbed-starter assets + stale template README
+- [x] Commit (56bed0d)
 
-### P6 — Screens (Mode A & B)  ⬜
+### P6 — Screens (Mode A & B)  🔄
 - [ ] Home / mode select
 - [ ] Goal Signature form (objective, occasion, audience, style, language, duration)
 - [ ] Mode A: script list → script display → record (expo-audio)
@@ -204,3 +207,13 @@ make poc-app-test
 - 2026-05-31 (P2): seeder uses per-doc `update_one` (not `bulk_write`) — pymongo 4.17 passes a
   `sort` kwarg that this mongomock version rejects in bulk ops. `update_one` is portable across
   mock + real Mongo and fine for tiny seed sets.
+- 2026-05-31 (P5): test files import jest globals from `@jest/globals` (not the ambient `@types/jest`
+  globals). Why: under `tsc --noEmit` the ambient globals weren't resolving (TS2304/TS2593), and the
+  explicit import is robust and runs fine through babel-jest. `jest.fn()` from `@jest/globals` needs
+  an explicit signature (`jest.fn<(...args: unknown[]) => Promise<unknown>>()`) or `mockResolvedValue`
+  infers `never`. Verified clean-room: typecheck passes with `.expo/`+`expo-env.d.ts` deleted, so CI
+  (`npm ci` with no generated Expo types) is safe. `Link href` typing falls back to string without
+  generated typed-routes — acceptable for POC.
+- 2026-05-31 (P5): CI `reusable-node-app.yml` adds `actions/setup-node@v4` (node 20) + runs
+  `npm ci → lint → typecheck → test`; keeps the `if [ -f app/package.json ]` guard so it stays green
+  on branches without the app. `make poc-app-test` runs the same lint+typecheck+jest locally.
