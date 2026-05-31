@@ -76,8 +76,8 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 | P0 | Isolated infra + branch + this tracker | ✅ DONE | `chore(poc): isolated infra + progress tracker` | `docker ps` shows vaani_poc_mongo:27018; `make poc-db-up` |
 | P1 | FastAPI backend scaffold + CI + `.venv-poc` | ✅ DONE | `feat(poc-api): FastAPI backend scaffold + CI wiring` | `make poc-api-run` → GET /health 200; `make poc-api-test` |
 | P2 | Data model: 10 collections + mock DB seed | ✅ DONE | `feat(poc-db): 10 collection schemas + mock DB init/seed` | `make poc-db-setup` → collections+seed present in mock DB |
-| P3 | Domain: providers + Goal Signature + scoring + pipeline | 🔄 IN PROGRESS | — | `make poc-api-test` (unit) green |
-| P4 | API endpoints + contract/integration tests | ⬜ TODO | — | `make poc-api-test-all` green |
+| P3 | Domain: providers + Goal Signature + scoring + pipeline | ✅ DONE | `feat(poc-domain): coaching pipeline + providers + Goal Signature` | `make poc-api-test` green (68 tests, 97.7% cov) |
+| P4 | API endpoints + contract/integration tests | 🔄 IN PROGRESS | — | `make poc-api-test-all` green |
 | P5 | Expo app scaffold + CI + API client | ⬜ TODO | — | `make poc-app-web` serves; `make poc-app-test` |
 | P6 | Screens: Mode A & B full coaching flows | ⬜ TODO | — | web E2E: record→feedback→A/B→retry |
 | P7 | Reliability artifacts (SLO, rollback, telemetry, golden) | ⬜ TODO | — | docs present; golden regression test in CI |
@@ -116,14 +116,20 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 - [x] Verified live: `make poc-db-setup` created 10 collections + validators on :27018; real DB (27017) confirmed untouched (still only its 12 collections, no `*_mock` DB)
 - [x] Commit
 
-### P3 — Domain logic  ⬜
-- [ ] `services/api/domain/versions.py` — rubric/scoring/feature/prompt version constants
-- [ ] `services/api/domain/goal_signature.py` — Goal Signature model + capability weighting
-- [ ] `services/api/providers/base.py` — STTProvider, FeatureExtractor, Aligner, Scorer, FeedbackGenerator, TTSProvider, ObjectStore interfaces
-- [ ] `services/api/providers/mock/*.py` — deterministic mock impls + LocalFS ObjectStore
-- [ ] `services/api/domain/pipeline.py` — orchestrator (transcribe→align→features→score→feedback→A/B TTS) + retry delta rescoring
-- [ ] Unit tests for every pure function (happy + empty + 1 error path)
-- [ ] Commit
+### P3 — Domain logic  ✅
+- [x] `services/api/domain/text.py` — tokenize/normalize/`stable_seed` (md5, cross-run determinism)/`split_script_text` (Mode B line+sentence splitting)
+- [x] `services/api/domain/versions.py` — rubric/scoring/feature/prompt version constants + `version_stamp()`
+- [x] `services/api/domain/types.py` — dataclasses (Word, Transcript, AlignOp, UtteranceAnalysis, DeliveryFeatures, ScoreResult, Improvement, FeedbackResult, CorrectionDraft, PipelineResult.to_dict)
+- [x] `services/api/domain/goal_signature.py` — `GoalSignature` (frozen) + `capability_weights` (6 canonical capabilities, keyword boosts normalized to mean 1.0)
+- [x] `services/api/providers/base.py` — STTProvider, Aligner, FeatureExtractor, Scorer, FeedbackGenerator, TTSProvider, ObjectStore ABCs + FILLER_WORDS
+- [x] `services/api/providers/object_store.py` — LocalFSObjectStore (path-traversal-safe) + InMemoryObjectStore
+- [x] `services/api/providers/analysis.py` — SequenceAligner (Levenshtein DP), DeliveryFeatureExtractor, RubricScorer (transparent per-capability curves, goal-weighted overall)
+- [x] `services/api/providers/mock_ai.py` — MockSTT (deterministic transcript w/ injected fillers/omissions/pauses), MockTTS (valid mono PCM WAV), MockFeedbackGenerator (templated improvements/strengths/A-B drafts)
+- [x] `services/api/providers/registry.py` — `ProviderBundle` + `build_providers` (mock-only; ValueError on non-mock, NotImplementedError on minio)
+- [x] `services/api/domain/pipeline.py` — `CoachingPipeline` (analyze→features→score→feedback→A/B TTS), `retry`, `compute_delta`
+- [x] Unit tests (43 new; happy + empty + ≥1 error path each): test_text, test_goal_signature, test_analysis, test_mock_ai, test_object_store, test_registry, test_pipeline
+- [x] `make poc-api-lint` clean, `make poc-api-test` green (68 tests, 97.7% cov)
+- [x] Commit
 
 ### P4 — API endpoints + tests  ⬜
 - [ ] `services/api/models.py` — Pydantic req/resp (with version fields in outputs)

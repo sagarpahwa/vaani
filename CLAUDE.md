@@ -279,8 +279,9 @@ services/api/
 ├── config.py         # pydantic-settings (reads .env.poc; mock defaults)
 ├── main.py           # uvicorn entry: services.api.main:app
 ├── db/               # mock-DB init + seed (targets public_speaking_intelligence_mock)
-├── domain/           # Goal Signature, scoring, coaching pipeline, version constants
-├── providers/        # STT/TTS/LLM/ObjectStore interfaces + deterministic mock impls
+├── domain/           # pure logic: text, types, versions, goal_signature, pipeline
+├── providers/        # base (ABCs), object_store, analysis (align/features/score),
+│                     #   mock_ai (STT/TTS/feedback), registry (build_providers)
 ├── routes/           # API routers (sessions, scripts, utterances, retry, audio, ws)
 ├── models.py         # Pydantic request/response models (carry *_version fields)
 ├── requirements.txt  # installed into .venv-poc
