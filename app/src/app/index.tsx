@@ -17,6 +17,21 @@ export default function HomeScreen() {
         </Text>
 
         <View style={styles.cards}>
+          <Link href="/personas" asChild>
+            <Pressable
+              style={[styles.card, styles.cardPrimary]}
+              accessibilityRole="button"
+              accessibilityLabel="Practice with a great speaker"
+            >
+              <Text style={styles.cardBadge}>20 LEGENDS</Text>
+              <Text style={styles.cardTitle}>Practice with a great speaker</Text>
+              <Text style={styles.cardBody}>
+                Record a one-minute speech in the style of Jobs, Buffett, Huang and more — then
+                hear how close you came to their delivery.
+              </Text>
+            </Pressable>
+          </Link>
+
           <Link href="/mode-a" asChild>
             <Pressable style={styles.card} accessibilityRole="button">
               <Text style={styles.cardTitle}>Guided Practice</Text>
@@ -89,6 +104,16 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     padding: spacing.lg,
     gap: spacing.xs,
+  },
+  cardPrimary: {
+    backgroundColor: colors.surfaceAlt,
+    borderColor: colors.accent,
+  },
+  cardBadge: {
+    color: colors.accent,
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.5,
   },
   cardTitle: {
     color: colors.text,
