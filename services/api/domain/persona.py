@@ -168,3 +168,36 @@ def score_persona(profile: AcousticProfile, rubric: PersonaRubric) -> ScoreResul
     overall = round(wsum / wtot, 4) if wtot > 0 else 0.0
 
     return ScoreResult(overall_score=overall, capabilities=caps, weights=dict(weights))
+
+
+def _relative_match(value: float, target: float) -> float:
+    """1.0 when ``value`` equals ``target``, decaying to 0 as it diverges *either way*.
+
+    This is the two-directional counterpart to the capability scorer: capabilities
+    are mostly one-directional ("more expressive is fine"), but a style *match*
+    docks you for overshooting the persona just as much as for undershooting.
+    """
+    if target <= 0:
+        return 1.0 if value <= 0 else 0.0
+    return _clamp01(1.0 - abs(value - target) / target)
+
+
+def compute_style_match(profile: AcousticProfile, rubric: PersonaRubric) -> float:
+    """A single 0–1 "how much you sounded like this speaker" score.
+
+    Distinct from the capability scores: this is a *distance*, so being more
+    expressive than a monotone persona, or pausing far longer than a brisk one,
+    lowers it — even though those same traits might raise an absolute capability.
+    Blends pace (in-band), expressiveness, and pause-length match, pace-weighted
+    because the band is the most legible signature of a speaker's delivery.
+    """
+    lo, hi = rubric.target_pace_sps
+    pace_match = _band_score(profile.speech_rate_sps, lo, hi)
+    expr_match = _relative_match(
+        profile.pitch_variation, _EXPRESSIVENESS_TARGET.get(rubric.expressiveness, 1.8)
+    )
+    pause_match = _relative_match(
+        profile.longest_pause_s, _PAUSE_TOL_LONG_S.get(rubric.pause_style, 1.2)
+    )
+    score = 0.45 * pace_match + 0.35 * expr_match + 0.20 * pause_match
+    return round(_clamp01(score), 4)
