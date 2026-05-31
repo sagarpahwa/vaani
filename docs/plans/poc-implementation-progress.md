@@ -74,8 +74,8 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 | # | Milestone | Status | Commit(s) | Verify with |
 |---|-----------|--------|-----------|-------------|
 | P0 | Isolated infra + branch + this tracker | ✅ DONE | `chore(poc): isolated infra + progress tracker` | `docker ps` shows vaani_poc_mongo:27018; `make poc-db-up` |
-| P1 | FastAPI backend scaffold + CI + `.venv-poc` | 🔄 IN PROGRESS | — | `make poc-api-run` → GET /health 200; `make poc-api-test` |
-| P2 | Data model: 10 collections + mock DB seed | ⬜ TODO | — | `make poc-db-setup` → collections+seed present in mock DB |
+| P1 | FastAPI backend scaffold + CI + `.venv-poc` | ✅ DONE | `feat(poc-api): FastAPI backend scaffold + CI wiring` | `make poc-api-run` → GET /health 200; `make poc-api-test` |
+| P2 | Data model: 10 collections + mock DB seed | 🔄 IN PROGRESS | — | `make poc-db-setup` → collections+seed present in mock DB |
 | P3 | Domain: providers + Goal Signature + scoring + pipeline | ⬜ TODO | — | `make poc-api-test` (unit) green |
 | P4 | API endpoints + contract/integration tests | ⬜ TODO | — | `make poc-api-test-all` green |
 | P5 | Expo app scaffold + CI + API client | ⬜ TODO | — | `make poc-app-web` serves; `make poc-app-test` |
@@ -98,14 +98,14 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 - [x] Bring up POC Mongo; confirmed `vaani_mongo`/real DB untouched (27018 vs 27017, both healthy)
 - [x] Commit
 
-### P1 — FastAPI backend scaffold  ⬜
-- [ ] `services/api/` package: `app.py` (factory), `config.py` (pydantic-settings), `main.py` (uvicorn entry)
-- [ ] `GET /health` + `GET /` endpoints
-- [ ] `services/api/requirements.txt` (fastapi, uvicorn, pydantic-settings, motor/pymongo, httpx, websockets, python-multipart, pytest, pytest-asyncio, pytest-cov)
-- [ ] `.venv-poc` created; deps installed; app boots (`uvicorn`), `/health` returns 200
-- [ ] `tests/api/test_health.py` (or services/api/tests) — first test green
-- [ ] New Layer Protocol: `.github/workflows/reusable-python-api.yml` + wire into `ci.yml`; Makefile targets; **update CLAUDE.md** (architecture map + CI table + How to Add New Code)
-- [ ] Commit
+### P1 — FastAPI backend scaffold  ✅
+- [x] `services/api/` package: `app.py` (factory), `config.py` (pydantic-settings), `main.py` (uvicorn entry)
+- [x] `GET /health` + `GET /` endpoints
+- [x] `services/api/requirements.txt` (fastapi, uvicorn, pydantic-settings, pymongo, httpx, python-multipart, pytest, pytest-asyncio, pytest-cov, mongomock, ruff, black)
+- [x] `.venv-poc` created; deps installed; app boots (`uvicorn`), `/health` returns 200
+- [x] `services/api/tests/test_health.py` — 2 tests green (97.73% coverage, gate ≥70%)
+- [x] New Layer Protocol: `.github/workflows/reusable-python-api.yml` + `reusable-node-app.yml` (placeholder) wired into `ci.yml`; Makefile `poc-*` targets; updated CLAUDE.md (architecture map + CI table + POC section); `.coveragerc` isolates backend coverage
+- [x] Commit
 
 ### P2 — Data model + mock DB  ⬜
 - [ ] `schemas/` JSON for: users, learner_profiles, guided_scripts, practice_sessions, session_utterances, coaching_feedback, audio_corrections, progress_snapshots, model_eval_runs, release_health_events (each `$jsonSchema`, created_at/updated_at/schema_version)

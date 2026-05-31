@@ -1,0 +1,25 @@
+name: reusable-node-app
+
+# Reusable quality workflow for the POC Expo app (app/).
+# Placeholder until the Expo app is scaffolded (POC milestone P5), at which point
+# this runs install + lint + typecheck + test. Kept valid + green in the meantime.
+on:
+  workflow_call: {}
+
+jobs:
+  app-quality:
+    name: App (Expo) Lint & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run app checks (or skip until scaffolded)
+        run: |
+          if [ -f app/package.json ]; then
+            cd app
+            npm ci
+            npm run lint --if-present
+            npm test -- --watchAll=false --passWithNoTests
+          else
+            echo "app/ not scaffolded yet (POC milestone P5) — skipping."
+          fi

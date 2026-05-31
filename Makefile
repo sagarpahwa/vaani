@@ -204,7 +204,8 @@ poc-api-run:
 
 poc-api-test:
 	$(POC_PY) -m pytest services/api/tests -m "not integration" \
-		--cov=services/api --cov-report=term-missing --cov-report=json -v
+		--cov=services/api --cov-config=services/api/.coveragerc \
+		--cov-report=term-missing -v
 
 poc-api-test-all:
 	$(POC_PY) -m pytest services/api/tests -m "integration or not integration" -v

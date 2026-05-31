@@ -53,18 +53,24 @@ vaani/
 │   ├── speakers_100.json   # 102 verified speakers
 │   ├── capability_taxonomy.json  # 25 capabilities
 │   └── profession_taxonomy.json  # 22 professions
+├── services/               # POC backend layer (FastAPI) — see "POC" section below
+│   └── api/                # Coaching API: app, config, db, domain, providers, routes, tests
+├── app/                    # POC universal frontend (Expo + Expo Router; web + Android)
 ├── tests/
 │   ├── unit/               # Fast, no Docker, <5s total
 │   └── integration/        # Require running MongoDB (@pytest.mark.integration)
 ├── .github/
 │   ├── workflows/
-│   │   ├── ci.yml          # Every push: lint + syntax + JSON + unit tests + secrets
+│   │   ├── ci.yml          # Every push: lint + syntax + JSON + unit tests + secrets + api + app
+│   │   ├── reusable-python-api.yml  # Reusable: services/api lint + test + coverage gate
+│   │   ├── reusable-node-app.yml    # Reusable: app/ (Expo) lint + test
 │   │   ├── integration.yml # PRs to main: Docker MongoDB + full seed + verify
 │   │   └── security.yml    # Weekly: pip-audit + npm audit + secret scan
 │   └── dependabot.yml      # Automated dependency updates
 ├── quality-baseline.json   # Committed coverage floor — only moves up
-├── Makefile                # Universal developer interface
-├── docker-compose.yml      # MongoDB 7.0 + mongo-express
+├── Makefile                # Universal developer interface (incl. isolated `poc-*` targets)
+├── docker-compose.yml      # MongoDB 7.0 + mongo-express (real DB, port 27017)
+├── docker-compose.poc.yml  # Isolated POC stack: vaani_poc_mongo (27018) + optional MinIO
 ├── pyproject.toml          # Python project config, pytest, coverage, ruff, black
 └── package.json            # Node.js config + npm scripts
 ```
@@ -107,6 +113,8 @@ vaani/
 | `unit-tests` | Every push | Test failures; coverage < 70% | `make test` |
 | `secret-scan` | Every push | Credentials or API keys committed | Remove the secret, rotate it |
 | `docs-freshness` | PRs only | New source files without CLAUDE.md update | Update this file |
+| `api-tests` | Every push | `services/api` ruff/black violations, FastAPI test failures, coverage < 70% | `make poc-api-lint && make poc-api-test` |
+| `app-tests` | Every push | `app/` (Expo) lint/type/test failures | `make poc-app-test` |
 | `integration-tests` | PRs to main | DB init/seed/verify cycle; idempotency; index enforcement | `make db-up && make db-setup && make test-integration` |
 | `python-audit` | Weekly | Python CVEs | `pip-audit` locally |
 | `node-audit` | Weekly | Node.js CVEs | `npm audit` locally |
@@ -240,6 +248,66 @@ When adding any new technology or service, follow these steps **before writing a
 6. **Write at least one test** before any feature code. The coverage gate enforces no regression from day one.
 
 This is the mechanism: new layers inherit the full quality system at scaffolding time, before features exist.
+
+---
+
+## POC: Universal Coaching App (`services/api` + `app`)
+
+The POC is a real public-speaking coach (Mode A: system-guided script; Mode B: user-provided
+script). It is built on layers added via the New Layer Protocol above. **Implementation progress
+is tracked in [`docs/plans/poc-implementation-progress.md`](docs/plans/poc-implementation-progress.md)
+— that file is the resumable source of truth.**
+
+### Hard isolation rules (never violate)
+
+The POC must never disturb the data-foundation dev environment:
+
+- **DB:** the POC uses an isolated MongoDB — `docker-compose.poc.yml` → container `vaani_poc_mongo`
+  on **port 27018**, database `public_speaking_intelligence_mock`. The real DB
+  (`public_speaking_intelligence`, `vaani_mongo`, port 27017) is never touched.
+- **Python env:** the backend uses a separate **`.venv-poc`** (created by `make poc-api-install`),
+  never `.venv` / `.venv311`.
+- **Audio:** never stored in Mongo documents. Use the `ObjectStore` abstraction
+  (LocalFS adapter by default at `.poc-storage/`; MinIO/S3 adapter pluggable via `OBJECT_STORE`).
+- **Config:** `.env.poc` (copy from `.env.poc.example`). All POC settings are `POC_*` / `PROVIDER_*`.
+
+### Backend (`services/api`, FastAPI)
+
+```
+services/api/
+├── app.py            # create_app() factory
+├── config.py         # pydantic-settings (reads .env.poc; mock defaults)
+├── main.py           # uvicorn entry: services.api.main:app
+├── db/               # mock-DB init + seed (targets public_speaking_intelligence_mock)
+├── domain/           # Goal Signature, scoring, coaching pipeline, version constants
+├── providers/        # STT/TTS/LLM/ObjectStore interfaces + deterministic mock impls
+├── routes/           # API routers (sessions, scripts, utterances, retry, audio, ws)
+├── models.py         # Pydantic request/response models (carry *_version fields)
+├── requirements.txt  # installed into .venv-poc
+└── tests/            # pytest (unit + @pytest.mark.integration), .coveragerc gate ≥70%
+```
+
+Rules:
+1. AI is accessed only through `providers/` interfaces. Default impls are deterministic mocks so
+   the app runs and tests pass with no cloud credentials. Real providers swap in via `PROVIDER_*`.
+2. Every scored/feedback output carries version fields: `rubric_version`, `scoring_model_version`,
+   `feature_extractor_version`, `prompt_version` (see `domain/versions.py`).
+3. Separate pure logic (testable) from DB/IO. Co-locate tests in `services/api/tests`.
+4. Run: `make poc-db-up && make poc-db-setup && make poc-api-run` → http://localhost:8090/docs.
+
+### Frontend (`app`, Expo + Expo Router)
+
+One universal codebase for **web + Android** (iOS best-effort for the POC). Audio capture/playback
+via `expo-audio`; full-feedback read-aloud via `expo-speech`. API base URL from app config.
+Run: `make poc-app-install && make poc-app-web`.
+
+### Adding POC code
+
+- New backend module in `services/api/`: keep pure logic separate, co-locate a test, keep
+  `make poc-api-lint` + `make poc-api-test` green (coverage ≥70% via `services/api/.coveragerc`).
+- New collection for the POC: add a `schemas/<name>.json`, register it in
+  `services/api/db/init_mock_db.py`, add to the collections table below, add a schema test.
+- New screen in `app/`: co-locate a component/logic test; keep `make poc-app-test` green.
 
 ---
 

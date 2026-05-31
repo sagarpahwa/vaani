@@ -188,3 +188,13 @@ jobs:
 
       - name: Check CLAUDE.md is updated with new source patterns
         run: python3 scripts/ci/check_claude_md.py
+
+  # ── Job 7: POC backend — FastAPI lint + test + coverage gate ───────────────
+  api-tests:
+    name: API (FastAPI)
+    uses: ./.github/workflows/reusable-python-api.yml
+
+  # ── Job 8: POC frontend — Expo app lint + test (wired in P5) ───────────────
+  app-tests:
+    name: App (Expo)
+    uses: ./.github/workflows/reusable-node-app.yml

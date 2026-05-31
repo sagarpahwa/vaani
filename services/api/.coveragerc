@@ -1,0 +1,11 @@
+# Isolated coverage config for the POC backend so it never inherits the
+# data-pipeline coverage source (scripts/python). Measures services/api only.
+[run]
+source = services/api
+omit =
+    services/api/tests/*
+    services/api/main.py
+
+[report]
+show_missing = True
+fail_under = 70
