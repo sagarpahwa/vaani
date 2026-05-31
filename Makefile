@@ -223,7 +223,7 @@ poc-app-android:
 	cd app && npx expo start --android
 
 poc-app-test:
-	cd app && npm test -- --watchAll=false
+	cd app && npm run lint && npm run typecheck && npm test -- --watchAll=false
 
 poc-up: poc-db-up
 	@echo "DB up. Starting backend on :8090 (Ctrl-C to stop)..."

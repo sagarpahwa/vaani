@@ -327,6 +327,28 @@ One universal codebase for **web + Android** (iOS best-effort for the POC). Audi
 via `expo-audio`; full-feedback read-aloud via `expo-speech`. API base URL from app config.
 Run: `make poc-app-install && make poc-app-web`.
 
+```
+app/
+├── src/
+│   ├── app/              # Expo Router file-based routes (_layout, index, mode-a, mode-b)
+│   ├── api/              # client.ts (typed fetch wrapper + ApiError), types.ts (wire types)
+│   ├── config.ts         # platform-aware API base URL (Android emulator → 10.0.2.2:8090)
+│   ├── featureFlags.ts   # EXPO_PUBLIC_FLAG_* gates (modeB, liveProgress, readAloud)
+│   └── theme.ts          # shared colors / spacing / radius tokens
+├── eslint.config.js      # flat config via eslint-config-expo/flat
+├── jest.config.js        # jest-expo preset
+└── tsconfig.json         # extends expo/tsconfig.base (strict); @/* → ./src/*
+```
+
+Rules:
+1. The app talks to the backend **only** through `src/api/client.ts`. Never call `fetch`
+   directly from a screen. Backend failures surface as `ApiError` (carries `status` + `detail`).
+2. Read config from `src/config.ts` and gates from `src/featureFlags.ts` — never read
+   `process.env` from a screen. `EXPO_PUBLIC_*` vars are inlined at build time (static access only).
+3. Co-locate logic tests next to the module (`*.test.ts`). Import jest globals explicitly from
+   `@jest/globals` so `tsc --noEmit` stays clean.
+4. Keep `make poc-app-test` green: that runs `lint` + `typecheck` + `jest`.
+
 ### Adding POC code
 
 - New backend module in `services/api/`: keep pure logic separate, co-locate a test, keep
