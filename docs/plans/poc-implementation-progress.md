@@ -77,8 +77,8 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 | P1 | FastAPI backend scaffold + CI + `.venv-poc` | ✅ DONE | `feat(poc-api): FastAPI backend scaffold + CI wiring` | `make poc-api-run` → GET /health 200; `make poc-api-test` |
 | P2 | Data model: 10 collections + mock DB seed | ✅ DONE | `feat(poc-db): 10 collection schemas + mock DB init/seed` | `make poc-db-setup` → collections+seed present in mock DB |
 | P3 | Domain: providers + Goal Signature + scoring + pipeline | ✅ DONE | `feat(poc-domain): coaching pipeline + providers + Goal Signature` | `make poc-api-test` green (68 tests, 97.7% cov) |
-| P4 | API endpoints + contract/integration tests | 🔄 IN PROGRESS | — | `make poc-api-test-all` green |
-| P5 | Expo app scaffold + CI + API client | ⬜ TODO | — | `make poc-app-web` serves; `make poc-app-test` |
+| P4 | API endpoints + contract/integration tests | ✅ DONE | `feat(poc-api): coaching endpoints + contract/integration tests` (09ebbe0) | `make poc-api-test-all` green (99 tests, 97% cov) |
+| P5 | Expo app scaffold + CI + API client | 🔄 IN PROGRESS | — | `make poc-app-web` serves; `make poc-app-test` |
 | P6 | Screens: Mode A & B full coaching flows | ⬜ TODO | — | web E2E: record→feedback→A/B→retry |
 | P7 | Reliability artifacts (SLO, rollback, telemetry, golden) | ⬜ TODO | — | docs present; golden regression test in CI |
 | P8 | E2E verify (web) + Android compat + push + PR | ⬜ TODO | — | both modes pass on web; PR open |
@@ -131,13 +131,13 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 - [x] `make poc-api-lint` clean, `make poc-api-test` green (68 tests, 97.7% cov)
 - [x] Commit
 
-### P4 — API endpoints + tests  ⬜
-- [ ] `services/api/models.py` — Pydantic req/resp (with version fields in outputs)
-- [ ] Routes: `GET /scripts`, `POST /sessions`, `POST /sessions/{id}/utterances` (+process), `GET /sessions/{id}`, `POST /sessions/{id}/retry`, `GET /audio/{key}`, `WS /sessions/{id}/events`
-- [ ] Wire pipeline + persistence (mock DB) + ObjectStore
-- [ ] Contract tests (TestClient) + integration test (full pipeline) marked appropriately
-- [ ] Coverage gate green
-- [ ] Commit
+### P4 — API endpoints + tests  ✅
+- [x] `services/api/models.py` — Pydantic req/resp (with version fields in outputs)
+- [x] Routes: `GET /scripts` (+`/scripts/{id}`), `POST /sessions`, `POST /sessions/{id}/utterances` (+process), `GET /sessions/{id}`, `POST /sessions/{id}/retry`, `GET /audio/{key}`, `WS /sessions/{id}/events`
+- [x] Wire pipeline + persistence via thin `coaching_service.py` + lazy `app.state` DI (`deps.py`); `repository.py` helpers
+- [x] Contract tests (TestClient, incl. WS) + integration test (`@pytest.mark.integration`, self-skips if :27018 down, cleans up its own docs)
+- [x] Coverage gate green (97.17% unit / 97% with integration; gate ≥70%)
+- [x] Commit (09ebbe0)
 
 ### P5 — Expo app scaffold  ⬜
 - [ ] `app/` Expo + Expo Router project (TS), runs on web
