@@ -1,0 +1,41 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["speaker_id", "scoring_version", "created_at"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":                     { "bsonType": "objectId" },
+      "speaker_id":              { "bsonType": "objectId" },
+      "scoring_version":         { "bsonType": "string" },
+      "greatness_score":         { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+      "credibility_score":       { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+      "clarity_score":           { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+      "emotional_power_score":   { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+      "memorability_score":      { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+      "delivery_score":          { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+      "influence_score":         { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+      "ethical_alignment_score": { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+      "evidence_strength_score": { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+      "data_completeness_score": { "bsonType": ["double","null"], "minimum": 0, "maximum": 1 },
+      "scoring_explanation": {
+        "bsonType": "object",
+        "properties": {
+          "historical_influence":   { "bsonType": ["double","null"] },
+          "speech_memorability":    { "bsonType": ["double","null"] },
+          "audience_reaction":      { "bsonType": ["double","null"] },
+          "institutional_authority":{ "bsonType": ["double","null"] },
+          "rhetorical_mastery":     { "bsonType": ["double","null"] },
+          "clarity":                { "bsonType": ["double","null"] },
+          "emotional_power":        { "bsonType": ["double","null"] },
+          "reach":                  { "bsonType": ["double","null"] },
+          "longevity_of_relevance": { "bsonType": ["double","null"] },
+          "source_coverage":        { "bsonType": ["double","null"] },
+          "evidence_strength":      { "bsonType": ["double","null"] },
+          "ethical_alignment":      { "bsonType": ["double","null"] },
+          "notes":                  { "bsonType": "string" }
+        }
+      },
+      "created_at": { "bsonType": "date" }
+    }
+  }
+}

@@ -1,0 +1,60 @@
+repos:
+  # ── Python formatter ───────────────────────────────────────────────────────
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+        language_version: python3.11
+        files: ^scripts/python/
+
+  # ── Python linter (auto-fix safe rules) ───────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
+    hooks:
+      - id: ruff
+        args: [--fix]
+        files: ^scripts/python/
+
+  # ── General file hygiene ───────────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-json
+        files: ^(schemas|seed)/.*\.json$
+      - id: pretty-format-json
+        args: [--autofix, --indent=2, --no-sort-keys]
+        files: ^seed/.*\.json$
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-added-large-files
+        args: [--maxkb=500]
+      - id: end-of-file-fixer
+        exclude: ^seed/.*\.json$
+      - id: trailing-whitespace
+        exclude: ^seed/.*\.json$
+
+  # ── Conventional commit messages ──────────────────────────────────────────
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v3.2.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: [feat, fix, chore, docs, test, refactor, ci, build, perf]
+
+  # ── Node.js syntax check ───────────────────────────────────────────────────
+  - repo: local
+    hooks:
+      - id: node-syntax-check
+        name: Node.js syntax check
+        entry: bash -c 'for f in "$@"; do node --check "$f" && echo "  OK: $f" || exit 1; done' --
+        language: system
+        files: ^scripts/node/.*\.js$
+        pass_filenames: true
+
+      # ── Block accidental .env commits ──────────────────────────────────────
+      - id: no-env-file
+        name: Block .env commit
+        entry: bash -c 'echo "ERROR: .env must not be committed (use .env.example)"; exit 1'
+        language: system
+        files: ^\.env$
+        exclude: ^\.env\.example$

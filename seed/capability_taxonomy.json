@@ -1,0 +1,477 @@
+[
+  {
+    "capability_id": "vocal_command",
+    "label": "Vocal Command",
+    "definition": "The ability to project voice with authority, clarity, and controlled volume so that the speaker fills the space and commands listener attention without electronic amplification.",
+    "observable_markers": [
+      "Voice carries to the back of a large room without shouting",
+      "Volume is modulated — quiet when intimate, loud when rousing",
+      "Tone does not waver under pressure",
+      "Voice does not go thin or reedy under stress"
+    ],
+    "trainable": true,
+    "related_drills": ["resonance_breathing", "projection_drill", "volume_staircase", "sustained_tone"],
+    "opposite_failure_modes": ["voice_cracking", "mumbling", "vocal_fry_collapse", "trailing_sentence_ends"],
+    "examples": [
+      { "speaker_name": "Martin Luther King Jr.", "speech_title": "I Have a Dream", "description": "Sustained vocal power across 17 minutes in outdoor heat, with dynamic range from whisper to full-throated call" },
+      { "speaker_name": "Winston Churchill", "speech_title": "We Shall Fight on the Beaches", "description": "Radio voice that projected gravitas and resolve through medium, not volume" }
+    ],
+    "parent_category": "delivery"
+  },
+  {
+    "capability_id": "strategic_pause",
+    "label": "Strategic Pause",
+    "definition": "Deliberate use of silence as a rhetorical tool — to create anticipation, let a key idea land, signal gravity, or reset audience attention.",
+    "observable_markers": [
+      "Speaker pauses before the most important word or phrase",
+      "Silence is held for 2–4 seconds without visible discomfort",
+      "Pause follows a major claim, not a minor transition",
+      "Audience leans in or goes quiet during the pause"
+    ],
+    "trainable": true,
+    "related_drills": ["pause_placement", "silence_tolerance", "punch_word_drill"],
+    "opposite_failure_modes": ["filler_words", "fear_of_silence", "rushing_past_key_moments"],
+    "examples": [
+      { "speaker_name": "Barack Obama", "speech_title": "Yes We Can — Election Night 2008", "description": "Repeated use of pause before 'Yes. We. Can.' to create rhythm and emotional space" },
+      { "speaker_name": "Steve Jobs", "speech_title": "iPhone Introduction 2007", "description": "Extended pause before revealing 'an iPod, a phone, and an internet communicator — are you getting it?'" }
+    ],
+    "parent_category": "delivery"
+  },
+  {
+    "capability_id": "cadence_control",
+    "label": "Cadence Control",
+    "definition": "The ability to vary speaking pace — slowing for gravity, accelerating for momentum, using rhythm to guide emotion and comprehension.",
+    "observable_markers": [
+      "Speaker deliberately slows on key words",
+      "Sentences vary in speed — not monotone",
+      "Fast passages create urgency; slow passages create weight",
+      "Natural-feeling rhythm, not mechanical"
+    ],
+    "trainable": true,
+    "related_drills": ["pace_mapping", "slow_fast_exercise", "reading_aloud_timing"],
+    "opposite_failure_modes": ["monotone_pace", "racing_through_content", "arrhythmic_delivery"],
+    "examples": [
+      { "speaker_name": "Martin Luther King Jr.", "speech_title": "I Have a Dream", "description": "Cadence built like music — each repetition of 'I have a dream' slower and heavier than the last" },
+      { "speaker_name": "Maya Angelou", "speech_title": "On the Pulse of Morning", "description": "Poetic pacing that mirrored the weight and lightness of each line" }
+    ],
+    "parent_category": "delivery"
+  },
+  {
+    "capability_id": "rhythmic_repetition",
+    "label": "Rhythmic Repetition",
+    "definition": "Deliberate reuse of words, phrases, or sentence structures to create emotional force, memorability, and a cumulative building effect.",
+    "observable_markers": [
+      "Repeated anchor phrase builds in intensity across uses",
+      "Structure is consistent — same syntax each repetition",
+      "Audience begins to anticipate and internally complete the phrase",
+      "Phrase becomes the takeaway or slogan of the speech"
+    ],
+    "trainable": true,
+    "related_drills": ["anaphora_construction", "phrase_ladder", "three_beat_repetition"],
+    "opposite_failure_modes": ["accidental_repetition", "phrase_dilution", "overuse_that_numbs"],
+    "examples": [
+      { "speaker_name": "Winston Churchill", "speech_title": "We Shall Fight", "description": "'We shall fight on the beaches, we shall fight on the landing grounds...' — six-part anaphora" },
+      { "speaker_name": "Martin Luther King Jr.", "speech_title": "I Have a Dream", "description": "'I have a dream' and 'Let freedom ring' — two parallel anaphoric sequences" }
+    ],
+    "parent_category": "language"
+  },
+  {
+    "capability_id": "metaphor_imagery",
+    "label": "Metaphor and Imagery",
+    "definition": "Using concrete images, comparisons, and figurative language to make abstract ideas visible, memorable, and emotionally resonant.",
+    "observable_markers": [
+      "Abstractions are consistently illustrated with physical images",
+      "Metaphors are fresh, not clichéd",
+      "Imagery appeals to multiple senses",
+      "Central metaphor is consistent across the speech"
+    ],
+    "trainable": true,
+    "related_drills": ["abstract_to_concrete", "metaphor_banking", "sensory_detail_drill"],
+    "opposite_failure_modes": ["jargon_without_image", "mixed_metaphors", "cliche_imagery"],
+    "examples": [
+      { "speaker_name": "Martin Luther King Jr.", "speech_title": "I Have a Dream", "description": "Sustained use of financial metaphor ('bad check', 'promissory note') to make injustice concrete" },
+      { "speaker_name": "Winston Churchill", "speech_title": "Iron Curtain Speech", "description": "The 'Iron Curtain' itself — one of the most impactful metaphors in political history" }
+    ],
+    "parent_category": "language"
+  },
+  {
+    "capability_id": "story_arc_control",
+    "label": "Story Arc Control",
+    "definition": "Ability to structure a speech with a recognizable narrative arc — problem, tension, turning point, resolution — that holds attention and drives toward a conclusion.",
+    "observable_markers": [
+      "Speech has a clear beginning, middle, and end",
+      "A central conflict or problem is established early",
+      "Tension builds across the speech",
+      "Resolution or call-to-action emerges naturally from the story"
+    ],
+    "trainable": true,
+    "related_drills": ["hero_arc_outline", "situation_complication_resolution", "three_act_speech"],
+    "opposite_failure_modes": ["list_structure_without_narrative", "no_clear_ending", "burying_the_point"],
+    "examples": [
+      { "speaker_name": "Ronald Reagan", "speech_title": "Challenger Address", "description": "Opened in grief, moved through meaning-making, closed with aspiration — complete emotional arc in 4 minutes" },
+      { "speaker_name": "Brené Brown", "speech_title": "The Power of Vulnerability (TED)", "description": "Personal story as the spine: researcher who studied vulnerability becomes the subject" }
+    ],
+    "parent_category": "structure"
+  },
+  {
+    "capability_id": "audience_connection",
+    "label": "Audience Connection",
+    "definition": "Ability to make individual listeners feel seen, spoken to directly, and emotionally included in the speech — regardless of audience size.",
+    "observable_markers": [
+      "Speaker uses 'you' and 'we' language inclusively",
+      "Eye contact feels direct, not scanning",
+      "References to shared experience resonate with room",
+      "Audience visibly responds — heads nod, posture opens"
+    ],
+    "trainable": true,
+    "related_drills": ["you_we_substitution", "eye_contact_zones", "audience_mirroring"],
+    "opposite_failure_modes": ["reading_from_notes", "speaking_at_not_to", "generic_address"],
+    "examples": [
+      { "speaker_name": "Bill Clinton", "speech_title": "1992 Democratic Convention", "description": "Famous for making individuals in large crowds feel personally addressed" },
+      { "speaker_name": "Oprah Winfrey", "speech_title": "2018 Golden Globes", "description": "Systematically included every demographic in the room through direct address" }
+    ],
+    "parent_category": "emotional"
+  },
+  {
+    "capability_id": "intellectual_clarity",
+    "label": "Intellectual Clarity",
+    "definition": "Ability to explain complex ideas with precision, structure, and simplicity — making the difficult accessible without losing accuracy.",
+    "observable_markers": [
+      "Concepts are defined before being used",
+      "Arguments follow a logical sequence",
+      "Complex ideas are illustrated with examples",
+      "No jargon without explanation"
+    ],
+    "trainable": true,
+    "related_drills": ["feynman_technique", "five_year_old_explanation", "concept_stacking"],
+    "opposite_failure_modes": ["jargon_overload", "undefined_terms", "circular_reasoning"],
+    "examples": [
+      { "speaker_name": "Richard Feynman", "speech_title": "QED Lectures (Auckand 1979)", "description": "Explained quantum electrodynamics to a general audience through cumulative analogies" },
+      { "speaker_name": "Carl Sagan", "speech_title": "Pale Blue Dot", "description": "Translated cosmic scale into human emotional terms with precise language" }
+    ],
+    "parent_category": "intellectual"
+  },
+  {
+    "capability_id": "crisis_reassurance",
+    "label": "Crisis Reassurance",
+    "definition": "Ability to project calm authority in moments of national or collective crisis — reducing panic while acknowledging gravity.",
+    "observable_markers": [
+      "Voice is steady even when delivering terrible news",
+      "Speaker acknowledges the fear without amplifying it",
+      "Language of 'we' and shared fate predominates",
+      "Provides a frame for action or hope alongside acknowledgment of loss"
+    ],
+    "trainable": true,
+    "related_drills": ["controlled_breathing_under_stress", "gravity_without_fear", "the_bad_news_frame"],
+    "opposite_failure_modes": ["downplaying_crisis", "panic_amplification", "false_certainty"],
+    "examples": [
+      { "speaker_name": "Franklin D. Roosevelt", "speech_title": "First Fireside Chat", "description": "Explained bank closures to a frightened public so simply that the panic stopped" },
+      { "speaker_name": "Winston Churchill", "speech_title": "Blood Toil Tears and Sweat", "description": "Named the cost without hiding it, then channeled fear into determination" }
+    ],
+    "parent_category": "contextual"
+  },
+  {
+    "capability_id": "humor_timing",
+    "label": "Humor and Timing",
+    "definition": "Strategic use of wit, irony, self-deprecation, or absurdity to build rapport, lower resistance, disarm critics, and create memorable moments.",
+    "observable_markers": [
+      "Punchline lands after setup — not simultaneously",
+      "Speaker does not telegraph or laugh at own joke",
+      "Humor is appropriate to context and audience",
+      "Jokes create connection, not discomfort"
+    ],
+    "trainable": true,
+    "related_drills": ["rule_of_three_subversion", "callback_setup", "self_deprecation_calibration"],
+    "opposite_failure_modes": ["forced_humor", "punching_down", "explaining_the_joke", "inappropriate_timing"],
+    "examples": [
+      { "speaker_name": "Barack Obama", "speech_title": "White House Correspondents Dinners", "description": "Mastered self-deprecating political humor with perfect timing and deadpan delivery" },
+      { "speaker_name": "Ronald Reagan", "speech_title": "1984 Presidential Debate", "description": "'There you go again' and the 'youth and inexperience' line defused Mondale attack with a smile" }
+    ],
+    "parent_category": "contextual"
+  },
+  {
+    "capability_id": "plain_language",
+    "label": "Plain Language",
+    "definition": "Commitment to using everyday vocabulary and short sentences so that any audience can follow — without simplifying the idea itself.",
+    "observable_markers": [
+      "Sentences average under 20 words",
+      "Words are commonly known (Flesch reading ease above 60)",
+      "Technical terms replaced with everyday equivalents",
+      "Idea is not dumbed down — only the vocabulary is simplified"
+    ],
+    "trainable": true,
+    "related_drills": ["vocabulary_substitution", "sentence_shortening", "lincoln_revision"],
+    "opposite_failure_modes": ["academic_register", "passive_voice_overuse", "noun_phrase_stacking"],
+    "examples": [
+      { "speaker_name": "Abraham Lincoln", "speech_title": "Gettysburg Address", "description": "267 words, almost all monosyllabic Anglo-Saxon — one of the densest ideas ever encoded in the simplest language" },
+      { "speaker_name": "Nelson Mandela", "speech_title": "I Am Prepared to Die", "description": "Complex constitutional argument made comprehensible to all through plain declarative language" }
+    ],
+    "parent_category": "language"
+  },
+  {
+    "capability_id": "vision_framing",
+    "label": "Vision Framing",
+    "definition": "Ability to articulate a compelling image of a desired future in terms concrete enough to inspire action but open enough to invite individual identification.",
+    "observable_markers": [
+      "Future is described in sensory, not bureaucratic terms",
+      "Vision is specific enough to be recognizable",
+      "Listener can see themselves in the future described",
+      "Vision implies a path — not just a destination"
+    ],
+    "trainable": true,
+    "related_drills": ["future_tense_painting", "specificity_scoring", "before_after_framing"],
+    "opposite_failure_modes": ["vague_aspiration", "utopian_abstraction", "vision_without_path"],
+    "examples": [
+      { "speaker_name": "Martin Luther King Jr.", "speech_title": "I Have a Dream", "description": "Each 'dream' sub-vision was specific, geographic, and rooted in the American founding" },
+      { "speaker_name": "John F. Kennedy", "speech_title": "Moon Speech", "description": "'We choose to go to the moon in this decade' — specific, bounded, testable vision" }
+    ],
+    "parent_category": "structure"
+  },
+  {
+    "capability_id": "authority_projection",
+    "label": "Authority Projection",
+    "definition": "The non-verbal and verbal signals that cause audiences to grant the speaker expert or moral authority — posture, confidence, specific claims, and source citation.",
+    "observable_markers": [
+      "Speaker stands or sits with physical stillness and uprightness",
+      "Does not hedge unnecessarily — states claims directly",
+      "Cites sources or expertise when appropriate",
+      "Does not seek approval from audience"
+    ],
+    "trainable": true,
+    "related_drills": ["power_posture_drill", "declarative_speech_practice", "hedging_elimination"],
+    "opposite_failure_modes": ["over_qualifying", "upspeak", "seeking_validation", "submissive_posture"],
+    "examples": [
+      { "speaker_name": "Angela Merkel", "speech_title": "Bundestag speeches", "description": "Achieved authority through factual precision and refusal to perform emotion" },
+      { "speaker_name": "Margaret Thatcher", "speech_title": "1980 Conservative Conference", "description": "'The lady's not for turning' — direct, unhedged, no seeking of approval" }
+    ],
+    "parent_category": "delivery"
+  },
+  {
+    "capability_id": "emotional_resonance",
+    "label": "Emotional Resonance",
+    "definition": "The ability to move an audience emotionally — creating genuine feelings of hope, grief, pride, or urgency through language, story, and delivery — not performance.",
+    "observable_markers": [
+      "Audience members visibly moved (tears, visible tension)",
+      "Emotion in speaker is real, not performed",
+      "Emotional moments are earned — not rushed",
+      "Emotion serves the argument — does not replace it"
+    ],
+    "trainable": true,
+    "related_drills": ["personal_vulnerability_story", "earned_emotion_build", "the_real_stakes_exercise"],
+    "opposite_failure_modes": ["emotional_performance", "manipulation_without_substance", "emotional_flatness"],
+    "examples": [
+      { "speaker_name": "Nelson Mandela", "speech_title": "Rivonia Trial Statement", "description": "27 years of consequence accepted with complete calm — the restraint made the emotion devastating" },
+      { "speaker_name": "Malala Yousafzai", "speech_title": "UN Speech 2013", "description": "Personal survival story made universal without self-pity" }
+    ],
+    "parent_category": "emotional"
+  },
+  {
+    "capability_id": "evidence_based_persuasion",
+    "label": "Evidence-Based Persuasion",
+    "definition": "Building arguments on verifiable facts, data, and cited expertise — making emotional and moral claims credible through factual grounding.",
+    "observable_markers": [
+      "Claims are followed by evidence within seconds",
+      "Data is made concrete and relatable (not just cited)",
+      "Sources are named — not vague ('experts say')",
+      "Counterarguments are acknowledged and addressed"
+    ],
+    "trainable": true,
+    "related_drills": ["claim_evidence_impact_drill", "data_translation", "steelmanning_practice"],
+    "opposite_failure_modes": ["assertion_without_evidence", "cherry_picking_data", "false_precision"],
+    "examples": [
+      { "speaker_name": "Al Gore", "speech_title": "Nobel Prize Lecture", "description": "Every claim about climate grounded in specific science and date-anchored data" },
+      { "speaker_name": "Hans Rosling", "speech_title": "The Best Stats You've Ever Seen (TED)", "description": "Made statistics into narrative by animating them through time and human story" }
+    ],
+    "parent_category": "intellectual"
+  },
+  {
+    "capability_id": "body_language_control",
+    "label": "Body Language Control",
+    "definition": "Deliberate use of gesture, posture, movement, and stillness to reinforce verbal message and project confidence.",
+    "observable_markers": [
+      "Gestures are purposeful — not nervous fidgeting",
+      "Posture is open and grounded",
+      "Movement is deliberate — no pacing",
+      "Physical stillness matches moments of maximum importance"
+    ],
+    "trainable": true,
+    "related_drills": ["gesture_mapping", "stillness_practice", "mirror_delivery_drill"],
+    "opposite_failure_modes": ["nervous_fidgeting", "closed_posture", "pacing", "mismatched_gesture"],
+    "examples": [
+      { "speaker_name": "Barack Obama", "speech_title": "2004 DNC Keynote", "description": "Used a single pointing gesture deliberately; hands were still when they needed to be" },
+      { "speaker_name": "Steve Jobs", "speech_title": "iPhone Introduction 2007", "description": "Minimal gesture, deliberate movement across stage — stillness amplified his words" }
+    ],
+    "parent_category": "delivery"
+  },
+  {
+    "capability_id": "debate_sharpness",
+    "label": "Debate Sharpness",
+    "definition": "Ability to listen precisely to an opponent's argument, identify its weakest point, and rebut it with speed, logic, and composure.",
+    "observable_markers": [
+      "Rebuttal begins from the opponent's actual words",
+      "Attack is logical, not personal",
+      "Response is concise — no rambling",
+      "Maintains composure under attack"
+    ],
+    "trainable": true,
+    "related_drills": ["active_listening_rebuttal", "steelman_then_attack", "one_sentence_counter"],
+    "opposite_failure_modes": ["strawmanning", "emotional_escalation", "talking_over_opponent"],
+    "examples": [
+      { "speaker_name": "Christopher Hitchens", "speech_title": "God is not Great debates", "description": "Listened completely, then attacked the precise pivot point — not a caricature" },
+      { "speaker_name": "Margaret Thatcher", "speech_title": "Prime Minister's Questions", "description": "Mastered the pre-emptive rebuttal — addressing objections before they were raised" }
+    ],
+    "parent_category": "intellectual"
+  },
+  {
+    "capability_id": "direct_address",
+    "label": "Direct Address",
+    "definition": "Speaking to a specific person, institution, or group in the audience — with the implied presence of that target — to create urgency and intimacy in a large setting.",
+    "observable_markers": [
+      "Speaker uses 'you' to address a named person or group",
+      "Target of address feels confronted, not just mentioned",
+      "Specific behavioral expectation is named",
+      "Other listeners feel the intensity of the addressed moment"
+    ],
+    "trainable": true,
+    "related_drills": ["named_address_practice", "the_accusation_then_invitation", "speaking_to_the_skeptic"],
+    "opposite_failure_modes": ["vague_audience_reference", "everyone_is_addressed_so_no_one_is"],
+    "examples": [
+      { "speaker_name": "Ronald Reagan", "speech_title": "Tear Down This Wall", "description": "'Mr. Gorbachev, tear down this wall!' — direct address to a named world leader" },
+      { "speaker_name": "Malala Yousafzai", "speech_title": "UN Speech 2013", "description": "Addressed Taliban directly ('you cannot silence us') in a United Nations setting" }
+    ],
+    "parent_category": "persuasion"
+  },
+  {
+    "capability_id": "memorability",
+    "label": "Memorability",
+    "definition": "Ability to craft lines, images, or moments so distinctive that they survive across time — quoted decades or centuries later.",
+    "observable_markers": [
+      "One phrase per speech can stand alone and mean something",
+      "Key phrase is short enough to repeat from memory",
+      "Image or formulation is original — not borrowed",
+      "Phrase works as a headline without its context"
+    ],
+    "trainable": true,
+    "related_drills": ["quotability_rewriting", "headline_test", "single_sentence_summary"],
+    "opposite_failure_modes": ["no_quotable_line", "too_many_competing_phrases", "memorable_but_hollow"],
+    "examples": [
+      { "speaker_name": "John F. Kennedy", "speech_title": "Inaugural Address 1961", "description": "'Ask not what your country can do for you — ask what you can do for your country'" },
+      { "speaker_name": "Winston Churchill", "speech_title": "Iron Curtain Speech", "description": "'An iron curtain has descended across the continent' — three words became geopolitical doctrine" }
+    ],
+    "parent_category": "language"
+  },
+  {
+    "capability_id": "call_to_action",
+    "label": "Call to Action",
+    "definition": "Closing with a specific, urgent, achievable demand for audience behavior — converting emotional engagement into commitment and movement.",
+    "observable_markers": [
+      "Speech ends with an explicit ask, not just inspiration",
+      "Action named is specific and doable",
+      "Urgency is felt — 'now' is implied",
+      "Speaker names who should do what"
+    ],
+    "trainable": true,
+    "related_drills": ["the_specific_ask", "urgency_language_stacking", "closing_sentence_construction"],
+    "opposite_failure_modes": ["inspiring_but_no_ask", "vague_call_to_change", "multiple_competing_asks"],
+    "examples": [
+      { "speaker_name": "Greta Thunberg", "speech_title": "UN Climate Action Summit 2019", "description": "Ended with implied legislative demand — not inspiration but indictment with implied action" },
+      { "speaker_name": "Elizabeth Warren", "speech_title": "Campaign speeches 2019-2020", "description": "Always closed with 'fight' — specific verb, specific stake, specific ask" }
+    ],
+    "parent_category": "persuasion"
+  },
+  {
+    "capability_id": "teaching_simplicity",
+    "label": "Teaching Simplicity",
+    "definition": "Ability to build understanding in a listener from nothing — using sequence, analogy, and repetition to produce genuine comprehension.",
+    "observable_markers": [
+      "New concept builds on the one before it — never assumes",
+      "Analogies are drawn from familiar experience",
+      "Key point is repeated in different words across the speech",
+      "Listener leaves knowing something they did not before"
+    ],
+    "trainable": true,
+    "related_drills": ["the_blank_slate_listener", "analogy_chain", "spaced_repetition_speech"],
+    "opposite_failure_modes": ["assumption_of_knowledge", "explanation_without_confirmation", "complexity_performance"],
+    "examples": [
+      { "speaker_name": "Richard Feynman", "speech_title": "Fun to Imagine (BBC)", "description": "Used rubber band, ice water, and jiggling atoms to explain quantum mechanics on national television" },
+      { "speaker_name": "Carl Sagan", "speech_title": "Cosmos lectures", "description": "Built a scaffold of analogy that let viewers ascend from their kitchen to deep time" }
+    ],
+    "parent_category": "intellectual"
+  },
+  {
+    "capability_id": "prophetic_tone",
+    "label": "Prophetic Tone",
+    "definition": "Speaking as a moral witness to the present — naming injustice, corruption, or danger with authority that transcends personal interest, as if summoned to speak the truth others cannot.",
+    "observable_markers": [
+      "Speaker appears to be speaking to history, not the room",
+      "Language has gravity beyond argument — it has verdict",
+      "No hedging or softening of the central moral claim",
+      "Tone is sorrowful, not angry — or righteous, not bitter"
+    ],
+    "trainable": false,
+    "related_drills": ["prophetic_register_study", "moral_witness_exercise"],
+    "opposite_failure_modes": ["self-righteousness", "judgment_without_love", "moral_performance"],
+    "examples": [
+      { "speaker_name": "Frederick Douglass", "speech_title": "What to the Slave is the Fourth of July?", "description": "Spoke from outside the celebration with the authority of lived suffering — the tone made argument unnecessary" },
+      { "speaker_name": "Martin Luther King Jr.", "speech_title": "Letter from Birmingham Jail", "description": "Spoke to white moderate clergy as a disappointed friend — sorrow amplifying moral force" }
+    ],
+    "parent_category": "ethical"
+  },
+  {
+    "capability_id": "cross_cultural_bridge",
+    "label": "Cross-Cultural Bridge",
+    "definition": "Ability to speak to audiences of different cultural backgrounds, languages, and reference frames — finding universal human frames that transcend group identity.",
+    "observable_markers": [
+      "Speaker draws on multiple cultural traditions without appropriating",
+      "Examples and metaphors work across cultural contexts",
+      "Language acknowledges diversity without performing it",
+      "Speech is translatable without losing meaning"
+    ],
+    "trainable": true,
+    "related_drills": ["universal_human_frame", "cultural_assumption_audit", "translation_test"],
+    "opposite_failure_modes": ["cultural_exclusivity", "tokenism", "assuming_shared_reference"],
+    "examples": [
+      { "speaker_name": "Nelson Mandela", "speech_title": "Long Walk to Freedom press conference", "description": "Spoke to white South Africans, Black South Africans, and the world simultaneously — different messages in one register" },
+      { "speaker_name": "Ban Ki-moon", "speech_title": "UN General Assembly addresses", "description": "Maintained cultural neutrality across the most diverse audiences on earth" }
+    ],
+    "parent_category": "contextual"
+  },
+  {
+    "capability_id": "ethical_restraint",
+    "label": "Ethical Restraint",
+    "definition": "Choosing not to use available rhetorical power for manipulation, fear, or scapegoating — deploying influence with responsibility and proportionality.",
+    "observable_markers": [
+      "Does not exploit emotional vulnerability of audience",
+      "Names adversaries accurately — not with dehumanizing language",
+      "Makes claims it can back — does not overclaim for effect",
+      "Does not exploit grief, fear, or group identity to bypass reason"
+    ],
+    "trainable": true,
+    "related_drills": ["manipulation_identification", "proportionality_check", "adversary_naming_practice"],
+    "opposite_failure_modes": ["scapegoating", "fear_manipulation", "dehumanization", "emotional_exploitation"],
+    "examples": [
+      { "speaker_name": "Abraham Lincoln", "speech_title": "Second Inaugural Address", "description": "'With malice toward none, with charity for all' — maximum moral authority through maximum restraint" },
+      { "speaker_name": "Nelson Mandela", "speech_title": "Inauguration Speech 1994", "description": "Governed every word to ensure South Africa's white minority heard inclusion, not retribution" }
+    ],
+    "parent_category": "ethical"
+  },
+  {
+    "capability_id": "moral_clarity",
+    "label": "Moral Clarity",
+    "definition": "Ability to name right and wrong directly, without equivocation — using moral language that is precise and backed by principle rather than sentiment.",
+    "observable_markers": [
+      "Uses words like 'wrong', 'unjust', 'unacceptable' with specificity",
+      "Names the moral principle being violated",
+      "Does not moralize — names and moves",
+      "Moral claim is backed by evidence or principle, not just feeling"
+    ],
+    "trainable": true,
+    "related_drills": ["moral_language_practice", "principle_first_framing", "the_verdict_sentence"],
+    "opposite_failure_modes": ["false_balance", "weasel_words", "moralism_without_principle"],
+    "examples": [
+      { "speaker_name": "Aung San Suu Kyi", "speech_title": "Freedom from Fear essay", "description": "'It is not power that corrupts but fear' — moral diagnosis in one sentence" },
+      { "speaker_name": "Frederick Douglass", "speech_title": "What to the Slave is the Fourth of July?", "description": "Named slavery as 'barbarous' and 'savage' with calm precision — not rhetorical performance" }
+    ],
+    "parent_category": "ethical"
+  }
+]

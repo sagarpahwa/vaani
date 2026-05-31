@@ -1,0 +1,39 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["canonical_name", "source", "created_at"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":              { "bsonType": "objectId" },
+      "canonical_name":   { "bsonType": "string", "minLength": 1 },
+      "aliases":          { "bsonType": "array", "items": { "bsonType": "string" } },
+      "slug":             { "bsonType": "string" },
+      "source":           { "bsonType": "string", "enum": [
+        "wikidata","pantheon","openalex","manual","ted","other"
+      ]},
+      "external_ids": {
+        "bsonType": "object",
+        "properties": {
+          "wikidata":  { "bsonType": "string" },
+          "pantheon":  { "bsonType": "string" },
+          "openalex":  { "bsonType": "string" },
+          "wikipedia": { "bsonType": "string" }
+        }
+      },
+      "profession":          { "bsonType": "string" },
+      "profession_category": { "bsonType": "string" },
+      "country_or_region":   { "bsonType": "string" },
+      "birth_year":          { "bsonType": ["int","null"] },
+      "death_year":          { "bsonType": ["int","null"] },
+      "primary_language":    { "bsonType": "string" },
+      "verification_status": { "bsonType": "string", "enum": [
+        "pending","verified","rejected","promoted","duplicate"
+      ]},
+      "promoted_speaker_id": { "bsonType": ["objectId","null"] },
+      "rejection_reason":    { "bsonType": "string" },
+      "raw_data":            { "bsonType": "object" },
+      "created_at":          { "bsonType": "date" },
+      "updated_at":          { "bsonType": "date" }
+    }
+  }
+}

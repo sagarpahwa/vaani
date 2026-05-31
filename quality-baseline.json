@@ -1,0 +1,11 @@
+{
+  "coverage_floor": 89.9,
+  "last_updated": "2026-05-31",
+  "coverage_by_module": {
+    "scripts/python/seed_speakers.py": 93.0,
+    "scripts/python/seed_taxonomies.py": 85.4,
+    "scripts/python/utils/__init__.py": 100.0,
+    "scripts/python/utils/slugify_utils.py": 100.0,
+    "scripts/python/utils/wikidata.py": 90.0
+  }
+}

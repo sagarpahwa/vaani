@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vaani-pipeline"
+version = "1.0.0"
+description = "Vaani — Public Speaking Intelligence Platform: data pipeline (Python)"
+requires-python = ">=3.11"
+dependencies = [
+    "pymongo>=4.7",
+    "python-dotenv>=1.0",
+    "requests>=2.31",
+    "SPARQLWrapper>=2.0",
+    "tqdm>=4.66",
+    "python-slugify>=8.0",
+    "rapidfuzz>=3.6",
+    "pytest>=8.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-cov", "black", "ruff", "mongomock>=4.1"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+pythonpath = ["scripts/python"]
+markers = ["integration: requires a running MongoDB instance (use -m integration to run)"]
+addopts = "-m 'not integration' --tb=short"
+
+[tool.coverage.run]
+source = ["scripts/python"]
+omit = ["scripts/python/ingest_wikidata.py"]
+
+[tool.coverage.report]
+fail_under = 70
+show_missing = true
+
+[tool.setuptools.packages.find]
+where = ["scripts/python"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP"]
+ignore = ["N999"]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]

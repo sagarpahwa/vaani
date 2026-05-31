@@ -1,0 +1,33 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["capability_id", "label", "definition", "created_at"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":               { "bsonType": "objectId" },
+      "capability_id":     { "bsonType": "string", "pattern": "^[a-z_]+$" },
+      "label":             { "bsonType": "string" },
+      "definition":        { "bsonType": "string", "minLength": 10 },
+      "observable_markers":{ "bsonType": "array", "items": { "bsonType": "string" } },
+      "trainable":         { "bsonType": "bool" },
+      "related_drills":    { "bsonType": "array", "items": { "bsonType": "string" } },
+      "opposite_failure_modes": { "bsonType": "array", "items": { "bsonType": "string" } },
+      "examples": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "properties": {
+            "speaker_name": { "bsonType": "string" },
+            "speech_title":  { "bsonType": "string" },
+            "description":   { "bsonType": "string" }
+          }
+        }
+      },
+      "parent_category":   { "bsonType": "string", "enum": [
+        "delivery","language","structure","persuasion","emotional","ethical","intellectual","contextual"
+      ]},
+      "created_at":        { "bsonType": "date" },
+      "updated_at":        { "bsonType": "date" }
+    }
+  }
+}

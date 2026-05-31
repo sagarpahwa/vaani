@@ -1,0 +1,73 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["canonical_name", "slug", "created_at", "schema_version"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":                    { "bsonType": "objectId" },
+      "canonical_name":         { "bsonType": "string", "minLength": 1 },
+      "aliases":                { "bsonType": "array", "items": { "bsonType": "string" } },
+      "slug":                   { "bsonType": "string", "pattern": "^[a-z0-9-]+$" },
+      "era":                    { "bsonType": "string", "enum": ["ancient", "medieval", "early_modern", "19th_century", "early_20th", "mid_20th", "late_20th", "21st_century", "contemporary", "unknown"] },
+      "birth_year":             { "bsonType": ["int", "null"] },
+      "death_year":             { "bsonType": ["int", "null"] },
+      "living_status":          { "bsonType": "string", "enum": ["living", "deceased", "unknown"] },
+      "country_or_region":      { "bsonType": "string" },
+      "nationality":            { "bsonType": "string" },
+      "primary_language":       { "bsonType": "string" },
+      "other_languages":        { "bsonType": "array", "items": { "bsonType": "string" } },
+      "gender_if_publicly_known": { "bsonType": "string" },
+      "profession":             { "bsonType": "string" },
+      "profession_category":    { "bsonType": "string" },
+      "secondary_professions":  { "bsonType": "array", "items": { "bsonType": "string" } },
+      "speaker_archetypes":     { "bsonType": "array", "items": { "bsonType": "string" } },
+      "authority_sources":      { "bsonType": "array", "items": { "bsonType": "string" } },
+      "speaking_capabilities": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "required": ["capability_id", "label", "strength_score", "confidence"],
+          "properties": {
+            "capability_id":  { "bsonType": "string" },
+            "label":          { "bsonType": "string" },
+            "strength_score": { "bsonType": "double", "minimum": 0, "maximum": 1 },
+            "rank":           { "bsonType": ["int", "null"] },
+            "evidence_ids":   { "bsonType": "array", "items": { "bsonType": "string" } },
+            "confidence":     { "bsonType": "double", "minimum": 0, "maximum": 1 },
+            "notes":          { "bsonType": "string" }
+          }
+        }
+      },
+      "signature_capability_ids": { "bsonType": "array", "items": { "bsonType": "string" } },
+      "observable_skills":     { "bsonType": "array", "items": { "bsonType": "string" } },
+      "audience_effects":      { "bsonType": "array", "items": { "bsonType": "string" } },
+      "signature_style":       { "bsonType": "string" },
+      "common_speech_contexts":{ "bsonType": "array", "items": { "bsonType": "string" } },
+      "audience_relationships":{ "bsonType": "array", "items": { "bsonType": "string" } },
+      "persuasion_modes":      { "bsonType": "array", "items": { "bsonType": "string" } },
+      "ethical_risk_flags":    { "bsonType": "array", "items": { "bsonType": "string" } },
+      "influence_domains":     { "bsonType": "array", "items": { "bsonType": "string" } },
+      "impact_summary":        { "bsonType": "string" },
+      "overall_speaker_score": { "bsonType": ["double", "null"], "minimum": 0, "maximum": 1 },
+      "greatness_score":       { "bsonType": ["double", "null"], "minimum": 0, "maximum": 1 },
+      "evidence_strength_score": { "bsonType": ["double", "null"], "minimum": 0, "maximum": 1 },
+      "ethical_alignment_score": { "bsonType": ["double", "null"], "minimum": 0, "maximum": 1 },
+      "data_completeness_score": { "bsonType": ["double", "null"], "minimum": 0, "maximum": 1 },
+      "source_ids":   { "bsonType": "array", "items": { "bsonType": "string" } },
+      "speech_ids":   { "bsonType": "array", "items": { "bsonType": "string" } },
+      "external_ids": {
+        "bsonType": "object",
+        "properties": {
+          "wikidata": { "bsonType": "string" },
+          "pantheon":  { "bsonType": "string" },
+          "openalex":  { "bsonType": "string" },
+          "wikipedia": { "bsonType": "string" }
+        }
+      },
+      "needs_review":   { "bsonType": "bool" },
+      "created_at":     { "bsonType": "date" },
+      "updated_at":     { "bsonType": "date" },
+      "schema_version": { "bsonType": "string" }
+    }
+  }
+}

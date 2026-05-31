@@ -1,0 +1,190 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Job 1: Python lint + format ────────────────────────────────────────────
+  python-lint:
+    name: Python Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install lint tools
+        run: pip install black ruff
+
+      - name: Black format check
+        run: black --check --diff scripts/python/
+
+      - name: Ruff lint
+        run: ruff check scripts/python/
+
+  # ── Job 2: Node.js syntax ──────────────────────────────────────────────────
+  node-syntax:
+    name: Node.js Syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Syntax check all Node.js scripts
+        run: |
+          for f in scripts/node/*.js; do
+            echo "Checking $f..."
+            node --check "$f"
+          done
+
+  # ── Job 3: JSON schema + seed data validation ──────────────────────────────
+  json-validate:
+    name: JSON Schema & Seed Validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate all JSON files parse correctly
+        run: |
+          python3 -c "
+          import json, glob, sys
+          errors = []
+          for f in sorted(glob.glob('schemas/*.json') + glob.glob('seed/*.json')):
+              try:
+                  json.load(open(f))
+                  print(f'  OK: {f}')
+              except Exception as e:
+                  errors.append(f'{f}: {e}')
+                  print(f'  FAIL: {f}: {e}')
+          if errors:
+              print(f'\n{len(errors)} JSON file(s) failed')
+              sys.exit(1)
+          "
+
+      - name: Validate seed data integrity
+        run: |
+          python3 -c "
+          import json, sys
+          speakers = json.load(open('seed/speakers_100.json'))
+          caps     = json.load(open('seed/capability_taxonomy.json'))
+          profs    = json.load(open('seed/profession_taxonomy.json'))
+
+          assert len(speakers) >= 100, f'Expected >=100 speakers, got {len(speakers)}'
+          assert len(caps)     >= 25,  f'Expected >=25 capabilities, got {len(caps)}'
+          assert len(profs)    >= 20,  f'Expected >=20 professions, got {len(profs)}'
+
+          slugs   = [s['slug'] for s in speakers]
+          cap_ids = [c['capability_id'] for c in caps]
+          prof_ids = [p['profession_id'] for p in profs]
+
+          assert len(slugs)    == len(set(slugs)),    'Duplicate slugs in speakers_100.json'
+          assert len(cap_ids)  == len(set(cap_ids)),  'Duplicate capability_ids'
+          assert len(prof_ids) == len(set(prof_ids)), 'Duplicate profession_ids'
+
+          for s in speakers:
+              for field in ['overall_speaker_score', 'greatness_score', 'ethical_alignment_score']:
+                  v = s.get(field)
+                  if v is not None:
+                      assert 0.0 <= v <= 1.0, f\"{s['slug']}.{field}={v} out of [0,1]\"
+
+          print('All seed integrity checks passed')
+          "
+
+  # ── Job 4: Unit tests with coverage ───────────────────────────────────────
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install project + dev dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Run unit tests with coverage
+        run: |
+          pytest tests/unit/ \
+            --cov=scripts/python \
+            --cov-report=term-missing \
+            --cov-report=json \
+            --cov-fail-under=70 \
+            -v
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage.json
+          retention-days: 7
+
+  # ── Job 5: Secret detection ────────────────────────────────────────────────
+  secret-scan:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install detect-secrets
+        run: pip install detect-secrets
+
+      - name: Scan for secrets
+        run: |
+          detect-secrets scan \
+            --exclude-files '\.env\.example' \
+            --exclude-files '\.secrets\.baseline' \
+            | python3 -c "
+          import json, sys
+          results = json.load(sys.stdin)
+          findings = {f: r for f, r in results.get('results', {}).items() if r}
+          if findings:
+              print('SECRETS DETECTED:')
+              for f, hits in findings.items():
+                  for h in hits:
+                      print(f'  {f}:{h[\"line_number\"]} ({h[\"type\"]})')
+              sys.exit(1)
+          print('No secrets detected')
+          "
+
+  # ── Job 6: CLAUDE.md freshness (PRs only) ─────────────────────────────────
+  docs-freshness:
+    name: CLAUDE.md Freshness
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check CLAUDE.md is updated with new source patterns
+        run: python3 scripts/ci/check_claude_md.py

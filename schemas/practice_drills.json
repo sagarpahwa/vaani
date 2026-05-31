@@ -1,0 +1,19 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["capability_id", "drill_name", "difficulty", "instructions"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":             { "bsonType": "objectId" },
+      "capability_id":   { "bsonType": "string" },
+      "drill_name":      { "bsonType": "string", "minLength": 1 },
+      "difficulty":      { "bsonType": "string", "enum": ["beginner","intermediate","advanced","expert"] },
+      "instructions":    { "bsonType": "string", "minLength": 10 },
+      "success_metrics": { "bsonType": "array", "items": { "bsonType": "string" } },
+      "model_speakers":  { "bsonType": "array", "items": { "bsonType": "string" } },
+      "example_speeches":{ "bsonType": "array", "items": { "bsonType": "string" } },
+      "duration_minutes":{ "bsonType": ["int","null"] },
+      "tags":            { "bsonType": "array", "items": { "bsonType": "string" } }
+    }
+  }
+}

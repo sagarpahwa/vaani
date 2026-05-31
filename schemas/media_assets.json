@@ -1,0 +1,23 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["speech_id", "speaker_id", "media_type", "created_at"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":                  { "bsonType": "objectId" },
+      "speech_id":            { "bsonType": "objectId" },
+      "speaker_id":           { "bsonType": "objectId" },
+      "media_type":           { "bsonType": "string", "enum": ["audio","video","transcript_pdf","image","other"] },
+      "url":                  { "bsonType": "string" },
+      "platform":             { "bsonType": "string", "enum": [
+        "youtube","vimeo","archive_org","c-span","ted","bbc","official","other","unknown"
+      ]},
+      "duration_seconds":     { "bsonType": ["int","null"] },
+      "license":              { "bsonType": "string" },
+      "transcript_available": { "bsonType": "bool" },
+      "audio_quality":        { "bsonType": "string", "enum": ["excellent","good","fair","poor","unknown"] },
+      "video_quality":        { "bsonType": "string", "enum": ["hd","sd","low","audio_only","unknown"] },
+      "created_at":           { "bsonType": "date" }
+    }
+  }
+}
