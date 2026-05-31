@@ -105,8 +105,8 @@ You were told: *"implement this plan"* (pointing at this file or at
 
 | # | Sub-task | Status | Commit | Verify |
 |---|---|---|---|---|
-| P3.1 | Carry `AcousticFeatures` on `UtteranceAnalysis`; add `AcousticProfile` aggregate + `style_match` on `ScoreResult`/`PipelineResult` (`types.py`); `PipelineResult.to_dict()` adds persona keys **only when set** so Mode A/B + golden stay byte-identical | DONE | `pending` | `pytest test_types.py` (6 passed); Mode A/B golden unchanged |
-| P3.2 | Pipeline persona branch: decode each line → `AcousticAnalyzer` → aggregate; skip Whisper. Mode A/B branch unchanged | TODO | | unit test: persona session never calls STT |
+| P3.1 | Carry `AcousticFeatures` on `UtteranceAnalysis`; add `AcousticProfile` aggregate + `style_match` on `ScoreResult`/`PipelineResult` (`types.py`); `PipelineResult.to_dict()` adds persona keys **only when set** so Mode A/B + golden stay byte-identical | DONE | `a500760` | `pytest test_types.py` (6 passed); Mode A/B golden unchanged |
+| P3.2 | Pipeline persona branch: `analyze_utterances_acoustic` (decode → `AcousticAnalyzer` per line, **no STT/align**) + `aggregate_acoustic` (→ `AcousticProfile`) in new `domain/persona.py`. Pace measured over spoken lines; a skip drags coverage. Mode A/B branch untouched | DONE | `pending` | `pytest test_persona_pipeline.py` (5 passed): spy STT never called; skip lowers coverage not pace |
 | P3.3 | Persona scorer: pace from `speech_rate_sps` vs persona band; fluency from pauses; engagement from pitch/energy; clarity/confidence from coverage/steadiness; apply persona `capability_weights` | TODO | | unit test on synthetic features |
 | P3.4 | `style_match` (0–1) from band/pause/expressiveness distance | TODO | | unit test: in-band → high, far → low |
 | P3.5 | Persona-flavored, acoustic-grounded per-line corrections using `rubric.feedback_notes` | TODO | | unit test: correction cites a real acoustic event |

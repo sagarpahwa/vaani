@@ -9,7 +9,7 @@ identical input yields identical output.
 from ..providers.registry import ProviderBundle
 from .goal_signature import GoalSignature, capability_weights
 from .text import stable_seed
-from .types import PipelineResult, UtteranceAnalysis
+from .types import PipelineResult, Transcript, UtteranceAnalysis
 from .versions import version_stamp
 
 
@@ -75,6 +75,50 @@ class CoachingPipeline:
                     transcript=transcript,
                     alignment=alignment,
                     audio_key=audio_key,
+                )
+            )
+        return analyses
+
+    def analyze_utterances_acoustic(
+        self,
+        *,
+        session_id: str,
+        expected_units: list[str],
+        utterances: list[dict],
+    ) -> list[UtteranceAnalysis]:
+        """Persona path: measure each line's raw waveform — **no STT, no alignment**.
+
+        This is the engine room of "judge my speech, not a cleaned-up transcript":
+        the recorded audio goes to the ``AcousticAnalyzer`` (pace/pauses/pitch),
+        never to Whisper. Each analysis carries an empty ``Transcript`` (so the
+        downstream shape is unchanged) plus the per-line ``AcousticFeatures``. A
+        missing/empty recording yields skipped-line zeros — the coverage signal.
+        """
+        analyses: list[UtteranceAnalysis] = []
+        for u in utterances:
+            line_index = u["line_index"]
+            expected_text = u.get("expected_text")
+            if expected_text is None:
+                expected_text = (
+                    expected_units[line_index] if 0 <= line_index < len(expected_units) else ""
+                )
+            audio_key = u.get("audio_key")
+            seed = stable_seed(session_id, line_index, expected_text)
+            audio_ref: bytes | str = b""
+            if audio_key:
+                try:
+                    audio_ref = self.p.store.get(audio_key)
+                except (KeyError, ValueError):
+                    audio_ref = b""
+            acoustic = self.p.acoustic.analyze(audio_ref, expected_text=expected_text, seed=seed)
+            analyses.append(
+                UtteranceAnalysis(
+                    line_index=line_index,
+                    expected_text=expected_text,
+                    transcript=Transcript(text="", words=[], duration_seconds=acoustic.duration_s),
+                    alignment=[],
+                    audio_key=audio_key,
+                    acoustic=acoustic,
                 )
             )
         return analyses
