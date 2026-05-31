@@ -20,3 +20,14 @@ faster-whisper>=1.2,<2
 # the system keychain (not certifi). Imported lazily + guarded in whisper_stt.py,
 # so it's a no-op when absent (CI, non-corporate machines).
 truststore>=0.9,<1
+
+# --- Real acoustic delivery analysis (the persona path) -----------------------
+# librosa measures the learner's raw waveform — pace (syllable-nuclei peaks),
+# pauses (RMS silence runs), pitch (pyin F0), energy dynamics — so delivery is
+# scored from speech, never a transcript. Enable with PROVIDER_ACOUSTIC=librosa.
+# Imported lazily in registry.py + omitted from .coveragerc, so absence never
+# touches the mock path. numpy is pulled transitively (librosa + faster-whisper);
+# PyAV (audio decode) already arrives via faster-whisper above.
+librosa>=0.10,<0.11
+scipy>=1.13
+soundfile>=0.12
