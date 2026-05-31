@@ -159,7 +159,7 @@ only when **all** of P6a–P6e are done.
 | P6a | Pure coaching helpers (capabilities, format, goal) + UI primitives (Screen, Button, Card, ScoreBar, OptionGroup, Field, Banner) + tests | ✅ DONE | `feat(poc-app): coaching format/goal helpers + UI primitives` (debe97e) |
 | P6b | Mode A script-list + Goal Signature form; Mode B intake (paste script + occasion/purpose); wire `createSession` → navigate to record | ✅ DONE | `feat(poc-app): Mode A & B setup screens + Goal Signature form` (96ed825) |
 | P6c | Cross-platform recorder (expo-audio: web MediaRecorder + native file→base64; no-mic fallback → `audio_base64=null`) + per-line record screen | ✅ DONE | `feat(poc-app): per-line recorder + record/feedback screens` (d63081b) |
-| P6d | Flow store for audio handoff + processing screen (submit/retry, animate STAGES, WS behind `liveProgress` flag) → feedback | ⬜ TODO | — |
+| P6d | Flow store for audio handoff + processing screen (submit/retry, animate STAGES, WS behind `liveProgress` flag) → feedback | ✅ DONE | `feat(poc-app): processing screen + audio handoff flow store` (2251ea6) |
 | P6e | Feedback report (overall + capability ScoreBars, strengths, improvements, read-aloud behind `readAloud` flag, A/B correction cards, retry showing `delta`) | ⬜ TODO | — |
 
 Feature checklist (the user-visible surface these sub-milestones add up to):
@@ -169,12 +169,13 @@ Feature checklist (the user-visible surface these sub-milestones add up to):
 - [x] Mode B: paste-script intake + goal → record → **per-line recorder + Get feedback** (P6c)
 - [x] Per-line recorder: record/stop/skip/re-record; skip-everything path submits all-null (P6c)
 - [x] Minimal feedback report: overall + capability ScoreBars + summary (P6c; full report = P6e)
-- [ ] Processing screen (WS progress) — P6d
+- [x] Processing screen: staged timeline + real submit/retry → feedback; WS behind `liveProgress` (P6d)
 - [ ] Feedback report: written feedback + read-aloud (expo-speech) + A/B correction cards (expo-audio play user vs ideal) — P6e
 - [ ] Retry flow: re-record flagged line → rescore → delta display — P6e
 - [x] **P6a:** coaching helpers + UI primitives + 44 tests green (debe97e)
 - [x] **P6b:** Mode A/B setup + Goal Signature form; createSession → /record loads session (96ed825)
 - [x] **P6c:** per-line recorder + record/feedback screens; 64 app tests green, web export 7 routes (d63081b)
+- [x] **P6d:** flow store + processing screen (record→processing→feedback); 71 app tests, web export 8 routes (2251ea6)
 
 ### P7 — Reliability artifacts  ⬜
 - [ ] `docs/reliability/slos.md` (SLO set + error budget policy)
@@ -241,6 +242,21 @@ make poc-app-test
   `setState` in an effect body — derive that state during render instead (record.tsx computes the
   missing-session banner at render, not in the effect). `createSession` does **not** require the user
   to pre-exist (backend just stores `user_id`), so `DEMO_USER_ID = 'demo-user'` is sufficient.
+- 2026-05-31 (P6d): submit moved **out of the recorder and into a processing screen**. The record
+  screen stashes the captured `UtteranceInput[]` in an in-memory `audio/flowStore` (base64 can't ride
+  URL params) and navigates with only the `sessionId`; `processing.tsx` reads it and runs the real
+  `submitUtterances`/`retrySession`. The store is **peeked, not consumed, on read** and dropped only
+  after the call succeeds, with a `startedRef` guard — this survives React Strict Mode's
+  double-invoked effects without double-submitting or losing the payload. The backend pipeline is
+  **synchronous** (`routes/events.py` says so — the WS just replays a cosmetic `received→…→done`
+  timeline), so the screen paces stages with a local timer (`STAGE_INTERVAL_MS`, mirrors backend
+  `STAGES` in `coaching/stages.ts`) and treats the HTTP result as truth; it navigates to /feedback
+  only once **both** the submit resolved and the timeline finished. `liveProgress` (default **on**)
+  opens the WS purely to surface a server `error` event — additive, defensive (`new WebSocket` in a
+  client-only effect, wrapped in try/catch), a real seam for when processing becomes async. Hard
+  reload of /processing finds an empty store → recover by re-fetching the session (feedback/score
+  present → go to feedback; else error). Same `react-hooks/set-state-in-effect` gotcha as P6b: the
+  missing-`sessionId` banner is derived at render, not set in the effect.
 - 2026-05-31 (P6c): the recorder is a child component (`ui/Recorder`) mounted **only when
   `useClientReady()` is true** — `useRecorder` calls expo-audio hooks (browser-only on web), so
   mounting it during static export (Node SSR) crashes. `record.tsx` renders a read-only line list
