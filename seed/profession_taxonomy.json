@@ -1,0 +1,200 @@
+[
+  {
+    "profession_id": "politician",
+    "label": "Politician",
+    "description": "Elected or appointed government officials whose role requires regular public address to constituents, legislatures, or international bodies.",
+    "typical_contexts": ["campaign_rally", "inaugural_address", "parliament", "press_conference", "state_funeral"],
+    "example_speakers": ["Abraham Lincoln", "Winston Churchill", "Barack Obama", "Nelson Mandela"],
+    "wikidata_occupation_ids": ["Q82955", "Q15900461"],
+    "parent_category": "government_and_civic"
+  },
+  {
+    "profession_id": "activist",
+    "label": "Activist / Social Reformer",
+    "description": "Individuals who speak primarily to advance a social, political, or moral cause outside of formal governmental power.",
+    "typical_contexts": ["protest_rally", "public_address", "trial_statement", "ceremony"],
+    "example_speakers": ["Martin Luther King Jr.", "Frederick Douglass", "Malala Yousafzai", "Greta Thunberg"],
+    "wikidata_occupation_ids": ["Q15980158", "Q2374149"],
+    "parent_category": "civic"
+  },
+  {
+    "profession_id": "religious_leader",
+    "label": "Religious Leader",
+    "description": "Clergy, preachers, imams, rabbis, monks, or spiritual authorities whose primary speaking context is moral and spiritual guidance.",
+    "typical_contexts": ["sermon", "ceremony", "address", "prayer"],
+    "example_speakers": ["Pope John Paul II", "Billy Graham", "Desmond Tutu", "Thich Nhat Hanh"],
+    "wikidata_occupation_ids": ["Q1458183", "Q1062303"],
+    "parent_category": "spiritual"
+  },
+  {
+    "profession_id": "philosopher",
+    "label": "Philosopher",
+    "description": "Thinkers whose public speaking emerges from systematic inquiry into ethics, knowledge, existence, or society.",
+    "typical_contexts": ["lecture", "debate", "academic_address"],
+    "example_speakers": ["Bertrand Russell", "Simone de Beauvoir", "Cornel West"],
+    "wikidata_occupation_ids": ["Q4964182"],
+    "parent_category": "intellectual"
+  },
+  {
+    "profession_id": "scientist",
+    "label": "Scientist",
+    "description": "Researchers and scholars in natural or social sciences who communicate findings and ideas to scientific or general audiences.",
+    "typical_contexts": ["lecture", "ted_talk", "nobel_lecture", "commencement"],
+    "example_speakers": ["Carl Sagan", "Richard Feynman", "Jane Goodall", "Neil deGrasse Tyson"],
+    "wikidata_occupation_ids": ["Q901", "Q2374149"],
+    "parent_category": "intellectual"
+  },
+  {
+    "profession_id": "educator",
+    "label": "Educator / Teacher",
+    "description": "Professors, teachers, and pedagogical communicators whose speaking primarily serves to transfer knowledge.",
+    "typical_contexts": ["lecture", "commencement", "ted_talk"],
+    "example_speakers": ["Paulo Freire", "bell hooks", "Howard Zinn"],
+    "wikidata_occupation_ids": ["Q37226", "Q1622272"],
+    "parent_category": "intellectual"
+  },
+  {
+    "profession_id": "business_leader",
+    "label": "Business Leader / Entrepreneur",
+    "description": "Executives, founders, and CEOs whose public speaking serves to inspire teams, persuade investors, or shape markets.",
+    "typical_contexts": ["keynote", "product_launch", "commencement", "ted_talk"],
+    "example_speakers": ["Steve Jobs", "Elon Musk", "Sheryl Sandberg", "Indra Nooyi"],
+    "wikidata_occupation_ids": ["Q131524", "Q484876"],
+    "parent_category": "commercial"
+  },
+  {
+    "profession_id": "actor",
+    "label": "Actor / Performer",
+    "description": "Theatrical or screen performers who apply performance skills to public speaking — including awards speeches and advocacy.",
+    "typical_contexts": ["acceptance_speech", "ceremony", "advocacy_address"],
+    "example_speakers": ["Meryl Streep", "Anthony Hopkins", "Marlon Brando"],
+    "wikidata_occupation_ids": ["Q33999"],
+    "parent_category": "arts"
+  },
+  {
+    "profession_id": "comedian",
+    "label": "Comedian / Satirist",
+    "description": "Stand-up comedians, satirists, and comic performers whose speaking integrates humor as its primary tool.",
+    "typical_contexts": ["comedy_performance", "commencement", "political_roast"],
+    "example_speakers": ["George Carlin", "Dave Chappelle", "Jon Stewart", "Hannah Gadsby"],
+    "wikidata_occupation_ids": ["Q245068"],
+    "parent_category": "arts"
+  },
+  {
+    "profession_id": "lawyer",
+    "label": "Lawyer / Trial Attorney",
+    "description": "Attorneys whose public speaking is primarily adversarial — structured for courts, juries, and legal argument.",
+    "typical_contexts": ["trial_argument", "closing_argument", "senate_testimony"],
+    "example_speakers": ["Thurgood Marshall", "Clarence Darrow", "Ruth Bader Ginsburg"],
+    "wikidata_occupation_ids": ["Q40348"],
+    "parent_category": "legal"
+  },
+  {
+    "profession_id": "military_leader",
+    "label": "Military Leader / General",
+    "description": "Military commanders and strategists whose speaking motivates troops, addresses nations, or shapes post-conflict peace.",
+    "typical_contexts": ["troop_address", "state_address", "ceremony", "memorial"],
+    "example_speakers": ["Dwight D. Eisenhower", "George S. Patton", "Douglas MacArthur"],
+    "wikidata_occupation_ids": ["Q47064"],
+    "parent_category": "government_and_civic"
+  },
+  {
+    "profession_id": "writer",
+    "label": "Writer / Author",
+    "description": "Authors, novelists, and essayists who speak publicly about ideas, literature, or society — Nobel lectures, lectures, readings.",
+    "typical_contexts": ["lecture", "nobel_lecture", "commencement", "reading"],
+    "example_speakers": ["Toni Morrison", "Gabriel García Márquez", "James Baldwin"],
+    "wikidata_occupation_ids": ["Q36180"],
+    "parent_category": "arts"
+  },
+  {
+    "profession_id": "journalist",
+    "label": "Journalist / Broadcaster",
+    "description": "Media professionals who communicate news, analysis, or investigation to public audiences.",
+    "typical_contexts": ["broadcast", "press_conference", "documentary", "interview"],
+    "example_speakers": ["Edward R. Murrow", "Barbara Walters", "Christiane Amanpour"],
+    "wikidata_occupation_ids": ["Q1930187"],
+    "parent_category": "media"
+  },
+  {
+    "profession_id": "athlete",
+    "label": "Athlete / Sports Figure",
+    "description": "Professional athletes whose public speaking ranges from post-game media to advocacy and political statements.",
+    "typical_contexts": ["press_conference", "acceptance_speech", "advocacy_address"],
+    "example_speakers": ["Muhammad Ali", "Serena Williams", "LeBron James", "Jesse Owens"],
+    "wikidata_occupation_ids": ["Q2066131"],
+    "parent_category": "sports"
+  },
+  {
+    "profession_id": "coach",
+    "label": "Coach / Motivational Speaker",
+    "description": "Coaches and motivational speakers whose primary role is to inspire behavioral change through speech.",
+    "typical_contexts": ["keynote", "motivational", "ted_talk", "team_address"],
+    "example_speakers": ["Tony Robbins", "Vince Lombardi", "Pat Summit"],
+    "wikidata_occupation_ids": ["Q174294"],
+    "parent_category": "sports"
+  },
+  {
+    "profession_id": "criminal_or_extremist_figure",
+    "label": "Criminal / Extremist Figure (Ethical Risk)",
+    "description": "Individuals whose rhetorical influence is historically significant but whose speech caused or enabled serious harm. Studied for ethical analysis only.",
+    "typical_contexts": ["rally", "propaganda_address", "trial_statement"],
+    "example_speakers": ["Adolf Hitler", "Joseph Goebbels"],
+    "wikidata_occupation_ids": [],
+    "parent_category": "ethical_risk_study"
+  },
+  {
+    "profession_id": "media_personality",
+    "label": "Media Personality / Talk Show Host",
+    "description": "Television and radio personalities whose influence operates through sustained long-form conversation and media presence.",
+    "typical_contexts": ["broadcast", "interview", "keynote", "ceremony"],
+    "example_speakers": ["Oprah Winfrey", "David Letterman", "Larry King"],
+    "wikidata_occupation_ids": ["Q947873"],
+    "parent_category": "media"
+  },
+  {
+    "profession_id": "academic",
+    "label": "Academic / Scholar",
+    "description": "University professors, researchers, and scholars who speak at conferences, in classrooms, and in public intellectual forums.",
+    "typical_contexts": ["lecture", "conference", "commencement", "ted_talk"],
+    "example_speakers": ["Noam Chomsky", "Cornel West", "Judith Butler"],
+    "wikidata_occupation_ids": ["Q3400985"],
+    "parent_category": "intellectual"
+  },
+  {
+    "profession_id": "doctor",
+    "label": "Doctor / Medical Professional",
+    "description": "Physicians, surgeons, and public health officials who speak to patients, colleagues, and the public on health topics.",
+    "typical_contexts": ["ted_talk", "lecture", "press_conference", "commencement"],
+    "example_speakers": ["Anthony Fauci", "Paul Farmer", "Atul Gawande"],
+    "wikidata_occupation_ids": ["Q39631"],
+    "parent_category": "science"
+  },
+  {
+    "profession_id": "technologist",
+    "label": "Technologist / Engineer",
+    "description": "Technology builders, engineers, and innovators who speak about technical and societal implications of technology.",
+    "typical_contexts": ["keynote", "ted_talk", "conference", "commencement"],
+    "example_speakers": ["Steve Jobs", "Tim Berners-Lee", "Linus Torvalds"],
+    "wikidata_occupation_ids": ["Q82594"],
+    "parent_category": "commercial"
+  },
+  {
+    "profession_id": "diplomat",
+    "label": "Diplomat / Ambassador",
+    "description": "Government officials who speak in international settings — UN, embassies, bilateral negotiations — requiring cultural sensitivity and precision.",
+    "typical_contexts": ["united_nations", "press_conference", "ceremony", "negotiation"],
+    "example_speakers": ["Adlai Stevenson", "Dag Hammarskjöld", "Madeleine Albright"],
+    "wikidata_occupation_ids": ["Q193391"],
+    "parent_category": "government_and_civic"
+  },
+  {
+    "profession_id": "poet",
+    "label": "Poet / Spoken Word Artist",
+    "description": "Poets and spoken word performers who use heightened language and rhythm as primary rhetorical tools.",
+    "typical_contexts": ["reading", "ceremony", "commencement", "performance"],
+    "example_speakers": ["Maya Angelou", "Pablo Neruda", "Amanda Gorman", "Langston Hughes"],
+    "wikidata_occupation_ids": ["Q49757"],
+    "parent_category": "arts"
+  }
+]
