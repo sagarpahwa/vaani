@@ -5,6 +5,8 @@ plain (no pydantic) so the pure logic stays dependency-light; the API layer
 maps them to/from pydantic request/response models.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 
 
@@ -38,13 +40,19 @@ class AlignOp:
 
 @dataclass
 class UtteranceAnalysis:
-    """Per-line analysis: the transcript aligned against its expected text."""
+    """Per-line analysis: the transcript aligned against its expected text.
+
+    In the persona path ``acoustic`` carries the raw-waveform measurements for
+    this line (pace/pauses/pitch), so a correction can cite the real event on the
+    exact line. Mode A/B leave it ``None`` — they score from the transcript only.
+    """
 
     line_index: int
     expected_text: str
     transcript: Transcript
     alignment: list[AlignOp]
     audio_key: str | None = None
+    acoustic: AcousticFeatures | None = None
 
 
 @dataclass
@@ -111,12 +119,63 @@ class AcousticFeatures:
 
 
 @dataclass
+class AcousticProfile:
+    """Session-level acoustic aggregate over the recorded lines (persona path).
+
+    Per-line ``AcousticFeatures`` collapsed into one delivery profile: pace and
+    expressiveness are duration-weighted means, pauses sum across lines, the
+    longest pause is the session max, coverage is the mean per-line ratio. This
+    is what the persona scorer compares against the speaker's target bands and
+    what the feedback screen reads back ("your pace vs the target band"). All
+    fields measured from audio — the expected text only ever bounds coverage.
+    """
+
+    speech_rate_sps: float = 0.0
+    articulation_rate_sps: float = 0.0
+    coverage_ratio: float = 0.0
+    pause_count: int = 0
+    pause_total_s: float = 0.0
+    longest_pause_s: float = 0.0
+    pitch_range_semitones: float = 0.0
+    pitch_variation: float = 0.0
+    energy_variation: float = 0.0
+    voiced_ratio: float = 0.0
+    duration_s: float = 0.0
+    lines_recorded: int = 0
+    lines_expected: int = 0
+
+    def to_dict(self) -> dict:
+        """JSON-friendly dict for the API/feedback layer."""
+        return {
+            "speech_rate_sps": self.speech_rate_sps,
+            "articulation_rate_sps": self.articulation_rate_sps,
+            "coverage_ratio": self.coverage_ratio,
+            "pause_count": self.pause_count,
+            "pause_total_s": self.pause_total_s,
+            "longest_pause_s": self.longest_pause_s,
+            "pitch_range_semitones": self.pitch_range_semitones,
+            "pitch_variation": self.pitch_variation,
+            "energy_variation": self.energy_variation,
+            "voiced_ratio": self.voiced_ratio,
+            "duration_s": self.duration_s,
+            "lines_recorded": self.lines_recorded,
+            "lines_expected": self.lines_expected,
+        }
+
+
+@dataclass
 class ScoreResult:
-    """Overall score plus per-capability breakdown and the weights used."""
+    """Overall score plus per-capability breakdown and the weights used.
+
+    ``style_match`` (0–1) is the persona path's "how close to this speaker"
+    score — distance of the measured profile from the speaker's target bands. It
+    is ``None`` for Mode A/B, which has no persona to match.
+    """
 
     overall_score: float
     capabilities: dict[str, float]
     weights: dict[str, float]
+    style_match: float | None = None
 
 
 @dataclass
@@ -165,10 +224,17 @@ class PipelineResult:
     versions: dict[str, str]
     delta: dict[str, float] | None = None
     analyses: list[UtteranceAnalysis] = field(default_factory=list)
+    style_match: float | None = None  # persona path only
+    acoustic: AcousticProfile | None = None  # persona path only
 
     def to_dict(self) -> dict:
-        """Serialize to a plain dict for the API/response layer."""
-        return {
+        """Serialize to a plain dict for the API/response layer.
+
+        ``style_match`` / ``acoustic`` are added only on the persona path (when
+        set), so Mode A/B responses and the existing golden stay byte-for-byte
+        unchanged.
+        """
+        out: dict = {
             "status": self.status,
             "overall_score": self.overall_score,
             "capability_scores": self.capability_scores,
@@ -212,3 +278,8 @@ class PipelineResult:
             "versions": self.versions,
             "delta": self.delta,
         }
+        if self.style_match is not None:
+            out["style_match"] = self.style_match
+        if self.acoustic is not None:
+            out["acoustic"] = self.acoustic.to_dict()
+        return out

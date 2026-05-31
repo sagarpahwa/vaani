@@ -95,7 +95,7 @@ You were told: *"implement this plan"* (pointing at this file or at
 | P2.5 | Real librosa impl (speech_rate_sps via syllable-nuclei peaks, pauses via short-window RMS silence runs, pitch via pyin) — kept in its **own** `services/api/providers/acoustic_librosa.py` (top-level `import librosa`; omitted from `.coveragerc` like `audio_decode.py`, since CI lacks the dep) so the mock `acoustic.py` stays fully CI-covered | DONE | `af980c7` | `pytest test_acoustic_librosa.py` on synthetic tone-burst / silence-gap signals (5 passed where librosa installed); key test: faster read → higher measured pace |
 | P2.6 | Wire `provider_acoustic` in `registry.py` (added `acoustic` to `ProviderBundle` + `_build_acoustic`: mock default, lazy-import librosa real, raise on unknown) + `config.py` (`provider_acoustic="mock"`) | DONE | `be55ce9` | `grep provider_acoustic services/api/config.py services/api/providers/registry.py` |
 | P2.7 | Unit tests: syllable-nuclei rate + pause detection (in `test_acoustic_librosa.py`, P2.5) · mock determinism (in `test_acoustic.py`, P2.4) · registry build/raise (added to `test_registry.py` here, coupled to P2.6 wiring) | DONE | `be55ce9` | `make poc-api-test` green (148 passed, 93.26%) |
-| P2.8 | Add `librosa` (+ scipy/soundfile; numpy/PyAV transitive) to `services/api/requirements-local.txt` (NOT CI requirements) | DONE | `pending` | `grep librosa services/api/requirements-local.txt` |
+| P2.8 | Add `librosa` (+ scipy/soundfile; numpy/PyAV transitive) to `services/api/requirements-local.txt` (NOT CI requirements) | DONE | `c6c9b50` | `grep librosa services/api/requirements-local.txt` |
 
 ---
 
@@ -105,7 +105,7 @@ You were told: *"implement this plan"* (pointing at this file or at
 
 | # | Sub-task | Status | Commit | Verify |
 |---|---|---|---|---|
-| P3.1 | Carry `AcousticFeatures` on `UtteranceAnalysis`; add persona aggregate view + `style_match` to score result (`types.py`) | TODO | | import works; `to_dict()` includes new fields |
+| P3.1 | Carry `AcousticFeatures` on `UtteranceAnalysis`; add `AcousticProfile` aggregate + `style_match` on `ScoreResult`/`PipelineResult` (`types.py`); `PipelineResult.to_dict()` adds persona keys **only when set** so Mode A/B + golden stay byte-identical | DONE | `pending` | `pytest test_types.py` (6 passed); Mode A/B golden unchanged |
 | P3.2 | Pipeline persona branch: decode each line → `AcousticAnalyzer` → aggregate; skip Whisper. Mode A/B branch unchanged | TODO | | unit test: persona session never calls STT |
 | P3.3 | Persona scorer: pace from `speech_rate_sps` vs persona band; fluency from pauses; engagement from pitch/energy; clarity/confidence from coverage/steadiness; apply persona `capability_weights` | TODO | | unit test on synthetic features |
 | P3.4 | `style_match` (0–1) from band/pause/expressiveness distance | TODO | | unit test: in-band → high, far → low |
