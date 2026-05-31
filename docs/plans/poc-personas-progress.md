@@ -125,8 +125,8 @@ You were told: *"implement this plan"* (pointing at this file or at
 |---|---|---|---|---|
 | P4.1 | `app/src/api/types.ts` — `PersonaSummary`, `PersonaDetail` (+ `PersonaReference`, `PersonaRubricView`), `AcousticProfile`; `SessionMode` gains `'persona'`, `CreateSessionRequest` gains `persona_id`; extend `SessionDetail` (persona_id/persona_name/style_match/acoustic) | DONE | `7ed7a68` | `make poc-app-test` green (lint + typecheck + 84 jest) |
 | P4.2 | `app/src/api/client.ts` — `listPersonas()`, `getPersona(id)`; `createSession` already passes through `persona_id` (P4.1 type) | DONE | `7354722` | `make poc-app-test` green (87 jest; 3 new: list /personas, get by encoded id, createSession carries persona_id) |
-| P4.3 | `app/src/app/personas.tsx` — monogram-tile grid (initials via exported `initials()`) → detail (role/archetype, goal_line, signature-quality chips, target-pace band, numbered lines, reference, "Speak as …" Start → createSession persona → /record) | DONE | `pending` | lint + typecheck green; full browser render verified in P4.8 |
-| P4.4 | Register `/personas` route in `app/src/app/_layout.tsx` | TODO | | route navigable |
+| P4.3 | `app/src/app/personas.tsx` — monogram-tile grid (initials via exported `initials()`) → detail (role/archetype, goal_line, signature-quality chips, target-pace band, numbered lines, reference, "Speak as …" Start → createSession persona → /record) | DONE | `9a83399` | lint + typecheck green; full browser render verified in P4.8 |
+| P4.4 | Register `/personas` route in `app/src/app/_layout.tsx` (`Stack.Screen` title "Great Speakers") | DONE | `pending` | `make poc-app-test` green; route header titled |
 | P4.5 | `app/src/app/index.tsx` — primary "Practice with a great speaker" headline card → `/personas` | TODO | | home shows the card |
 | P4.6 | `app/src/app/feedback.tsx` — persona name, style-match score beside Overall, acoustic readout (pace vs band, pause count) | TODO | | feedback screen shows style_match |
 | P4.7 | Co-located frontend test(s) for persona screen/client | TODO | | `make poc-app-test` green |

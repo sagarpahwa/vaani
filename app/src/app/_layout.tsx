@@ -16,6 +16,7 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ title: 'Vaani' }} />
+        <Stack.Screen name="personas" options={{ title: 'Great Speakers' }} />
         <Stack.Screen name="mode-a" options={{ title: 'Guided Practice' }} />
         <Stack.Screen name="mode-b" options={{ title: 'Your Own Script' }} />
         <Stack.Screen name="record" options={{ title: 'Rehearse' }} />
