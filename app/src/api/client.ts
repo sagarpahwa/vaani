@@ -7,6 +7,8 @@
 import { API_BASE_URL, wsBaseUrl } from '../config';
 import type {
   CreateSessionRequest,
+  PersonaDetail,
+  PersonaSummary,
   ScriptDetail,
   ScriptSummary,
   SessionDetail,
@@ -46,6 +48,11 @@ export const api = {
 
   getScript: (scriptId: string): Promise<ScriptDetail> =>
     request(`/scripts/${encodeURIComponent(scriptId)}`),
+
+  listPersonas: (): Promise<PersonaSummary[]> => request('/personas'),
+
+  getPersona: (personaId: string): Promise<PersonaDetail> =>
+    request(`/personas/${encodeURIComponent(personaId)}`),
 
   createSession: (body: CreateSessionRequest): Promise<SessionDetail> =>
     request('/sessions', { method: 'POST', body: JSON.stringify(body) }),

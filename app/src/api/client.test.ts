@@ -58,6 +58,34 @@ describe('api client requests', () => {
     expect(f.mock.calls[0][0]).toBe(`${API_BASE_URL}/scripts/a%2Fb%20id`);
   });
 
+  it('GETs /personas and returns the parsed body', async () => {
+    const f = mockFetch([
+      { persona_id: 'steve-jobs', name: 'Steve Jobs', role: 'Founder', line_count: 3 },
+    ]);
+    const out = await api.listPersonas();
+    expect(f.mock.calls[0][0]).toBe(`${API_BASE_URL}/personas`);
+    expect(out[0].persona_id).toBe('steve-jobs');
+  });
+
+  it('GETs a single persona by encoded id', async () => {
+    const f = mockFetch({ persona_id: 'steve-jobs', name: 'Steve Jobs', lines: [] });
+    const out = await api.getPersona('steve jobs');
+    expect(f.mock.calls[0][0]).toBe(`${API_BASE_URL}/personas/steve%20jobs`);
+    expect(out.name).toBe('Steve Jobs');
+  });
+
+  it('POSTs createSession carrying persona_id for mode="persona"', async () => {
+    const f = mockFetch({ session_id: 'x' });
+    await api.createSession({ user_id: 'u', mode: 'persona', persona_id: 'steve-jobs' });
+    const [url, init] = f.mock.calls[0] as FetchArgs;
+    expect(url).toBe(`${API_BASE_URL}/sessions`);
+    expect(JSON.parse(init.body as string)).toEqual({
+      user_id: 'u',
+      mode: 'persona',
+      persona_id: 'steve-jobs',
+    });
+  });
+
   it('raises ApiError carrying status and backend detail on failure', async () => {
     mockFetch({ detail: 'session not found' }, false, 404);
     await expect(api.getSession('nope')).rejects.toEqual(

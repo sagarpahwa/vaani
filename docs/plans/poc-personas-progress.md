@@ -123,8 +123,8 @@ You were told: *"implement this plan"* (pointing at this file or at
 
 | # | Sub-task | Status | Commit | Verify |
 |---|---|---|---|---|
-| P4.1 | `app/src/api/types.ts` — `PersonaSummary`, `PersonaDetail` (+ `PersonaReference`, `PersonaRubricView`), `AcousticProfile`; `SessionMode` gains `'persona'`, `CreateSessionRequest` gains `persona_id`; extend `SessionDetail` (persona_id/persona_name/style_match/acoustic) | DONE | `pending` | `make poc-app-test` green (lint + typecheck + 84 jest) |
-| P4.2 | `app/src/api/client.ts` — `listPersonas()`, `getPersona(id)`; extend `createSession` with `persona_id` | TODO | | co-located client test green |
+| P4.1 | `app/src/api/types.ts` — `PersonaSummary`, `PersonaDetail` (+ `PersonaReference`, `PersonaRubricView`), `AcousticProfile`; `SessionMode` gains `'persona'`, `CreateSessionRequest` gains `persona_id`; extend `SessionDetail` (persona_id/persona_name/style_match/acoustic) | DONE | `7ed7a68` | `make poc-app-test` green (lint + typecheck + 84 jest) |
+| P4.2 | `app/src/api/client.ts` — `listPersonas()`, `getPersona(id)`; `createSession` already passes through `persona_id` (P4.1 type) | DONE | `pending` | `make poc-app-test` green (87 jest; 3 new: list /personas, get by encoded id, createSession carries persona_id) |
 | P4.3 | `app/src/app/personas.tsx` — 20 monogram tiles grid → detail (goal_line, lines, signature_qualities, reference, Start) | TODO | | renders in browser; tiles show initials |
 | P4.4 | Register `/personas` route in `app/src/app/_layout.tsx` | TODO | | route navigable |
 | P4.5 | `app/src/app/index.tsx` — primary "Practice with a great speaker" headline card → `/personas` | TODO | | home shows the card |
