@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "vaani-pipeline"
+version = "1.0.0"
+description = "Vaani — Public Speaking Intelligence Platform: data pipeline (Python)"
+requires-python = ">=3.11"
+dependencies = [
+    "pymongo>=4.7",
+    "python-dotenv>=1.0",
+    "requests>=2.31",
+    "SPARQLWrapper>=2.0",
+    "tqdm>=4.66",
+    "python-slugify>=8.0",
+    "rapidfuzz>=3.6",
+    "pytest>=8.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov", "black", "ruff"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+
+[tool.ruff]
+line-length = 100

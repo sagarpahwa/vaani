@@ -1,0 +1,20 @@
+{
+  "name": "vaani-db",
+  "version": "1.0.0",
+  "description": "Vaani — Public Speaking Intelligence Platform: DB admin scripts (Node.js)",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "db:init":    "node scripts/node/db_init.js",
+    "db:indexes": "node scripts/node/create_indexes.js",
+    "db:verify":  "node scripts/node/verify.js",
+    "db:setup":   "npm run db:init && npm run db:indexes && npm run db:verify"
+  },
+  "dependencies": {
+    "mongodb": "^6.6.0",
+    "dotenv":  "^16.4.5"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
