@@ -150,6 +150,19 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 - [x] Commit (56bed0d)
 
 ### P6 — Screens (Mode A & B)  🔄
+
+Broken into committable sub-milestones (each keeps `make poc-app-test` green). P6 flips to ✅
+only when **all** of P6a–P6e are done.
+
+| Sub | Scope | Status | Commit |
+|---|---|---|---|
+| P6a | Pure coaching helpers (capabilities, format, goal) + UI primitives (Screen, Button, Card, ScoreBar, OptionGroup, Field, Banner) + tests | ✅ DONE | `feat(poc-app): coaching format/goal helpers + UI primitives` (debe97e) |
+| P6b | Mode A script-list + Goal Signature form; Mode B intake (paste script + occasion/purpose); wire `createSession` → navigate to record | 🔄 IN PROGRESS | — |
+| P6c | Cross-platform recorder (expo-audio: web MediaRecorder + native file→base64; no-mic fallback → `audio_base64=null`) + per-line record screen | ⬜ TODO | — |
+| P6d | Flow store for audio handoff + processing screen (submit/retry, animate STAGES, WS behind `liveProgress` flag) → feedback | ⬜ TODO | — |
+| P6e | Feedback report (overall + capability ScoreBars, strengths, improvements, read-aloud behind `readAloud` flag, A/B correction cards, retry showing `delta`) | ⬜ TODO | — |
+
+Feature checklist (the user-visible surface these sub-milestones add up to):
 - [ ] Home / mode select
 - [ ] Goal Signature form (objective, occasion, audience, style, language, duration)
 - [ ] Mode A: script list → script display → record (expo-audio)
@@ -157,8 +170,7 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 - [ ] Processing screen (WS progress)
 - [ ] Feedback report: written feedback + read-aloud (expo-speech) + A/B correction cards (expo-audio play user vs ideal)
 - [ ] Retry flow: re-record flagged line → rescore → delta display
-- [ ] Component/logic tests + web smoke
-- [ ] Commit(s)
+- [x] **P6a:** coaching helpers + UI primitives + 44 tests green (debe97e)
 
 ### P7 — Reliability artifacts  ⬜
 - [ ] `docs/reliability/slos.md` (SLO set + error budget policy)
@@ -217,3 +229,11 @@ make poc-app-test
 - 2026-05-31 (P5): CI `reusable-node-app.yml` adds `actions/setup-node@v4` (node 20) + runs
   `npm ci → lint → typecheck → test`; keeps the `if [ -f app/package.json ]` guard so it stays green
   on branches without the app. `make poc-app-test` runs the same lint+typecheck+jest locally.
+- 2026-05-31 (P6a): jest needs `moduleNameMapper: { '^@/(.*)$': '<rootDir>/src/$1' }` to resolve the
+  `@/` alias — Metro reads tsconfig `paths` but jest does not. Component tests use bare
+  `react-test-renderer` (no @testing-library/react-native installed): wrap `TestRenderer.create` in
+  `act(...)`, and find Pressables via `root.findAll(n => typeof n.props?.onPress === 'function')` —
+  the jest-expo preset wraps `Pressable` so `findAllByType(Pressable)` returns 0. Coaching `OCCASIONS`
+  option values deliberately embed backend boost keywords (investor/wedding/toast/interview/lecture/
+  keynote/standup) so the Goal Signature drives `domain/goal_signature.py` capability weighting; a
+  goal.test.ts assertion guards this contract.
