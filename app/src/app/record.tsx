@@ -5,6 +5,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { api, errorMessage } from '@/api/client';
 import type { SessionDetail } from '@/api/types';
 import { stashSubmission } from '@/audio/flowStore';
+import { flaggedLineNumbers } from '@/coaching/report';
 import { useClientReady } from '@/hooks/useClientReady';
 import { colors, radius, spacing } from '@/theme';
 import { Banner } from '@/ui/Banner';
@@ -13,7 +14,8 @@ import { Screen } from '@/ui/Screen';
 
 export default function RecordScreen() {
   const router = useRouter();
-  const { sessionId } = useLocalSearchParams<{ sessionId?: string }>();
+  const { sessionId, retry } = useLocalSearchParams<{ sessionId?: string; retry?: string }>();
+  const isRetry = retry === '1';
   const ready = useClientReady();
   const [session, setSession] = useState<SessionDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -54,19 +56,28 @@ export default function RecordScreen() {
     );
   }
 
+  const flagged = isRetry ? flaggedLineNumbers(session.corrections) : [];
+
   return (
     <Screen>
-      <Text style={styles.title}>Rehearse your lines</Text>
+      <Text style={styles.title}>{isRetry ? 'Another take' : 'Rehearse your lines'}</Text>
       <Text style={styles.body}>
         {session.expected_units.length} line{session.expected_units.length === 1 ? '' : 's'} to
         practice.
       </Text>
 
+      {flagged.length > 0 ? (
+        <Banner
+          tone="info"
+          message={`Focus on line${flagged.length === 1 ? '' : 's'} ${flagged.join(', ')} — flagged last attempt.`}
+        />
+      ) : null}
+
       {ready ? (
         <Recorder
           lines={session.expected_units}
           onSubmit={(inputs) => {
-            stashSubmission(session.session_id, { kind: 'submit', inputs });
+            stashSubmission(session.session_id, { kind: isRetry ? 'retry' : 'submit', inputs });
             router.push({ pathname: '/processing', params: { sessionId } });
           }}
         />

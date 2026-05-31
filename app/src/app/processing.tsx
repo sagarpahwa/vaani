@@ -15,7 +15,7 @@ export default function ProcessingScreen() {
   const router = useRouter();
   const { sessionId } = useLocalSearchParams<{ sessionId?: string }>();
   const [shownStage, setShownStage] = useState(0);
-  const [submitDone, setSubmitDone] = useState(false);
+  const [resultId, setResultId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const startedRef = useRef(false);
 
@@ -35,9 +35,10 @@ export default function ProcessingScreen() {
       if (submission) {
         const call = submission.kind === 'retry' ? api.retrySession : api.submitUtterances;
         call(sessionId, submission.inputs)
-          .then(() => {
+          .then((result) => {
             dropSubmission(sessionId);
-            setSubmitDone(true);
+            // A retry forks a child session with a new id — show that one's feedback.
+            setResultId(result.session_id);
           })
           .catch((e) => setError(errorMessage(e)));
       } else {
@@ -45,7 +46,7 @@ export default function ProcessingScreen() {
         api
           .getSession(sessionId)
           .then((s) => {
-            if (s.feedback || s.overall_score != null) setSubmitDone(true);
+            if (s.feedback || s.overall_score != null) setResultId(s.session_id);
             else setError('Your recording is no longer available. Please record again.');
           })
           .catch((e) => setError(errorMessage(e)));
@@ -57,9 +58,9 @@ export default function ProcessingScreen() {
 
   // Move on only once the work finished AND the full timeline has been shown.
   useEffect(() => {
-    if (error || !submitDone || shownStage < STAGES.length) return;
-    router.replace({ pathname: '/feedback', params: { sessionId } });
-  }, [error, submitDone, shownStage, sessionId, router]);
+    if (error || !resultId || shownStage < STAGES.length) return;
+    router.replace({ pathname: '/feedback', params: { sessionId: resultId } });
+  }, [error, resultId, shownStage, router]);
 
   // Live progress is additive: it surfaces a server-side failure event. The
   // synchronous POC backend does the work in the submit call, so the local
