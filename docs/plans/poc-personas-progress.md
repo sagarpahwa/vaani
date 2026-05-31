@@ -113,7 +113,7 @@ You were told: *"implement this plan"* (pointing at this file or at
 | P3.6 | Session create + lifecycle: `mode="persona"` + `persona_id` on `CreateSessionRequest`; `_create_persona_session` loads the speech as `expected_units` + stashes the rubric; `process_session` branches to `run_persona` (acoustic, no STT) and persists `style_match`+`acoustic`; `assemble_detail` surfaces persona fields; retry carries persona context | DONE | `b0ad20f` | `POST /sessions {persona_id}` → 201, session carries rubric; full flow → `style_match`+`acoustic`, persona version stamp; retry preserves persona + delta (test_api_sessions: 5 new passed) |
 | P3.7 | Persona version constants + `persona_version_stamp()` in `domain/versions.py` (distinct from Mode A/B so goldens stay independent) | DONE | `25f9888` | `pytest test_versions.py` (3 passed): same 4 keys, all values differ from Mode A/B |
 | P3.8 | **New** persona golden fixtures under `services/api/tests/golden/` (`persona_dataset.json` + `test_persona_golden.py`; `persona_model_quality` floor in `quality-baseline.poc.json`); Mode A/B `dataset.json` untouched | DONE | `ebc1602` | `make poc-api-test` golden green (193 passed, 3 persona cases: jobs-clean 0.93/style 0.81, buffett-clean 0.86/style 0.59, jobs-skip drags coverage); Mode A/B golden byte-unchanged in `git diff` |
-| P3.9 | End-to-end backend test (`test_persona_e2e.py`): inject a rate-pinned `AcousticAnalyzer` (mock is text-derived, can't vary speed), run the whole persona path twice on the same lines vs one fast band — assert fast read separates on pace + style_match, slow read flags a too-slow correction citing the real rate | DONE | `pending` | `make poc-api-test` green (195 passed, 93.82%): 4.6 sps → pace 1.0 + higher style_match; 2.2 sps → lower pace + "2.2 syll/s"/"Lift the energy" correction |
+| P3.9 | End-to-end backend test (`test_persona_e2e.py`): inject a rate-pinned `AcousticAnalyzer` (mock is text-derived, can't vary speed), run the whole persona path twice on the same lines vs one fast band — assert fast read separates on pace + style_match, slow read flags a too-slow correction citing the real rate | DONE | `863313c` | `make poc-api-test` green (195 passed, 93.82%): 4.6 sps → pace 1.0 + higher style_match; 2.2 sps → lower pace + "2.2 syll/s"/"Lift the energy" correction |
 
 ---
 
@@ -123,7 +123,7 @@ You were told: *"implement this plan"* (pointing at this file or at
 
 | # | Sub-task | Status | Commit | Verify |
 |---|---|---|---|---|
-| P4.1 | `app/src/api/types.ts` — `PersonaSummary`, `PersonaDetail`; extend `SessionDetail` (style_match + acoustic metrics) | TODO | | `make poc-app-test` typecheck green |
+| P4.1 | `app/src/api/types.ts` — `PersonaSummary`, `PersonaDetail` (+ `PersonaReference`, `PersonaRubricView`), `AcousticProfile`; `SessionMode` gains `'persona'`, `CreateSessionRequest` gains `persona_id`; extend `SessionDetail` (persona_id/persona_name/style_match/acoustic) | DONE | `pending` | `make poc-app-test` green (lint + typecheck + 84 jest) |
 | P4.2 | `app/src/api/client.ts` — `listPersonas()`, `getPersona(id)`; extend `createSession` with `persona_id` | TODO | | co-located client test green |
 | P4.3 | `app/src/app/personas.tsx` — 20 monogram tiles grid → detail (goal_line, lines, signature_qualities, reference, Start) | TODO | | renders in browser; tiles show initials |
 | P4.4 | Register `/personas` route in `app/src/app/_layout.tsx` | TODO | | route navigable |

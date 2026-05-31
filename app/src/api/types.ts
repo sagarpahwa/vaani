@@ -1,7 +1,7 @@
 /** Wire types mirroring the FastAPI coaching backend (services/api/models.py).
  *  Kept in sync by hand — the backend Pydantic models are the source of truth. */
 
-export type SessionMode = 'guided' | 'user_script';
+export type SessionMode = 'guided' | 'user_script' | 'persona';
 
 export interface GoalSignature {
   objective?: string;
@@ -17,6 +17,7 @@ export interface CreateSessionRequest {
   mode: SessionMode;
   script_id?: string | null;
   script_text?: string | null;
+  persona_id?: string | null;
   goal_signature?: GoalSignature | null;
 }
 
@@ -56,6 +57,24 @@ export interface Versions {
   prompt_version: string;
 }
 
+/** Session-level acoustic aggregate (persona path only).
+ *  Mirrors AcousticProfile.to_dict() in services/api/domain/types.py. */
+export interface AcousticProfile {
+  speech_rate_sps: number;
+  articulation_rate_sps: number;
+  coverage_ratio: number;
+  pause_count: number;
+  pause_total_s: number;
+  longest_pause_s: number;
+  pitch_range_semitones: number;
+  pitch_variation: number;
+  energy_variation: number;
+  voiced_ratio: number;
+  duration_s: number;
+  lines_recorded: number;
+  lines_expected: number;
+}
+
 export interface SessionDetail {
   session_id: string;
   user_id: string;
@@ -73,6 +92,11 @@ export interface SessionDetail {
   corrections: Correction[];
   delta?: Record<string, number> | null;
   created_at?: string | null;
+  // Persona path only (mode="persona"); null/absent for Mode A/B.
+  persona_id?: string | null;
+  persona_name?: string | null;
+  style_match?: number | null;
+  acoustic?: AcousticProfile | null;
 }
 
 export interface ScriptLine {
@@ -99,4 +123,39 @@ export interface ScriptDetail {
   goal_profile?: Record<string, unknown> | null;
   target_capabilities: string[];
   lines: ScriptLine[];
+}
+
+// ---- personas (20 Legends) ------------------------------------------------
+
+export interface PersonaReference {
+  title?: string | null;
+  video_url?: string | null;
+}
+
+export interface PersonaSummary {
+  persona_id: string;
+  name: string;
+  role?: string | null;
+  archetype?: string | null;
+  line_count: number;
+}
+
+/** Demo-relevant slice of a persona rubric (scoring weights stay server-side). */
+export interface PersonaRubricView {
+  target_pace_sps: number[];
+  expressiveness?: string | null;
+  pause_style?: string | null;
+}
+
+export interface PersonaDetail {
+  persona_id: string;
+  name: string;
+  role?: string | null;
+  archetype?: string | null;
+  reference?: PersonaReference | null;
+  goal_line?: string | null;
+  signature_qualities: string[];
+  estimated_duration_seconds?: number | null;
+  lines: ScriptLine[];
+  rubric?: PersonaRubricView | null;
 }
