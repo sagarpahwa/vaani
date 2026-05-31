@@ -32,9 +32,19 @@ class Settings(BaseSettings):
     poc_minio_bucket: str = "vaani-poc-audio"
 
     # AI providers (mock = deterministic, no cloud creds).
+    #   provider_stt: "mock" | "whisper" (local faster-whisper, no key)
+    #   provider_tts: "mock" | "macos"   (macOS `say`, no key)
+    #   provider_llm: "mock"             (only deterministic feedback in the POC)
     provider_stt: str = "mock"
     provider_tts: str = "mock"
     provider_llm: str = "mock"
+
+    # Real-provider knobs (used only when the matching provider_* is non-mock).
+    poc_whisper_model: str = "base.en"  # tiny.en | base.en | small.en | …
+    poc_whisper_device: str = "cpu"
+    poc_whisper_compute: str = "int8"
+    poc_tts_voice: str = ""  # "" → system default voice
+    poc_tts_rate: int = 0  # 0 → system default words-per-minute
 
     log_level: str = "INFO"
 

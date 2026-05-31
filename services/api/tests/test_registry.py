@@ -28,10 +28,24 @@ def test_build_localfs_store(tmp_path):
     assert isinstance(bundle.store, LocalFSObjectStore)
 
 
-def test_non_mock_provider_raises():
+def test_unknown_stt_provider_raises():
     s = _Settings()
-    s.provider_stt = "whisper"
+    s.provider_stt = "deepgram"  # not 'mock' or 'whisper'
     with pytest.raises(ValueError, match="not supported"):
+        build_providers(s, store=InMemoryObjectStore())
+
+
+def test_unknown_tts_provider_raises():
+    s = _Settings()
+    s.provider_tts = "elevenlabs"  # not 'mock' or 'macos'
+    with pytest.raises(ValueError, match="not supported"):
+        build_providers(s, store=InMemoryObjectStore())
+
+
+def test_non_mock_llm_raises():
+    s = _Settings()
+    s.provider_llm = "openai"  # only deterministic 'mock' feedback in the POC
+    with pytest.raises(ValueError, match="only 'mock'"):
         build_providers(s, store=InMemoryObjectStore())
 
 

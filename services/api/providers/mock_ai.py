@@ -24,7 +24,7 @@ from ..domain.types import (
     UtteranceAnalysis,
     Word,
 )
-from .base import FeedbackGenerator, STTProvider, TTSProvider
+from .base import FILLER_WORDS, FeedbackGenerator, STTProvider, TTSProvider
 
 # Per-word base duration (seconds) before jitter. ~0.34s ≈ 145 wpm baseline.
 _BASE_WORD_SECONDS = 0.34
@@ -134,6 +134,23 @@ _SEV_HIGH = 0.55
 _SEV_MEDIUM = 0.7
 _STRENGTH_FLOOR = 0.8
 
+# How many concrete word-level mistakes to call out, and how many errors per line.
+_MAX_CONCRETE_LINES = 2
+_MAX_ERRORS_PER_LINE = 3
+# A line with at least this many word errors is flagged "high" severity.
+_CONCRETE_HIGH_ERRORS = 3
+
+
+def _was_recorded(a: UtteranceAnalysis) -> bool:
+    """True only if the learner actually produced audio for this line.
+
+    An empty transcript means the line was skipped (no-mic path) or came back
+    silent — *not* a delivery mistake. Such a line must never surface a
+    "you said …"/"you skipped …" callout or a correction card, and must never
+    echo the expected text back as what was said.
+    """
+    return bool(a.transcript.words)
+
 
 class MockFeedbackGenerator(FeedbackGenerator):
     """Turns features + scores + alignment into written feedback and A/B drafts.
@@ -151,7 +168,16 @@ class MockFeedbackGenerator(FeedbackGenerator):
         analyses: list[UtteranceAnalysis],
         goal: GoalSignature,
     ) -> tuple[FeedbackResult, list[CorrectionDraft]]:
-        improvements = self._improvements(features, scores)
+        # Lead with concrete, real word-level mistakes pulled straight from the
+        # alignment (grounded in what was actually said vs. the script); fall back
+        # to the score-derived templates for delivery aspects not about word
+        # accuracy. Concrete clarity callouts replace the generic clarity template.
+        concrete = self._concrete_mistakes(analyses)
+        covered = {imp.capability for imp in concrete}
+        scored = [
+            imp for imp in self._improvements(features, scores) if imp.capability not in covered
+        ]
+        improvements = (concrete + scored)[:5]
         strengths = [
             _STRENGTH_TEMPLATES[cap]
             for cap, sc in sorted(scores.capabilities.items(), key=lambda kv: -kv[1])
@@ -172,6 +198,55 @@ class MockFeedbackGenerator(FeedbackGenerator):
             ),
             corrections,
         )
+
+    @staticmethod
+    def _concrete_mistakes(analyses: list[UtteranceAnalysis]) -> list[Improvement]:
+        """Real word-level errors from the alignment → specific, grounded callouts.
+
+        Reports the actual diffs the learner made — substituted, skipped, or added
+        words — for the lines with the most errors, so feedback says *what* went
+        wrong instead of a generic "some words didn't land". Inserted fillers are
+        excluded here (the fluency score already covers them).
+        """
+        ranked: list[tuple[int, int, list[tuple[str, str]], list[str], list[str]]] = []
+        for a in analyses:
+            if not _was_recorded(a):
+                continue  # skipped/silent line — not a mistake the learner made
+            subs = [(op.ref, op.hyp) for op in a.alignment if op.op == "sub"]
+            missed = [op.ref for op in a.alignment if op.op == "delete"]
+            added = [
+                op.hyp
+                for op in a.alignment
+                if op.op == "insert" and normalize(op.hyp or "") not in FILLER_WORDS
+            ]
+            errors = len(subs) + len(missed) + len(added)
+            if errors:
+                ranked.append((errors, a.line_index, subs, missed, added))
+        ranked.sort(key=lambda r: (-r[0], r[1]))  # worst lines first, stable by line
+
+        out: list[Improvement] = []
+        for errors, line_index, subs, missed, added in ranked[:_MAX_CONCRETE_LINES]:
+            bits: list[str] = []
+            if subs:
+                bits.append(
+                    "; ".join(
+                        f'said "{h}" instead of "{r}"' for r, h in subs[:_MAX_ERRORS_PER_LINE]
+                    )
+                )
+            if missed:
+                bits.append("skipped " + ", ".join(f'"{w}"' for w in missed[:_MAX_ERRORS_PER_LINE]))
+            if added:
+                bits.append("added " + ", ".join(f'"{w}"' for w in added[:_MAX_ERRORS_PER_LINE]))
+            severity = "high" if errors >= _CONCRETE_HIGH_ERRORS else "medium"
+            out.append(
+                Improvement(
+                    capability="clarity",
+                    message=f"Line {line_index + 1}: you " + "; ".join(bits) + ".",
+                    severity=severity,
+                    line_index=line_index,
+                )
+            )
+        return out
 
     @staticmethod
     def _improvements(features: DeliveryFeatures, scores: ScoreResult) -> list[Improvement]:
@@ -225,7 +300,12 @@ class MockFeedbackGenerator(FeedbackGenerator):
             if scores.capabilities
             else "clarity"
         )
-        ranked = sorted(analyses, key=self._error_count, reverse=True)
+        # Only coach lines that were actually recorded — a skipped/silent line
+        # has an empty transcript and must not get a card echoing the script
+        # back as what was said.
+        ranked = sorted(
+            (a for a in analyses if _was_recorded(a)), key=self._error_count, reverse=True
+        )
         drafts: list[CorrectionDraft] = []
         for a in ranked[:2]:
             if self._error_count(a) == 0:
@@ -234,7 +314,7 @@ class MockFeedbackGenerator(FeedbackGenerator):
                 CorrectionDraft(
                     line_index=a.line_index,
                     focus_capability=focus,
-                    original_text=a.transcript.text or a.expected_text,
+                    original_text=a.transcript.text,
                     corrected_text=a.expected_text,
                     explanation=(
                         "Here's the line delivered cleanly — match this phrasing and pacing, "

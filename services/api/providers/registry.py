@@ -1,9 +1,13 @@
 """Wires concrete providers together based on settings.
 
-Only the deterministic mock stack is implemented in the POC. Selecting any other
-`PROVIDER_*` value fails loudly (ValueError) rather than silently degrading, and
-`minio` object storage raises NotImplementedError until wired — so a
-misconfiguration can never quietly fall back to a half-working state.
+The deterministic mock stack is the default (and the only one CI/golden uses).
+For a real demo, `PROVIDER_STT=whisper` (local faster-whisper) and
+`PROVIDER_TTS=macos` (macOS `say`) swap in real speech-to-text and text-to-speech
+— both no-cloud, no-credential, and imported lazily so their optional dependencies
+never affect the mock path. Any unrecognized `PROVIDER_*` value fails loudly
+(ValueError) rather than silently degrading, and `minio` object storage raises
+NotImplementedError until wired — so a misconfiguration can never quietly fall
+back to a half-working state.
 """
 
 from dataclasses import dataclass
@@ -35,6 +39,35 @@ class ProviderBundle:
     store: ObjectStore
 
 
+def _build_stt(settings) -> STTProvider:
+    kind = getattr(settings, "provider_stt", "mock")
+    if kind == "mock":
+        return MockSTT()
+    if kind == "whisper":
+        from .whisper_stt import WhisperSTT  # lazy: optional faster-whisper dep
+
+        return WhisperSTT(
+            model_size=getattr(settings, "poc_whisper_model", "base.en"),
+            device=getattr(settings, "poc_whisper_device", "cpu"),
+            compute_type=getattr(settings, "poc_whisper_compute", "int8"),
+        )
+    raise ValueError(f"provider_stt={kind!r} is not supported; use 'mock' or 'whisper'.")
+
+
+def _build_tts(settings) -> TTSProvider:
+    kind = getattr(settings, "provider_tts", "mock")
+    if kind == "mock":
+        return MockTTS()
+    if kind == "macos":
+        from .macos_tts import MacSayTTS  # lazy: darwin-only `say`
+
+        return MacSayTTS(
+            voice=getattr(settings, "poc_tts_voice", "") or None,
+            rate=getattr(settings, "poc_tts_rate", 0) or None,
+        )
+    raise ValueError(f"provider_tts={kind!r} is not supported; use 'mock' or 'macos'.")
+
+
 def _build_store(kind: str, settings) -> ObjectStore:
     if kind == "localfs":
         root = getattr(settings, "poc_storage_dir", "./.poc-storage")
@@ -59,22 +92,21 @@ def build_providers(settings=None, store: ObjectStore | None = None) -> Provider
 
         settings = get_settings()
 
-    for name in ("provider_stt", "provider_tts", "provider_llm"):
-        value = getattr(settings, name, "mock")
-        if value != "mock":
-            raise ValueError(
-                f"{name}={value!r} is not supported in the POC; only 'mock' is implemented."
-            )
+    # Feedback generation has no real-LLM impl in the POC; it is always the
+    # (now alignment-grounded) deterministic generator. STT/TTS can go real.
+    llm = getattr(settings, "provider_llm", "mock")
+    if llm != "mock":
+        raise ValueError(f"provider_llm={llm!r} is not supported in the POC; only 'mock'.")
 
     if store is None:
         store = _build_store(getattr(settings, "object_store", "localfs"), settings)
 
     return ProviderBundle(
-        stt=MockSTT(),
+        stt=_build_stt(settings),
         aligner=SequenceAligner(),
         feature_extractor=DeliveryFeatureExtractor(),
         scorer=RubricScorer(),
         feedback=MockFeedbackGenerator(),
-        tts=MockTTS(),
+        tts=_build_tts(settings),
         store=store,
     )

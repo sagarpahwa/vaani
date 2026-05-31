@@ -52,9 +52,17 @@ class CoachingPipeline:
                 )
             audio_key = u.get("audio_key")
             seed = stable_seed(session_id, line_index, expected_text)
-            transcript = self.p.stt.transcribe(
-                audio_key or b"", expected_text=expected_text, seed=seed
-            )
+            # Resolve the stored audio to bytes for a real STT provider. The mock
+            # ignores the payload (it derives a transcript from expected_text), so
+            # this is a no-op for deterministic runs; a missing/absent key passes
+            # empty bytes — the no-mic skip path — which real STT scores as silence.
+            audio_ref: bytes | str = b""
+            if audio_key:
+                try:
+                    audio_ref = self.p.store.get(audio_key)
+                except (KeyError, ValueError):
+                    audio_ref = b""
+            transcript = self.p.stt.transcribe(audio_ref, expected_text=expected_text, seed=seed)
             from .text import tokenize
 
             alignment = self.p.aligner.align(
@@ -98,12 +106,18 @@ class CoachingPipeline:
             features=features, scores=scores, analyses=analyses, goal=goal
         )
 
-        # Synthesize an "ideal" re-delivery clip for each correction card.
+        # Synthesize an "ideal" re-delivery clip for each correction card. This is
+        # best-effort: a TTS failure (e.g. `say` missing off macOS) must not fail
+        # the whole coaching run — the card simply renders without an ideal clip.
         for c in corrections:
-            audio = self.p.tts.synthesize(c.corrected_text)
-            key = f"sessions/{session_id}/corrections/{c.line_index}-ideal.wav"
-            self.p.store.put(key, audio)
-            c.ideal_audio_key = key
+            try:
+                audio = self.p.tts.synthesize(c.corrected_text)
+                key = f"sessions/{session_id}/corrections/{c.line_index}-ideal.wav"
+                self.p.store.put(key, audio)
+                c.ideal_audio_key = key
+            except Exception:
+                # Best-effort: a synth failure leaves the card without an ideal clip.
+                c.ideal_audio_key = None
 
         new_scores = {"overall": scores.overall_score, **scores.capabilities}
         delta = compute_delta(parent_scores, new_scores) if parent_scores else None

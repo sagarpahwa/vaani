@@ -1,0 +1,22 @@
+# Optional, demo-machine-only dependencies for the REAL provider stack.
+#
+# These are intentionally NOT in requirements.txt: CI and the golden regression
+# suite run the deterministic mock providers and must stay lean + offline. Install
+# these only when you want real speech-to-text on a dev machine:
+#
+#     .venv-poc/bin/pip install -r services/api/requirements-local.txt
+#
+# Then enable real providers in .env.poc:
+#     PROVIDER_STT=whisper   # local faster-whisper (no API key)
+#     PROVIDER_TTS=macos     # macOS `say` (no extra dep; macOS only)
+#
+# faster-whisper pulls in ctranslate2, PyAV (decodes webm/opus + m4a), tokenizers,
+# and onnxruntime (Silero VAD). The Whisper model downloads on first use (~140MB
+# for base.en) and is cached under ~/.cache/huggingface.
+faster-whisper>=1.2,<2
+
+# truststore routes Python's SSL through the OS trust store so the one-time
+# model download succeeds behind a corporate MITM proxy whose root CA lives in
+# the system keychain (not certifi). Imported lazily + guarded in whisper_stt.py,
+# so it's a no-op when absent (CI, non-corporate machines).
+truststore>=0.9,<1

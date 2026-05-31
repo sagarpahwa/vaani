@@ -110,6 +110,29 @@ def test_feedback_corrections_carry_audio_keys():
     assert corrections[0].user_audio_key == "sessions/s1/utterances/0.wav"
 
 
+def test_feedback_ignores_skipped_lines():
+    """A line with no recorded audio (empty transcript) is never coached as a mistake."""
+    skipped_expected = "we built pulse so those two hours come back to you"
+    analyses = [
+        _analysis(
+            0,
+            "this is the original expected line",
+            [("this", 0.0, 0.4), ("is", 0.5, 0.7), ("wrong", 0.8, 1.2)],
+        ),
+        _analysis(1, skipped_expected, []),  # never recorded → empty transcript
+    ]
+    feats = DeliveryFeatureExtractor().extract(analyses)
+    scores = RubricScorer().score(feats, {c: 1.0 for c in scores_caps()})
+    fb, corrections = MockFeedbackGenerator().generate(
+        features=feats, scores=scores, analyses=analyses, goal=GoalSignature.from_dict({})
+    )
+    # No correction card for the skipped line, and none echoes its script text back.
+    assert all(c.line_index != 1 for c in corrections)
+    assert all(c.original_text != skipped_expected for c in corrections)
+    # No "Line 2: you skipped …" concrete callout for the unrecorded line.
+    assert all("Line 2" not in imp.message for imp in fb.improvements)
+
+
 def scores_caps():
     from services.api.domain.goal_signature import CANONICAL_CAPABILITIES
 
