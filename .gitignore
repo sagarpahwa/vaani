@@ -3,7 +3,6 @@ node_modules/
 __pycache__/
 *.pyc
 .venv/
-logs/*.log
+logs/
 exports/*.jsonl
 .DS_Store
-logs/mongo/mongod.log
