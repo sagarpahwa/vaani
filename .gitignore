@@ -12,3 +12,11 @@ coverage.json
 htmlcov/
 *.egg-info/
 .pytest_cache/
+
+# POC (universal coaching app) artifacts
+.env.poc
+.poc-storage/
+app/.expo/
+app/dist/
+app/web-build/
+.expo/

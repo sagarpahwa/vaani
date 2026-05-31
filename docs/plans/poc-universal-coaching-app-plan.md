@@ -5,6 +5,11 @@
 **Owner:** Product + Engineering + Reliability  
 **Scope:** React Native + Expo universal app (Android, iOS, web) with production-safe coaching platform
 
+> **▶ IMPLEMENTATION IN PROGRESS — RESUME HERE:** Live, git-committed build progress is tracked in
+> [`poc-implementation-progress.md`](./poc-implementation-progress.md). To continue an interrupted
+> build, read that file first and start from the first task that is not `✅ DONE`. Do not redo
+> completed (committed) work.
+
 ## 1) Executive Intent
 
 Build a real speaking coach, not a demo, and launch it with guardrails strong enough that once features go live they do not silently degrade.
