@@ -4,10 +4,13 @@
 > the original prompt (below), then read this file top-to-bottom and continue from the
 > **first task that is not `✅ DONE`**. Every `✅ DONE` task is committed to git — do not redo it.
 
-> **▶ ACTIVE MILESTONE — Iteration 1 "20 Legends Speaking Coach" (personas, acoustic-first).**
-> Its own plan + tracker live in [`poc-personas-plan.md`](poc-personas-plan.md) and
-> [`poc-personas-progress.md`](poc-personas-progress.md). To resume that work, read those two
-> files and continue from the first non-`DONE` sub-task there.
+> **▶ Iteration 1 — "20 Legends Speaking Coach" (personas, acoustic-first): ✅ functionally complete.**
+> Full plan + tracker live in [`poc-personas-plan.md`](poc-personas-plan.md) and
+> [`poc-personas-progress.md`](poc-personas-progress.md) — P0–P5 DONE (20 personas, mock+librosa
+> acoustic engine, persona scoring + style-match + grounded corrections, web
+> grid→detail→record→feedback; real librosa run verified). Open items: Android emulator click-through
+> deferred (P4.9 — needs an SDK box); coverage-baseline bump (P5.7). Resume from the first
+> non-`DONE`/`DEFERRED` sub-task in that tracker.
 
 ---
 
@@ -90,6 +93,7 @@ Status legend: `⬜ TODO` · `🔄 IN PROGRESS` · `✅ DONE` · `⏸ DEFERRED`
 | P8 | E2E verify (web) + Android compat + push + PR | 🔄 IN PROGRESS | — | both modes pass on web; PR open |
 | P9 | **Real STT** — transcribe the actual recording; real mistake detection (plan §5.3) | ✅ DONE | `feat(poc-api): real STT/TTS providers + grounded feedback, hardened for real-mic input (P9/P10)` (adec89f) | faster-whisper transcribes real audio; empty/quiet/noisy → empty transcript (anti-hallucination guards); grounded feedback cites real diffs |
 | P10 | **Real TTS** ideal-voice clips + fix A/B audio playback (stop control, no beep) | ✅ DONE | backend macOS `say` TTS (adec89f); frontend app-wide single playback (60c6ddf) | macOS `say` speaks the ideal line; buttons toggle ▶/⏸, gated on `isLoaded`; starting any clip stops every other (shared `exclusivePlayback`) |
+| It1 | **Iteration 1 — 20 Legends personas (acoustic-first)**: 20-persona seed, acoustic engine (mock default · librosa real), persona scoring + style-match + grounded corrections, web grid→detail→record→feedback | ✅ DONE | `poc-personas-progress.md` P0–P5 (96dcc51…3502f98) | `GET /personas` → 20; `make poc-api-test` (195, 93.82%) + `make poc-app-test` (96) green; real librosa run verified pace/skip/per-persona; Android emulator deferred (P4.9) |
 
 ---
 
