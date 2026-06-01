@@ -279,19 +279,21 @@ services/api/
 ├── config.py         # pydantic-settings (reads .env.poc; mock defaults)
 ├── main.py           # uvicorn entry: services.api.main:app
 ├── db/               # mock-DB init + seed (targets public_speaking_intelligence_mock)
-├── domain/           # pure logic: text, types, versions, goal_signature, pipeline
-├── providers/        # base (ABCs), object_store, analysis (align/features/score),
-│                     #   mock_ai (deterministic STT/TTS/feedback — default, offline),
+├── domain/           # pure logic: text, types, versions, goal_signature, pipeline, persona
+├── providers/        # base (ABCs incl. AcousticAnalyzer), object_store, analysis (align/
+│                     #   features/score), mock_ai (deterministic STT/TTS/feedback — default,
+│                     #   offline), acoustic (deterministic mock AcousticAnalyzer — default),
+│                     #   acoustic_librosa + audio_decode (real waveform analysis, demo-only),
 │                     #   whisper_stt (real STT via faster-whisper), macos_tts (real TTS
 │                     #   via macOS `say`), registry (build_providers from PROVIDER_*)
-├── routes/           # API routers (sessions, scripts, utterances, retry, audio, ws)
+├── routes/           # API routers (sessions, scripts, personas, utterances, retry, audio, ws)
 ├── telemetry.py      # release-health event emitters (plan §11.1) → release_health_events
 ├── models.py         # Pydantic request/response models (carry *_version fields)
 ├── requirements.txt        # mock stack — installed into .venv-poc (lean, offline, CI)
 ├── requirements-local.txt  # OPTIONAL demo-machine deps for the REAL providers
-│                           #   (faster-whisper, truststore) — never in CI
+│                           #   (faster-whisper, librosa+scipy+soundfile+PyAV, truststore) — never in CI
 └── tests/            # pytest (unit + @pytest.mark.integration), .coveragerc gate ≥70%
-    └── golden/       # frozen dataset.json + regression test (scoring drift gate)
+    └── golden/       # frozen dataset.json + persona_dataset.json + regression tests (drift gate)
 ```
 
 ### Reliability artifacts (plan §9–§13)
@@ -311,9 +313,12 @@ services/api/
 Rules:
 1. AI is accessed only through `providers/` interfaces. Default impls are deterministic mocks so
    the app runs and tests pass with no cloud credentials. Real providers swap in via `PROVIDER_*`
-   (`PROVIDER_STT=whisper`, `PROVIDER_TTS=macos`) and need `requirements-local.txt`; the registry
-   raises on an unknown name (no silent fallback). Real STT decodes the learner's *actual* audio and
-   guards against Whisper's silence-hallucination so an unrecorded line scores as missed, not faked.
+   (`PROVIDER_STT=whisper`, `PROVIDER_TTS=macos`, `PROVIDER_ACOUSTIC=librosa`) and need
+   `requirements-local.txt`; the registry raises on an unknown name (no silent fallback). Real STT
+   decodes the learner's *actual* audio and guards against Whisper's silence-hallucination so an
+   unrecorded line scores as missed, not faked. The **persona path is acoustic-first**: it scores the
+   raw waveform via the `AcousticAnalyzer` (pace/pauses/pitch/coverage) and **never runs STT** — judge
+   the speech, not a transcript; Mode A/B keep their transcript path (and goldens) unchanged.
 2. Every scored/feedback output carries version fields: `rubric_version`, `scoring_model_version`,
    `feature_extractor_version`, `prompt_version` (see `domain/versions.py`).
 3. Separate pure logic (testable) from DB/IO. Co-locate tests in `services/api/tests`.
@@ -383,7 +388,10 @@ Rules:
 - New screen in `app/`: co-locate a component/logic test; keep `make poc-app-test` green.
 - Bumping a `*_version` in `domain/versions.py`: regenerate `services/api/tests/golden/dataset.json`
   (snippet in `test_golden_regression.py`) and the versions in `quality-baseline.poc.json`, else the
-  golden suite fails. A golden diff is a scoring-behavior change and must be reviewed.
+  golden suite fails. A golden diff is a scoring-behavior change and must be reviewed. The **persona**
+  path carries its own stamp (`persona_version_stamp()`) and golden (`persona_dataset.json` via
+  `test_persona_golden.py`) so it stays independent of Mode A/B; bumping a persona version means
+  regenerating that fixture and its `persona_model_quality` floor too.
 - New telemetry event: add an emitter to `services/api/telemetry.py`, cover it in
   `test_telemetry.py`, and document the SLO it feeds in `docs/reliability/slos.md`.
 
