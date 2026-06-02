@@ -1,0 +1,41 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["script_id", "title", "lines", "created_at", "schema_version"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":                        { "bsonType": "objectId" },
+      "script_id":                  { "bsonType": "string", "minLength": 1 },
+      "title":                      { "bsonType": "string", "minLength": 1 },
+      "description":                { "bsonType": "string" },
+      "difficulty":                 { "bsonType": "string", "enum": ["beginner", "intermediate", "advanced"] },
+      "language":                   { "bsonType": "string" },
+      "estimated_duration_seconds": { "bsonType": ["int", "null"] },
+      "goal_profile": {
+        "bsonType": "object",
+        "properties": {
+          "objective": { "bsonType": "string" },
+          "occasion":  { "bsonType": "string" },
+          "audience":  { "bsonType": "string" },
+          "style":     { "bsonType": "string" }
+        }
+      },
+      "target_capabilities":        { "bsonType": "array", "items": { "bsonType": "string" } },
+      "lines": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "required": ["line_index", "text"],
+          "properties": {
+            "line_index":     { "bsonType": "int" },
+            "text":           { "bsonType": "string", "minLength": 1 },
+            "coaching_focus": { "bsonType": "array", "items": { "bsonType": "string" } }
+          }
+        }
+      },
+      "created_at":                 { "bsonType": "date" },
+      "updated_at":                 { "bsonType": "date" },
+      "schema_version":             { "bsonType": "string" }
+    }
+  }
+}

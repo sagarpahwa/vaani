@@ -1,0 +1,902 @@
+[
+  {
+    "persona_id": "steve-jobs",
+    "name": "Steve Jobs",
+    "role": "Founder",
+    "archetype": "Product storyteller",
+    "reference": {
+      "title": "Stanford 2005 Commencement Address",
+      "video_url": "https://www.youtube.com/watch?v=jiHZqamCD8c"
+    },
+    "goal_line": "Build suspense, then reveal with simple, confident contrast.",
+    "signature_qualities": [
+      "a dramatic pause right before the reveal",
+      "simple, concrete words over jargon",
+      "old-versus-new contrast",
+      "a measured, unhurried pace"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "Every once in a while, a product comes along that changes everything.", "coaching_focus": ["confidence", "pace"] },
+        { "line_index": 1, "text": "Today, we are going to do exactly that, not once, but three times.", "coaching_focus": ["engagement", "pace"] },
+        { "line_index": 2, "text": "A music player. A phone. And a way to reach the whole internet.", "coaching_focus": ["clarity", "pace"] },
+        { "line_index": 3, "text": "A music player. A phone. Are you starting to see it yet?", "coaching_focus": ["engagement", "pace"] },
+        { "line_index": 4, "text": "These are not three separate devices.", "coaching_focus": ["clarity"] },
+        { "line_index": 5, "text": "This is one device, and we are calling it the phone you have always wanted.", "coaching_focus": ["confidence"] },
+        { "line_index": 6, "text": "Every phone before it shipped with little plastic buttons that never go away.", "coaching_focus": ["clarity"] },
+        { "line_index": 7, "text": "So we threw them out, and we replaced them with the most beautiful screen ever made.", "coaching_focus": ["pace", "confidence"] },
+        { "line_index": 8, "text": "It is not a small step forward. It is a giant leap.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 9, "text": "Today, the phone gets reinvented, and nothing will be the same again.", "coaching_focus": ["confidence"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.2, "pace": 1.3, "engagement": 1.3, "confidence": 1.2, "fluency": 0.8, "conciseness": 1.2 },
+      "target_pace_sps": [2.8, 3.6],
+      "expressiveness": "high-contrast",
+      "pause_style": "dramatic",
+      "feedback_notes": {
+        "too_fast": "You rushed the reveal. Jobs lets a long silence do the work right before the big line.",
+        "too_slow": "You drifted below his measured pace. Keep it deliberate, but don't let the energy sag.",
+        "monotone": "Flat delivery kills the contrast. Drop your voice on the setup, then lift it on the reveal.",
+        "hesitation": "A stumble broke the spell. The Jobs pause is intentional and silent, not a fumble.",
+        "on_target": "That measured build with a clean pause before the reveal is pure Jobs."
+      }
+    }
+  },
+  {
+    "persona_id": "elon-musk",
+    "name": "Elon Musk",
+    "role": "Founder",
+    "archetype": "First-principles visionary",
+    "reference": {
+      "title": "TED interview on vision and the future",
+      "video_url": null
+    },
+    "goal_line": "Reason from first principles toward an almost impossible future, calmly.",
+    "signature_qualities": [
+      "long thinking pauses mid-sentence",
+      "first-principles reasoning out loud",
+      "understated delivery of huge ideas",
+      "earnest, almost shy confidence"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "I think it is important to reason from first principles rather than by analogy.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 1, "text": "You boil things down to the most fundamental truths, and then you reason up from there.", "coaching_focus": ["clarity", "pace"] },
+        { "line_index": 2, "text": "People said a reusable rocket was impossible.", "coaching_focus": ["engagement"] },
+        { "line_index": 3, "text": "But the materials in a rocket are only about two percent of its cost.", "coaching_focus": ["clarity"] },
+        { "line_index": 4, "text": "So the rocket can be cheap. We were just throwing it away every single time.", "coaching_focus": ["pace", "confidence"] },
+        { "line_index": 5, "text": "The same logic applies to making life multiplanetary.", "coaching_focus": ["confidence"] },
+        { "line_index": 6, "text": "It sounds crazy, and maybe it is, but the math actually works.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 7, "text": "If something is important enough, you do it even if the odds are against you.", "coaching_focus": ["confidence"] },
+        { "line_index": 8, "text": "The future should be inspiring. It should make you excited to wake up.", "coaching_focus": ["engagement"] },
+        { "line_index": 9, "text": "So we keep going, one hard problem at a time.", "coaching_focus": ["pace"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.3, "pace": 0.9, "engagement": 1.1, "confidence": 1.2, "fluency": 0.7, "conciseness": 1.0 },
+      "target_pace_sps": [2.6, 3.4],
+      "expressiveness": "balanced",
+      "pause_style": "dramatic",
+      "feedback_notes": {
+        "too_fast": "You sped past the idea. Musk lets a thought hang while he works it out; slow the reasoning down.",
+        "too_slow": "Even his pauses move toward a point. You stalled instead of thinking out loud.",
+        "monotone": "Understated is fine, but a flat line on 'the math works' loses the quiet awe. Lift it slightly.",
+        "hesitation": "His mid-sentence pauses are thinking, not panic. Let them land calmly, then continue.",
+        "on_target": "That calm, first-principles build with real thinking pauses sounds just like him."
+      }
+    }
+  },
+  {
+    "persona_id": "satya-nadella",
+    "name": "Satya Nadella",
+    "role": "CEO",
+    "archetype": "Empathetic leader",
+    "reference": {
+      "title": "Microsoft Build 2025 Opening Keynote",
+      "video_url": "https://www.youtube.com/watch?v=ceV3RsG946s"
+    },
+    "goal_line": "Lead with empathy and a growth mindset, calm and grounded.",
+    "signature_qualities": [
+      "a calm, even, reassuring pace",
+      "empathy framed as a business advantage",
+      "the language of learning and growth",
+      "grounded, never grandiose"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "The thing I have learned is that empathy is not a soft skill. It is our hardest, most important one.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 1, "text": "You cannot build products people love if you cannot feel what they feel.", "coaching_focus": ["engagement"] },
+        { "line_index": 2, "text": "When I became CEO, I did not ask us to know everything.", "coaching_focus": ["clarity"] },
+        { "line_index": 3, "text": "I asked us to learn everything, to move from know-it-all to learn-it-all.", "coaching_focus": ["clarity", "pace"] },
+        { "line_index": 4, "text": "That one shift changed our culture more than any strategy ever could.", "coaching_focus": ["confidence"] },
+        { "line_index": 5, "text": "Our mission is to empower every person and every organization to achieve more.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 6, "text": "Notice the word empower. Not impress, not dominate. Empower.", "coaching_focus": ["engagement", "pace"] },
+        { "line_index": 7, "text": "The technology should fade into the background and let people shine.", "coaching_focus": ["engagement"] },
+        { "line_index": 8, "text": "We measure our success by the success we create for others.", "coaching_focus": ["confidence"] },
+        { "line_index": 9, "text": "That is the kind of company, and the kind of leaders, we choose to be.", "coaching_focus": ["confidence"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.3, "pace": 1.0, "engagement": 1.1, "confidence": 1.2, "fluency": 1.0, "conciseness": 1.0 },
+      "target_pace_sps": [3.0, 3.8],
+      "expressiveness": "balanced",
+      "pause_style": "steady",
+      "feedback_notes": {
+        "too_fast": "You hurried past the empathy. Nadella stays calm and even, never rushed.",
+        "too_slow": "The energy dipped too low. Keep it grounded but still moving forward.",
+        "monotone": "A little warmth goes a long way. Let 'empower' rise gently; don't deliver it flat.",
+        "hesitation": "His calm comes from steady breathing, not stalling. Smooth out the catch.",
+        "on_target": "Calm, even, and grounded, with warmth on the key words. Very Nadella."
+      }
+    }
+  },
+  {
+    "persona_id": "jensen-huang",
+    "name": "Jensen Huang",
+    "role": "CEO",
+    "archetype": "High-energy technical storyteller",
+    "reference": {
+      "title": "NVIDIA GTC Keynote",
+      "video_url": null
+    },
+    "goal_line": "Bring relentless energy and make the technical feel thrilling.",
+    "signature_qualities": [
+      "a fast, high-energy delivery",
+      "infectious enthusiasm for the technology",
+      "repetition that builds momentum",
+      "celebrating scale and speed"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "This is the most important computing revolution we have ever seen, and it is happening right now.", "coaching_focus": ["engagement", "pace"] },
+        { "line_index": 1, "text": "Every industry, every company, every single one of you, is about to be transformed.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 2, "text": "Look at this. The performance is not two times faster. It is twenty times faster.", "coaching_focus": ["pace", "engagement"] },
+        { "line_index": 3, "text": "And here is the crazy part: the more you invest in it, the more you save.", "coaching_focus": ["engagement"] },
+        { "line_index": 4, "text": "We took something that used to take a month and now it takes an afternoon.", "coaching_focus": ["pace", "clarity"] },
+        { "line_index": 5, "text": "An afternoon! Think about what that means for your team.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 6, "text": "This is not the future. This is shipping today, to real customers, at scale.", "coaching_focus": ["confidence", "pace"] },
+        { "line_index": 7, "text": "And we are just getting started. We are nowhere near the limit.", "coaching_focus": ["engagement"] },
+        { "line_index": 8, "text": "The factories of the future will not make things. They will make intelligence.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 9, "text": "I cannot wait to show you what comes next. Let's go!", "coaching_focus": ["engagement", "confidence"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 0.9, "pace": 1.4, "engagement": 1.4, "confidence": 1.2, "fluency": 0.8, "conciseness": 0.9 },
+      "target_pace_sps": [4.2, 5.0],
+      "expressiveness": "high-contrast",
+      "pause_style": "brisk",
+      "feedback_notes": {
+        "too_fast": "Even Jensen lands the punchline. You blurred 'twenty times faster'; hit it, then push on.",
+        "too_slow": "This needs momentum. You dropped below his energy; pick up the pace and ride the excitement.",
+        "monotone": "Flat delivery wastes this material. Huang's voice jumps; let your pitch and volume surge.",
+        "hesitation": "A pause here kills momentum. Keep the train moving, even through a small stumble.",
+        "on_target": "Fast, loud, and genuinely thrilled. That is the Huang keynote energy."
+      }
+    }
+  },
+  {
+    "persona_id": "warren-buffett",
+    "name": "Warren Buffett",
+    "role": "Business Leader",
+    "archetype": "Folksy explainer",
+    "reference": {
+      "title": "Berkshire Hathaway Annual Meeting Q&A",
+      "video_url": "https://www.youtube.com/playlist?list=PLVbP054jv0KqFeE00eUl-r40ucTwEz2fP"
+    },
+    "goal_line": "Explain a big idea slowly, with a plain-spoken analogy and a wink.",
+    "signature_qualities": [
+      "a slow, unhurried, patient pace",
+      "homespun analogies anyone can picture",
+      "dry, gentle humor",
+      "comfort with silence"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "Someone is sitting in the shade today because someone planted a tree a long time ago.", "coaching_focus": ["pace", "clarity"] },
+        { "line_index": 1, "text": "That is really all investing is. You plant, and then you wait.", "coaching_focus": ["pace"] },
+        { "line_index": 2, "text": "The stock market is a device for transferring money from the impatient to the patient.", "coaching_focus": ["clarity", "engagement"] },
+        { "line_index": 3, "text": "I have never been any good at predicting what will happen next month.", "coaching_focus": ["confidence"] },
+        { "line_index": 4, "text": "And neither, by the way, is the fellow on television who says he can.", "coaching_focus": ["engagement"] },
+        { "line_index": 5, "text": "It is far better to buy a wonderful company at a fair price.", "coaching_focus": ["clarity"] },
+        { "line_index": 6, "text": "Than to buy a fair company at a wonderful price.", "coaching_focus": ["pace", "clarity"] },
+        { "line_index": 7, "text": "Risk comes from not knowing what you are doing.", "coaching_focus": ["confidence"] },
+        { "line_index": 8, "text": "So stay inside what you understand, and let the rest go right by.", "coaching_focus": ["pace"] },
+        { "line_index": 9, "text": "Be fearful when others are greedy, and greedy when others are fearful. It is that simple.", "coaching_focus": ["confidence", "clarity"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.3, "pace": 1.3, "engagement": 1.1, "confidence": 1.1, "fluency": 1.0, "conciseness": 1.2 },
+      "target_pace_sps": [2.4, 3.0],
+      "expressiveness": "balanced",
+      "pause_style": "steady",
+      "feedback_notes": {
+        "too_fast": "You hurried Buffett, and that is the one thing he never does. Slow way down and let it breathe.",
+        "too_slow": "Even unhurried has a heartbeat. You stalled; keep the folksy rhythm moving gently.",
+        "monotone": "Add the wry smile. The humor lands when your tone lifts just slightly on the punchline.",
+        "hesitation": "Buffett is comfortable with silence, but a stumble is different. Settle in and take your time.",
+        "on_target": "Slow, plain, and a little wry. That is the Buffett porch-swing rhythm."
+      }
+    }
+  },
+  {
+    "persona_id": "indra-nooyi",
+    "name": "Indra Nooyi",
+    "role": "Business Leader",
+    "archetype": "Purpose-driven storyteller",
+    "reference": {
+      "title": "Leadership and Performance with Purpose keynote",
+      "video_url": null
+    },
+    "goal_line": "Tie business results to human purpose through a personal story.",
+    "signature_qualities": [
+      "warm, narrative leadership",
+      "connecting profit to purpose",
+      "vivid personal anecdotes",
+      "an expressive, caring tone"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "When I was named CEO, the first thing I did was fly home to India to tell my mother.", "coaching_focus": ["engagement", "clarity"] },
+        { "line_index": 1, "text": "She told me to leave my crown in the garage before I walked into the house.", "coaching_focus": ["engagement"] },
+        { "line_index": 2, "text": "That lesson stayed with me. Whatever your title, you are still a person first.", "coaching_focus": ["confidence", "clarity"] },
+        { "line_index": 3, "text": "I built our company around one idea: performance with purpose.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 4, "text": "We can deliver results and still do right by people and the planet.", "coaching_focus": ["confidence"] },
+        { "line_index": 5, "text": "Those are not opposites. The best companies prove they belong together.", "coaching_focus": ["engagement"] },
+        { "line_index": 6, "text": "Leadership is not about being the smartest voice in the room.", "coaching_focus": ["clarity"] },
+        { "line_index": 7, "text": "It is about lifting every other voice until the whole room is stronger.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 8, "text": "I want to be remembered not for the profit, but for the people we grew.", "coaching_focus": ["engagement"] },
+        { "line_index": 9, "text": "Because in the end, that is the only number that truly lasts.", "coaching_focus": ["confidence", "pace"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.1, "pace": 1.0, "engagement": 1.3, "confidence": 1.2, "fluency": 1.0, "conciseness": 0.9 },
+      "target_pace_sps": [3.0, 3.8],
+      "expressiveness": "high-contrast",
+      "pause_style": "steady",
+      "feedback_notes": {
+        "too_fast": "You raced through the story. Nooyi lets the mother moment breathe so it lands emotionally.",
+        "too_slow": "The warmth turned heavy. Keep the narrative moving with gentle momentum.",
+        "monotone": "This is a story, not a memo. Let your voice warm up on the personal lines.",
+        "hesitation": "A fumble broke the spell of the story. Find the thread and carry it through.",
+        "on_target": "Warm, personal, and purposeful, exactly the Nooyi blend of heart and results."
+      }
+    }
+  },
+  {
+    "persona_id": "marty-cagan",
+    "name": "Marty Cagan",
+    "role": "Product Manager",
+    "archetype": "Product truth-teller",
+    "reference": {
+      "title": "Product Management Theater talk",
+      "video_url": "https://www.youtube.com/watch?v=9N4ZgNaWvI0"
+    },
+    "goal_line": "State the hard product truth plainly, then point to a better way.",
+    "signature_qualities": [
+      "direct, opinionated clarity",
+      "naming the dysfunction out loud",
+      "empowered teams over feature factories",
+      "a confident, no-nonsense pace"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "Let me be direct, because someone has to say this out loud.", "coaching_focus": ["confidence", "clarity"] },
+        { "line_index": 1, "text": "Most companies are not doing product. They are doing what I call product theater.", "coaching_focus": ["clarity", "engagement"] },
+        { "line_index": 2, "text": "They take orders, they build a roadmap of features, and they ship on a calendar.", "coaching_focus": ["clarity", "pace"] },
+        { "line_index": 3, "text": "And then they wonder why the results never come.", "coaching_focus": ["engagement"] },
+        { "line_index": 4, "text": "The best companies in the world do not work that way.", "coaching_focus": ["confidence"] },
+        { "line_index": 5, "text": "They give teams problems to solve, not features to build.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 6, "text": "That single difference is why empowered teams run circles around feature factories.", "coaching_focus": ["confidence", "engagement"] },
+        { "line_index": 7, "text": "Your job is not to ship what you were told. It is to solve the real problem.", "coaching_focus": ["clarity"] },
+        { "line_index": 8, "text": "Fall in love with the problem, never with your solution.", "coaching_focus": ["confidence"] },
+        { "line_index": 9, "text": "Do that, and you stop playing theater and start building products that matter.", "coaching_focus": ["confidence", "pace"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.3, "pace": 1.1, "engagement": 1.1, "confidence": 1.3, "fluency": 0.9, "conciseness": 1.2 },
+      "target_pace_sps": [3.2, 4.0],
+      "expressiveness": "balanced",
+      "pause_style": "brisk",
+      "feedback_notes": {
+        "too_fast": "Conviction needs a beat. You ran the truths together; let 'product theater' land before moving on.",
+        "too_slow": "This loses its edge when slow. Keep the brisk, no-nonsense pace that signals confidence.",
+        "monotone": "Directness still needs emphasis. Push harder on the contrast between theater and empowered teams.",
+        "hesitation": "Cagan never hedges. A stumble reads as doubt; say it cleanly and own it.",
+        "on_target": "Direct, brisk, and unflinching. That is the Cagan straight-talk."
+      }
+    }
+  },
+  {
+    "persona_id": "shreyas-doshi",
+    "name": "Shreyas Doshi",
+    "role": "Product Manager",
+    "archetype": "Strategic clarifier",
+    "reference": {
+      "title": "Product strategy and execution talks",
+      "video_url": null
+    },
+    "goal_line": "Bring crisp structure and calm precision to a messy problem.",
+    "signature_qualities": [
+      "crisp, structured thinking",
+      "naming levels and frameworks",
+      "calm, precise delivery",
+      "distinguishing what matters from what is loud"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "Most product failures are not execution problems. They are clarity problems in disguise.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 1, "text": "Before you build anything, separate three things: the problem, the strategy, and the tactics.", "coaching_focus": ["clarity", "pace"] },
+        { "line_index": 2, "text": "Teams love to argue about tactics because tactics feel concrete.", "coaching_focus": ["clarity"] },
+        { "line_index": 3, "text": "But arguing tactics when the strategy is unclear is just expensive motion.", "coaching_focus": ["engagement", "clarity"] },
+        { "line_index": 4, "text": "So I ask one question early: what would have to be true for this to work?", "coaching_focus": ["confidence", "clarity"] },
+        { "line_index": 5, "text": "Then run a pre-mortem. Imagine it failed, and ask yourself why.", "coaching_focus": ["clarity"] },
+        { "line_index": 6, "text": "The answers are almost always known to someone on the team right now.", "coaching_focus": ["engagement"] },
+        { "line_index": 7, "text": "Good product thinking is mostly the discipline of slowing down to think clearly.", "coaching_focus": ["confidence", "pace"] },
+        { "line_index": 8, "text": "Speed without clarity is the most expensive thing a team can buy.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 9, "text": "Get the thinking right, and the execution becomes almost easy.", "coaching_focus": ["confidence"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.4, "pace": 1.0, "engagement": 1.0, "confidence": 1.2, "fluency": 1.0, "conciseness": 1.2 },
+      "target_pace_sps": [3.0, 3.8],
+      "expressiveness": "balanced",
+      "pause_style": "steady",
+      "feedback_notes": {
+        "too_fast": "Clarity needs space. You rushed the three-part structure; let each level register before the next.",
+        "too_slow": "Precise is not the same as slow. Keep a steady, thinking pace without dragging.",
+        "monotone": "Calm is good, but flat hides the structure. Lift your tone slightly to mark each new point.",
+        "hesitation": "Doshi sounds composed because the thinking is done first. Smooth the catch and stay measured.",
+        "on_target": "Crisp, structured, and calm. That is the Doshi clarity."
+      }
+    }
+  },
+  {
+    "persona_id": "chris-voss",
+    "name": "Chris Voss",
+    "role": "Sales / Negotiator",
+    "archetype": "Tactical-empathy negotiator",
+    "reference": {
+      "title": "Favorite Negotiation Hacks",
+      "video_url": "https://www.youtube.com/playlist?list=PL_3ZK0x5nFYBNLNoUnm0FxZCUyqPmXccf"
+    },
+    "goal_line": "Stay calm and low, use silence and questions to lower the temperature.",
+    "signature_qualities": [
+      "a calm, low, deliberate voice",
+      "calibrated how and what questions",
+      "strategic use of silence",
+      "tactical empathy over pressure"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "The most powerful tool in any negotiation is not leverage. It is a calm voice.", "coaching_focus": ["confidence", "pace"] },
+        { "line_index": 1, "text": "When the other side gets emotional, you slow down. You lower your tone.", "coaching_focus": ["pace", "clarity"] },
+        { "line_index": 2, "text": "I call it the late-night radio voice. Warm, steady, in no hurry at all.", "coaching_focus": ["engagement", "pace"] },
+        { "line_index": 3, "text": "Then, instead of arguing, you ask a question that starts with how or what.", "coaching_focus": ["clarity"] },
+        { "line_index": 4, "text": "How am I supposed to do that? Watch what happens when you ask it gently.", "coaching_focus": ["engagement"] },
+        { "line_index": 5, "text": "Suddenly they are solving your problem for you.", "coaching_focus": ["confidence"] },
+        { "line_index": 6, "text": "And then comes the hardest skill of all. You stay quiet.", "coaching_focus": ["pace", "confidence"] },
+        { "line_index": 7, "text": "Silence feels uncomfortable, so most people rush to fill it. Do not.", "coaching_focus": ["pace"] },
+        { "line_index": 8, "text": "Let the silence work. It pulls the truth to the surface.", "coaching_focus": ["confidence", "engagement"] },
+        { "line_index": 9, "text": "Calm voice, careful question, patient silence. That is how you win the room.", "coaching_focus": ["clarity", "confidence"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.2, "pace": 1.3, "engagement": 1.1, "confidence": 1.3, "fluency": 1.0, "conciseness": 1.0 },
+      "target_pace_sps": [2.6, 3.2],
+      "expressiveness": "balanced",
+      "pause_style": "dramatic",
+      "feedback_notes": {
+        "too_fast": "Speed signals nerves, the opposite of the goal. Slow down and drop your pitch like the radio voice.",
+        "too_slow": "Deliberate, not lifeless. Keep the low calm flowing instead of stalling.",
+        "monotone": "Low and warm is the target, but pure flat loses the empathy. Soften, don't deaden, the tone.",
+        "hesitation": "Voss uses silence on purpose. Make your pauses look chosen, not caught off guard.",
+        "on_target": "Low, calm, and deliberate, with silence that does the work. Textbook Voss."
+      }
+    }
+  },
+  {
+    "persona_id": "seth-godin",
+    "name": "Seth Godin",
+    "role": "Marketer",
+    "archetype": "Idea packager",
+    "reference": {
+      "title": "Marketing and the power of ideas talks",
+      "video_url": null
+    },
+    "goal_line": "Make one remarkable idea impossible to ignore with short, punchy lines.",
+    "signature_qualities": [
+      "short, punchy declaratives",
+      "one memorable idea, repeated",
+      "contrarian reframes",
+      "a confident, brisk rhythm"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "Here is the truth nobody in marketing wants to admit.", "coaching_focus": ["confidence", "engagement"] },
+        { "line_index": 1, "text": "Average products for average people. That used to be a winning strategy.", "coaching_focus": ["clarity", "pace"] },
+        { "line_index": 2, "text": "Not anymore. The riskiest thing you can do now is be boring.", "coaching_focus": ["confidence", "engagement"] },
+        { "line_index": 3, "text": "If you are remarkable, people talk about you. If you are not, you are invisible.", "coaching_focus": ["clarity"] },
+        { "line_index": 4, "text": "So stop trying to please everyone. Everyone is not your customer.", "coaching_focus": ["confidence"] },
+        { "line_index": 5, "text": "Find the smallest group that cares the most, and serve them obsessively.", "coaching_focus": ["clarity", "engagement"] },
+        { "line_index": 6, "text": "A purple cow in a field of brown cows. That is what gets noticed.", "coaching_focus": ["engagement"] },
+        { "line_index": 7, "text": "Marketing is no longer about the stuff you make.", "coaching_focus": ["clarity"] },
+        { "line_index": 8, "text": "It is about the stories you tell and the change you create.", "coaching_focus": ["confidence", "engagement"] },
+        { "line_index": 9, "text": "So go make something worth talking about. That is the whole game.", "coaching_focus": ["confidence", "pace"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.2, "pace": 1.2, "engagement": 1.3, "confidence": 1.3, "fluency": 0.9, "conciseness": 1.3 },
+      "target_pace_sps": [3.4, 4.2],
+      "expressiveness": "high-contrast",
+      "pause_style": "brisk",
+      "feedback_notes": {
+        "too_fast": "Even punchy lines need a landing. You ran them together; pause a half beat after each idea.",
+        "too_slow": "These short lines die when stretched. Keep the brisk, confident snap.",
+        "monotone": "Punchy means dynamic. Hit the key word in each line; don't deliver them all the same.",
+        "hesitation": "Godin's lines sound inevitable. A stumble softens them; deliver each one like a fact.",
+        "on_target": "Short, sharp, and confident. That is the Godin rhythm."
+      }
+    }
+  },
+  {
+    "persona_id": "nancy-duarte",
+    "name": "Nancy Duarte",
+    "role": "Storyteller",
+    "archetype": "Presentation architect",
+    "reference": {
+      "title": "How to Tell a Story",
+      "video_url": "https://www.youtube.com/watch?v=9JrRQ1oQWQk"
+    },
+    "goal_line": "Move the audience between what is and what could be, again and again.",
+    "signature_qualities": [
+      "contrast between what is and what could be",
+      "deliberate structure under the story",
+      "an expressive, building delivery",
+      "a clear call to a new normal"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "The greatest speeches in history all share one hidden shape.", "coaching_focus": ["engagement", "clarity"] },
+        { "line_index": 1, "text": "They move, again and again, between what is and what could be.", "coaching_focus": ["clarity", "pace"] },
+        { "line_index": 2, "text": "Here is what is. Things are stuck, and everyone in the room feels it.", "coaching_focus": ["engagement"] },
+        { "line_index": 3, "text": "Now here is what could be. Picture a world where that problem is gone.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 4, "text": "Feel that gap? That tension is what holds an audience.", "coaching_focus": ["engagement"] },
+        { "line_index": 5, "text": "You do not present your idea. You contrast it against the ordinary world.", "coaching_focus": ["clarity"] },
+        { "line_index": 6, "text": "Back and forth, what is, what could be, until the gap is impossible to ignore.", "coaching_focus": ["pace", "engagement"] },
+        { "line_index": 7, "text": "And then, at the very end, you paint one last picture.", "coaching_focus": ["confidence"] },
+        { "line_index": 8, "text": "The new normal, the world transformed because they said yes.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 9, "text": "Master that rhythm, and your ideas will finally move people to act.", "coaching_focus": ["confidence", "clarity"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.2, "pace": 1.1, "engagement": 1.4, "confidence": 1.1, "fluency": 0.9, "conciseness": 0.9 },
+      "target_pace_sps": [3.0, 3.8],
+      "expressiveness": "high-contrast",
+      "pause_style": "steady",
+      "feedback_notes": {
+        "too_fast": "The contrast needs room. You blurred 'what is' into 'what could be'; pause between them.",
+        "too_slow": "Don't let the build sag. Keep momentum so the tension keeps rising.",
+        "monotone": "The whole point is contrast. Drop your tone on what is, lift it on what could be.",
+        "hesitation": "A stumble flattens the rhythm. Keep the back-and-forth clean and intentional.",
+        "on_target": "You felt the gap between what is and what could be. That is the Duarte move."
+      }
+    }
+  },
+  {
+    "persona_id": "matthew-dicks",
+    "name": "Matthew Dicks",
+    "role": "Storyteller",
+    "archetype": "Personal-narrative master",
+    "reference": {
+      "title": "Storytelling craft and Homework for Life",
+      "video_url": null
+    },
+    "goal_line": "Drop us into a single vivid moment and hold the suspense.",
+    "signature_qualities": [
+      "a single, specific moment in present tense",
+      "vivid sensory detail",
+      "withholding the ending for suspense",
+      "a conversational, intimate tone"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "It is nine years old and I am standing at the top of the high dive.", "coaching_focus": ["engagement", "clarity"] },
+        { "line_index": 1, "text": "My toes are curled over the edge, and the water looks impossibly far away.", "coaching_focus": ["engagement"] },
+        { "line_index": 2, "text": "Behind me, a line of kids is starting to chant my name.", "coaching_focus": ["engagement", "pace"] },
+        { "line_index": 3, "text": "And here is the thing I have never told anyone until right now.", "coaching_focus": ["confidence", "engagement"] },
+        { "line_index": 4, "text": "I am not afraid of the jump. I am afraid of climbing back down.", "coaching_focus": ["clarity"] },
+        { "line_index": 5, "text": "Because going back down means everyone watching me give up.", "coaching_focus": ["engagement"] },
+        { "line_index": 6, "text": "Great stories do not live in the big dramatic events.", "coaching_focus": ["clarity"] },
+        { "line_index": 7, "text": "They live in that one tiny moment where everything could go either way.", "coaching_focus": ["engagement", "pace"] },
+        { "line_index": 8, "text": "Find your moment. The smaller and more specific, the better.", "coaching_focus": ["confidence"] },
+        { "line_index": 9, "text": "And whatever you do, do not tell them how it ends. Not yet.", "coaching_focus": ["engagement", "confidence"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.0, "pace": 1.1, "engagement": 1.4, "confidence": 1.0, "fluency": 1.0, "conciseness": 0.9 },
+      "target_pace_sps": [3.2, 4.0],
+      "expressiveness": "high-contrast",
+      "pause_style": "dramatic",
+      "feedback_notes": {
+        "too_fast": "You rushed the moment. Dicks slows down at the top of the high dive so we live it with him.",
+        "too_slow": "Don't lose the scene's pulse. Keep it conversational and moving.",
+        "monotone": "This is a movie, not a report. Let your voice carry the fear and the suspense.",
+        "hesitation": "A real pause builds suspense; a stumble breaks it. Make the silence feel chosen.",
+        "on_target": "Vivid, present, and suspenseful. You held the moment like Dicks does."
+      }
+    }
+  },
+  {
+    "persona_id": "adam-grant",
+    "name": "Adam Grant",
+    "role": "Psychologist",
+    "archetype": "Evidence-based reframer",
+    "reference": {
+      "title": "WorkLife with Adam Grant",
+      "video_url": "https://www.youtube.com/playlist?list=PLAWu34VO7OtLBbm3PLlGrnjnxlrMVCn6Q"
+    },
+    "goal_line": "Flip a common belief using a surprising piece of evidence.",
+    "signature_qualities": [
+      "a brisk, witty delivery",
+      "counterintuitive, research-backed reframes",
+      "a memorable study or statistic",
+      "playful but precise"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "We have all been told that to succeed, you have to take more than you give.", "coaching_focus": ["clarity", "pace"] },
+        { "line_index": 1, "text": "The research says the opposite, and it surprised even me.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 2, "text": "When you study who ends up at the bottom of organizations, it is the givers.", "coaching_focus": ["clarity"] },
+        { "line_index": 3, "text": "But here is the twist. Who ends up at the very top? Also the givers.", "coaching_focus": ["engagement", "pace"] },
+        { "line_index": 4, "text": "The takers rise fast, but other people quietly root for them to fall.", "coaching_focus": ["clarity"] },
+        { "line_index": 5, "text": "The givers build a network that lifts them when it matters most.", "coaching_focus": ["engagement"] },
+        { "line_index": 6, "text": "The difference is not whether you give. It is being generous without burning out.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 7, "text": "Protect your time, but stay generous with your knowledge.", "coaching_focus": ["confidence"] },
+        { "line_index": 8, "text": "Because in the long run, the way you treat people compounds.", "coaching_focus": ["engagement"] },
+        { "line_index": 9, "text": "And generosity, it turns out, is a surprisingly good long-term strategy.", "coaching_focus": ["confidence", "pace"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.2, "pace": 1.2, "engagement": 1.3, "confidence": 1.0, "fluency": 0.9, "conciseness": 1.1 },
+      "target_pace_sps": [3.6, 4.4],
+      "expressiveness": "high-contrast",
+      "pause_style": "brisk",
+      "feedback_notes": {
+        "too_fast": "Land the twist. You blew past 'also the givers'; pause a beat so the surprise registers.",
+        "too_slow": "Grant moves quickly and wittily. Pick up the pace so the reframe feels lively.",
+        "monotone": "The surprise needs lift. Raise your tone on the counterintuitive turn.",
+        "hesitation": "Keep it crisp. A stumble dulls the wit; deliver the studies cleanly.",
+        "on_target": "Brisk, witty, and surprising. That is the Grant reframe."
+      }
+    }
+  },
+  {
+    "persona_id": "jordan-peterson",
+    "name": "Jordan Peterson",
+    "role": "Psychologist",
+    "archetype": "Intense lecturer",
+    "reference": {
+      "title": "Lectures on meaning and responsibility",
+      "video_url": null
+    },
+    "goal_line": "Build a precise, emotionally intense argument toward responsibility.",
+    "signature_qualities": [
+      "precise, deliberate diction",
+      "emotional intensity that rises and breaks",
+      "long clauses that build to a point",
+      "weighty, careful pauses"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "You have to understand, and this is not a small thing, that life is genuinely difficult.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 1, "text": "It is suffering, in many ways, and pretending otherwise helps no one.", "coaching_focus": ["engagement"] },
+        { "line_index": 2, "text": "And yet, the antidote to that suffering is not comfort. It is responsibility.", "coaching_focus": ["confidence", "clarity"] },
+        { "line_index": 3, "text": "Pick up the heaviest load that you can bear, and carry it.", "coaching_focus": ["confidence"] },
+        { "line_index": 4, "text": "Not because someone told you to, but because it gives your life meaning.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 5, "text": "Start small. Make your bed. Clean your room. Tell the truth.", "coaching_focus": ["clarity", "pace"] },
+        { "line_index": 6, "text": "It sounds trivial, and it is anything but.", "coaching_focus": ["engagement"] },
+        { "line_index": 7, "text": "Because the way you set your own house in order ripples outward.", "coaching_focus": ["clarity"] },
+        { "line_index": 8, "text": "And a person who has aimed at the good can withstand almost anything.", "coaching_focus": ["confidence", "engagement"] },
+        { "line_index": 9, "text": "So aim high, tell the truth, and take responsibility. It will save you.", "coaching_focus": ["confidence"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.2, "pace": 1.0, "engagement": 1.3, "confidence": 1.2, "fluency": 0.8, "conciseness": 0.9 },
+      "target_pace_sps": [3.0, 3.8],
+      "expressiveness": "high-contrast",
+      "pause_style": "dramatic",
+      "feedback_notes": {
+        "too_fast": "The weight comes from deliberateness. You rushed; slow down and let each clause carry its load.",
+        "too_slow": "Intense is not the same as stalled. Keep the argument building toward its point.",
+        "monotone": "Peterson's power is the rise and break. Let your voice intensify, then drop on the key line.",
+        "hesitation": "His pauses are heavy and chosen. Make yours feel deliberate, not uncertain.",
+        "on_target": "Precise, intense, and rising to responsibility. That is the Peterson cadence."
+      }
+    }
+  },
+  {
+    "persona_id": "sal-khan",
+    "name": "Sal Khan",
+    "role": "Teacher",
+    "archetype": "Patient explainer",
+    "reference": {
+      "title": "How AI Could Save (Not Destroy) Education",
+      "video_url": "https://www.youtube.com/watch?v=hJP5GqnTrNo"
+    },
+    "goal_line": "Explain a hard idea simply, like a patient friend at a whiteboard.",
+    "signature_qualities": [
+      "an even, friendly, patient pace",
+      "building up from what you already know",
+      "thinking out loud, step by step",
+      "warm, never condescending"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "Okay, so let's think about this together, the way you might with a friend.", "coaching_focus": ["clarity", "engagement"] },
+        { "line_index": 1, "text": "Imagine every student had a personal tutor sitting right beside them.", "coaching_focus": ["clarity"] },
+        { "line_index": 2, "text": "Not to give them the answer, but to ask the next good question.", "coaching_focus": ["engagement", "clarity"] },
+        { "line_index": 3, "text": "We have actually known for forty years that this works.", "coaching_focus": ["confidence"] },
+        { "line_index": 4, "text": "A student with one-on-one help does dramatically better. That is just the data.", "coaching_focus": ["clarity"] },
+        { "line_index": 5, "text": "The only problem was that we could never give every kid a tutor.", "coaching_focus": ["engagement"] },
+        { "line_index": 6, "text": "Until now. And that is the part that gets me really excited.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 7, "text": "If we get this right, we are not replacing teachers at all.", "coaching_focus": ["clarity"] },
+        { "line_index": 8, "text": "We are giving every single teacher a superpower.", "coaching_focus": ["confidence", "engagement"] },
+        { "line_index": 9, "text": "And we are giving every student the patient help they always deserved.", "coaching_focus": ["confidence"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.3, "pace": 1.1, "engagement": 1.1, "confidence": 1.0, "fluency": 1.1, "conciseness": 1.0 },
+      "target_pace_sps": [3.2, 4.0],
+      "expressiveness": "balanced",
+      "pause_style": "steady",
+      "feedback_notes": {
+        "too_fast": "You jumped ahead. Khan adds one idea at a time so no one gets left behind.",
+        "too_slow": "Friendly still has momentum. Keep the steady, conversational flow.",
+        "monotone": "Let the warmth show, especially on the line that excites you. A flat tone feels like a lecture.",
+        "hesitation": "Thinking out loud is fine, but a stumble breaks the calm. Keep it smooth and patient.",
+        "on_target": "Even, warm, and patient, building idea by idea. That is the Khan style."
+      }
+    }
+  },
+  {
+    "persona_id": "walter-lewin",
+    "name": "Walter Lewin",
+    "role": "Teacher",
+    "archetype": "Theatrical demonstrator",
+    "reference": {
+      "title": "MIT Physics Lectures",
+      "video_url": null
+    },
+    "goal_line": "Make physics thrilling with theatrical energy and a fearless demo.",
+    "signature_qualities": [
+      "high theatrical energy",
+      "wonder at how the world works",
+      "a dramatic build to a demonstration",
+      "emphatic, exclaiming delivery"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "I am about to put my life on the line, and I want you to watch closely.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 1, "text": "This is a fifteen kilogram ball, hanging from the ceiling on a wire.", "coaching_focus": ["clarity"] },
+        { "line_index": 2, "text": "I pull it all the way up to my chin, right here, and I let it go.", "coaching_focus": ["engagement", "pace"] },
+        { "line_index": 3, "text": "If the physics is right, it will swing away and come back.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 4, "text": "And it will stop, exactly, just short of my face.", "coaching_focus": ["engagement"] },
+        { "line_index": 5, "text": "I am not going to flinch. Do you understand? Not even a little.", "coaching_focus": ["confidence", "engagement"] },
+        { "line_index": 6, "text": "Because I trust the conservation of energy with my life.", "coaching_focus": ["confidence"] },
+        { "line_index": 7, "text": "The ball can never come back higher than where it started.", "coaching_focus": ["clarity"] },
+        { "line_index": 8, "text": "Physics works! And it is beautiful, and it just saved my life.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 9, "text": "That is the power of understanding the world. Never forget it.", "coaching_focus": ["confidence", "engagement"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.0, "pace": 1.2, "engagement": 1.4, "confidence": 1.2, "fluency": 0.8, "conciseness": 0.9 },
+      "target_pace_sps": [3.6, 4.4],
+      "expressiveness": "high-contrast",
+      "pause_style": "dramatic",
+      "feedback_notes": {
+        "too_fast": "Build the suspense before the release. You rushed; hold the moment at your chin first.",
+        "too_slow": "Lewin crackles with energy. Don't let it sag; keep the theatrical drive.",
+        "monotone": "This demands big dynamics. Let your voice swing from hushed danger to the 'Physics works!' shout.",
+        "hesitation": "Confidence is the whole point. A fumble undercuts the fearless demo; commit fully.",
+        "on_target": "Theatrical, fearless, and full of wonder. That is the Lewin lecture hall."
+      }
+    }
+  },
+  {
+    "persona_id": "ken-robinson",
+    "name": "Sir Ken Robinson",
+    "role": "TED Speaker",
+    "archetype": "Witty educator",
+    "reference": {
+      "title": "Do Schools Kill Creativity?",
+      "video_url": "https://www.youtube.com/watch?v=iG9CE55wbtY"
+    },
+    "goal_line": "Land a serious point through dry humor and perfect timing.",
+    "signature_qualities": [
+      "dry, understated humor",
+      "impeccable comedic timing",
+      "a serious argument under the jokes",
+      "warm, conversational charm"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "I believe we do not grow into creativity. We grow out of it.", "coaching_focus": ["clarity", "engagement"] },
+        { "line_index": 1, "text": "Or rather, we get educated out of it. And we are very good at that.", "coaching_focus": ["engagement", "pace"] },
+        { "line_index": 2, "text": "If you are not prepared to be wrong, you will never come up with anything original.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 3, "text": "And by the time most children grow up, they have lost that capacity.", "coaching_focus": ["engagement"] },
+        { "line_index": 4, "text": "They have become frightened of being wrong.", "coaching_focus": ["clarity"] },
+        { "line_index": 5, "text": "We run our schools like factories, and we wonder why the magic disappears.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 6, "text": "A child will take a chance. If they do not know, they will have a go.", "coaching_focus": ["pace", "engagement"] },
+        { "line_index": 7, "text": "We do not grow into creativity. We are educated out of it.", "coaching_focus": ["clarity"] },
+        { "line_index": 8, "text": "Our task is to educate their whole being, so they can face this future.", "coaching_focus": ["confidence"] },
+        { "line_index": 9, "text": "We may not see this future, but they will. Our job is to help them make something of it.", "coaching_focus": ["confidence", "engagement"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.1, "pace": 1.2, "engagement": 1.3, "confidence": 1.0, "fluency": 1.0, "conciseness": 0.9 },
+      "target_pace_sps": [3.0, 3.8],
+      "expressiveness": "high-contrast",
+      "pause_style": "dramatic",
+      "feedback_notes": {
+        "too_fast": "Comedy is timing. You stepped on the joke; pause before the punchline and let it breathe.",
+        "too_slow": "Don't lose the conversational charm. Keep it light and moving between the laughs.",
+        "monotone": "The humor hides in the delivery. A flat tone kills it; let the wry lift come through.",
+        "hesitation": "Robinson's pauses are comic beats, not fumbles. Make the silence feel like a setup.",
+        "on_target": "Dry, warm, and perfectly timed. That is the Robinson charm."
+      }
+    }
+  },
+  {
+    "persona_id": "brene-brown",
+    "name": "Brené Brown",
+    "role": "TED Speaker",
+    "archetype": "Vulnerability researcher",
+    "reference": {
+      "title": "The Power of Vulnerability",
+      "video_url": null
+    },
+    "goal_line": "Speak a hard personal truth with warmth and a vulnerable beat.",
+    "signature_qualities": [
+      "warm, conversational honesty",
+      "a vulnerable beat where the voice softens",
+      "research delivered like a confession",
+      "expressive, variable tone"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "So I spent years studying connection, and then the data did something rude.", "coaching_focus": ["engagement", "clarity"] },
+        { "line_index": 1, "text": "It started telling me things about myself I did not want to hear.", "coaching_focus": ["engagement"] },
+        { "line_index": 2, "text": "Here is what I found. The people who feel deeply connected have one thing in common.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 3, "text": "They believe they are worthy of connection. That is it.", "coaching_focus": ["confidence"] },
+        { "line_index": 4, "text": "And to be seen, truly seen, you have to let yourself be vulnerable.", "coaching_focus": ["engagement", "clarity"] },
+        { "line_index": 5, "text": "Now, I had spent my whole life trying to control and predict.", "coaching_focus": ["clarity"] },
+        { "line_index": 6, "text": "And vulnerability felt like the last thing I ever wanted to do.", "coaching_focus": ["engagement"] },
+        { "line_index": 7, "text": "But you cannot selectively numb. When you numb the fear, you numb the joy too.", "coaching_focus": ["confidence", "engagement"] },
+        { "line_index": 8, "text": "So this is what I am learning to do, badly, and on purpose.", "coaching_focus": ["engagement"] },
+        { "line_index": 9, "text": "To let myself be seen. To love with my whole heart, even with no guarantee.", "coaching_focus": ["confidence", "engagement"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.0, "pace": 1.1, "engagement": 1.4, "confidence": 1.0, "fluency": 1.0, "conciseness": 0.9 },
+      "target_pace_sps": [3.2, 4.0],
+      "expressiveness": "high-contrast",
+      "pause_style": "dramatic",
+      "feedback_notes": {
+        "too_fast": "You rushed past the vulnerable beat. Brown slows and softens on the honest lines.",
+        "too_slow": "Warm still moves. Keep the conversational pace so it feels like a real talk, not a reading.",
+        "monotone": "The heart is in the variation. Let your voice soften on the vulnerable lines and lift on the hopeful ones.",
+        "hesitation": "A genuine catch can be powerful, but a nervous stumble is not. Let the emotion guide the pause.",
+        "on_target": "Warm, honest, and unguarded. You let yourself be seen, just like Brown."
+      }
+    }
+  },
+  {
+    "persona_id": "guy-kawasaki",
+    "name": "Guy Kawasaki",
+    "role": "Tech Evangelist",
+    "archetype": "Enthusiast evangelist",
+    "reference": {
+      "title": "The Art of the Start and evangelism talks",
+      "video_url": "https://www.youtube.com/guykawasaki"
+    },
+    "goal_line": "Energize the room with punchy, practical rules and real enthusiasm.",
+    "signature_qualities": [
+      "an upbeat, enthusiastic pace",
+      "practical numbered rules",
+      "evangelism over selling",
+      "confident, fun delivery"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "Let me give you the single best rule I know for any presentation.", "coaching_focus": ["confidence", "engagement"] },
+        { "line_index": 1, "text": "I call it ten, twenty, thirty. Ten slides, twenty minutes, thirty point font.", "coaching_focus": ["clarity", "pace"] },
+        { "line_index": 2, "text": "Why thirty point font? Because it forces you to know your stuff.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 3, "text": "If you need tiny text, you do not know your material, and the audience can tell.", "coaching_focus": ["clarity"] },
+        { "line_index": 4, "text": "Here is the deeper secret though. Great evangelists do not sell.", "coaching_focus": ["confidence"] },
+        { "line_index": 5, "text": "They share something they genuinely love, and the love is contagious.", "coaching_focus": ["engagement"] },
+        { "line_index": 6, "text": "Nobody was ever argued into caring. They were inspired into it.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 7, "text": "So find the thing you would talk about for free, all day long.", "coaching_focus": ["engagement"] },
+        { "line_index": 8, "text": "Then go out and make people fall in love with it too.", "coaching_focus": ["confidence", "engagement"] },
+        { "line_index": 9, "text": "That is evangelism, and honestly, it is the most fun you can have working.", "coaching_focus": ["engagement", "confidence"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.1, "pace": 1.2, "engagement": 1.3, "confidence": 1.2, "fluency": 0.9, "conciseness": 1.1 },
+      "target_pace_sps": [3.6, 4.4],
+      "expressiveness": "high-contrast",
+      "pause_style": "brisk",
+      "feedback_notes": {
+        "too_fast": "Land the rule. You rushed 'ten, twenty, thirty'; say it crisply so it sticks.",
+        "too_slow": "Kawasaki is upbeat and energetic. Lift the pace so the enthusiasm carries.",
+        "monotone": "Evangelism needs energy. Let your excitement show; don't deliver the rules flat.",
+        "hesitation": "Keep it fun and confident. A stumble dampens the energy; push through it smiling.",
+        "on_target": "Upbeat, practical, and genuinely enthusiastic. That is the Kawasaki pitch."
+      }
+    }
+  },
+  {
+    "persona_id": "kevin-kelly",
+    "name": "Kevin Kelly",
+    "role": "Tech Evangelist",
+    "archetype": "Big-picture futurist",
+    "reference": {
+      "title": "Talks on technology and the future",
+      "video_url": null
+    },
+    "goal_line": "Narrate a large, calm vision of where technology is heading.",
+    "signature_qualities": [
+      "a calm, reflective pace",
+      "long-arc, big-picture framing",
+      "measured wonder",
+      "patient, unhurried confidence"
+    ],
+    "speech": {
+      "estimated_duration_seconds": 60,
+      "lines": [
+        { "line_index": 0, "text": "If you want to know where technology is going, do not look at the gadgets.", "coaching_focus": ["clarity", "confidence"] },
+        { "line_index": 1, "text": "Look at the long, slow forces underneath them.", "coaching_focus": ["pace", "clarity"] },
+        { "line_index": 2, "text": "These forces are like gravity. You cannot stop them, only work with them.", "coaching_focus": ["engagement"] },
+        { "line_index": 3, "text": "Everything is becoming a stream. We are flowing from owning to accessing.", "coaching_focus": ["clarity"] },
+        { "line_index": 4, "text": "We used to buy things. Now we subscribe to them, and soon we will simply summon them.", "coaching_focus": ["pace", "engagement"] },
+        { "line_index": 5, "text": "The most powerful technologies will be the ones that feel inevitable in hindsight.", "coaching_focus": ["confidence", "clarity"] },
+        { "line_index": 6, "text": "And here is the comforting part. We are still at the very beginning.", "coaching_focus": ["engagement"] },
+        { "line_index": 7, "text": "The most important things have not been invented yet.", "coaching_focus": ["confidence"] },
+        { "line_index": 8, "text": "Which means it is not too late for you to shape what comes next.", "coaching_focus": ["engagement", "confidence"] },
+        { "line_index": 9, "text": "The best time to begin was twenty years ago. The second best time is right now.", "coaching_focus": ["confidence", "pace"] }
+      ]
+    },
+    "rubric": {
+      "capability_weights": { "clarity": 1.2, "pace": 1.1, "engagement": 1.1, "confidence": 1.2, "fluency": 1.0, "conciseness": 1.0 },
+      "target_pace_sps": [2.8, 3.6],
+      "expressiveness": "balanced",
+      "pause_style": "steady",
+      "feedback_notes": {
+        "too_fast": "Big-picture ideas need room. You rushed; slow to a reflective pace so the scale lands.",
+        "too_slow": "Measured is good, but don't drift. Keep a calm, steady forward motion.",
+        "monotone": "Let measured wonder show. A small lift on 'inevitable' carries the awe.",
+        "hesitation": "Kelly sounds settled and sure. Smooth the catch and stay calmly confident.",
+        "on_target": "Calm, sweeping, and quietly confident. That is the Kelly long view."
+      }
+    }
+  }
+]

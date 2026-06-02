@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "poc-app-web",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": ["-c", "cd app && CI=1 BROWSER=none npx expo start --web -c"],
+      "port": 8081
+    }
+  ]
+}

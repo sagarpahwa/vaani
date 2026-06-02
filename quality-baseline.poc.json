@@ -1,0 +1,31 @@
+{
+  "_comment": "POC reliability + quality floors for the coaching app (services/api + app). Separate from quality-baseline.json so the data-foundation ratchet is never coupled to POC numbers. SLO targets mirror docs/reliability/slos.md §10.1 and are the budgets ops measures release_health_events against; model_quality.min_overall_score is enforced by services/api/tests/golden/test_golden_regression.py.",
+  "last_updated": "2026-05-31",
+  "coverage_floor": 70.0,
+  "slo_targets": {
+    "session_completion_availability_pct": 99.5,
+    "coaching_generation_success_pct": 99.0,
+    "feedback_latency_median_seconds": 12.0,
+    "feedback_latency_p95_seconds": 20.0,
+    "ab_audio_playback_success_pct": 99.5,
+    "crash_free_sessions_pct": 99.0,
+    "window_days": 28
+  },
+  "model_quality": {
+    "golden_set_id": "poc-coaching-golden-v1",
+    "scoring_model_version": "scoring-mock-1.0.0",
+    "rubric_version": "rubric-2026.05.1",
+    "tolerance": 0.0005,
+    "min_overall_score": 0.3,
+    "max_mean_absolute_error": 0.001
+  },
+  "persona_model_quality": {
+    "_comment": "Persona (acoustic) scoring path floor; enforced by services/api/tests/golden/test_persona_golden.py against persona_dataset.json. Independent of model_quality so a bump to one path never touches the other.",
+    "golden_set_id": "poc-persona-golden-v1",
+    "scoring_model_version": "persona-acoustic-1.0.0",
+    "rubric_version": "persona-rubric-2026.05.1",
+    "tolerance": 0.0005,
+    "min_overall_score": 0.3,
+    "max_mean_absolute_error": 0.001
+  }
+}

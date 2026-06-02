@@ -1,0 +1,171 @@
+# POC Personas ("20 Legends Speaking Coach") — Implementation Progress Tracker
+
+> **This file is the committed, resumable source of truth for Iteration 1.**
+> It is authoritative across sessions — not in-session memory, not the TaskList.
+
+---
+
+## ▶ HOW TO RESUME (agent: read this block FIRST, every run)
+
+You were told: *"implement this plan"* (pointing at this file or at
+[`poc-personas-plan.md`](poc-personas-plan.md)). Do exactly this:
+
+1. **Read the plan:** [`docs/plans/poc-personas-plan.md`](poc-personas-plan.md) — the full
+   approved design (Parts A–D, verification, acceptance). This tracker is its checklist.
+2. **Read this whole file** — find the **first sub-task whose status is not `DONE`** in the
+   tables below. That is where you resume.
+3. **Re-verify the last `DONE` row actually landed** before continuing (run its *Verify*
+   command / confirm the file exists). A session can die between writing code and committing,
+   so the last row marked `DONE` might not be on disk. If it didn't land, redo **only** that
+   one step. **Never redo work already `DONE` and verified.**
+4. Work **one atomic sub-task at a time**: do it → run its *Verify* → set status `DONE` +
+   record the commit SHA → **`git commit` the code and this tracker together** (branch
+   `feat/poc-coaching-app`, conventional commit) → next row. Never batch multiple sub-tasks
+   into one commit. A crash then costs at most one in-flight step.
+5. Mirror progress into TaskCreate/TaskUpdate for in-session visibility, but **this committed
+   file is authoritative** — reconcile against it, not against memory.
+
+**Status legend:** `TODO` (not started) · `DOING` (in flight, not committed) · `DONE` (committed; SHA recorded) · `DEFERRED` (committed decision to skip; blocker recorded).
+
+---
+
+## Key constraints (do not violate — full detail in the plan & CLAUDE.md)
+
+- **Acoustic-first, never transcript-as-judge.** The persona path scores the *real waveform*
+  (pace = syllables/sec, pauses = silence segmentation, expressiveness = pitch/energy,
+  coverage = detected-vs-expected syllables). Whisper STT stays **OFF** in the persona path.
+  This honors the user's hard rule: judge my speech, not a cleaned-up transcript.
+- **Additive, zero regression.** Mode A/B keep their existing transcript-based path **untouched**.
+  The existing Mode A/B golden fixtures must stay byte-for-byte identical (no churn).
+- **Mock is the CI default.** `PROVIDER_ACOUSTIC=mock` (deterministic, offline) is default;
+  `librosa` is the opt-in real impl for the demo machine only. Registry raises on unknown name.
+- **Hard DB isolation.** Mock DB only: container `vaani_poc_mongo`, port **27018**, database
+  `public_speaking_intelligence_mock` (name must end `_mock`). Never touch the real DB / 27017.
+- **POC schemas are isolated.** New schema goes in `services/api/db/schemas/` — NOT shared `schemas/`.
+- **Audio never in Mongo.** Use the `ObjectStore` abstraction (LocalFS at `.poc-storage/` by default).
+- **Versioning/golden gate.** Every scored output carries `*_version` fields; a version bump
+  requires regenerating the persona golden fixtures or CI fails.
+- **Python env:** `.venv-poc` only (via `make poc-api-install`). Never `.venv` / `.venv311`.
+- **Keep green:** `make poc-api-lint && make poc-api-test` (coverage ≥70%) and `make poc-app-test`.
+- **Git identity:** branch `feat/poc-coaching-app`; conventional commits; never `git add -A`,
+  never force-push / `reset --hard` without explicit ask (see global CLAUDE.md dual-identity rules).
+
+---
+
+## P0 — Resumability scaffold
+
+| # | Sub-task | Status | Commit | Verify |
+|---|---|---|---|---|
+| P0.1 | In-repo copy of full plan → [`poc-personas-plan.md`](poc-personas-plan.md) | DONE | `3baf934` | `test -f docs/plans/poc-personas-plan.md` |
+| P0.2 | This resumable tracker → `poc-personas-progress.md` | DONE | `3baf934` | `test -f docs/plans/poc-personas-progress.md` |
+| P0.3 | Link this milestone from [`poc-implementation-progress.md`](poc-implementation-progress.md) | DONE | `3baf934` | grep finds "poc-personas-progress" in that file |
+
+---
+
+## P1 — Persona content + data plumbing (Part A + Part B.1, B.8)
+
+*Checkpoint:* `GET /personas` returns 20; each speech readable in `/docs`.
+
+| # | Sub-task | Status | Commit | Verify |
+|---|---|---|---|---|
+| P1.1 | Research the 20 (confirm top reference video + distill speaking qualities) → notes feed P1.2 | DONE | `96dcc51` | profiles drafted for all 20 (Jobs…Kelly) — embodied in personas.json |
+| P1.2 | Author `services/api/db/seed_data/personas.json` — 20 records (persona_id, name, role, archetype, reference, goal_line, signature_qualities, speech.lines, rubric) | DONE | `96dcc51` | `python3 -c "import json;d=json.load(open('services/api/db/seed_data/personas.json'));assert len(d)==20"` |
+| P1.3 | Schema `services/api/db/schemas/personas.json` (`$jsonSchema`, required fields) | DONE | `531ed44` | file parses; has `$jsonSchema`; `required` lists persona_id/name/speech/rubric |
+| P1.4 | Register `personas` in `COLLECTION_SPECS` (`services/api/db/init_mock_db.py`) + indexes | DONE | `531ed44` | `grep personas services/api/db/init_mock_db.py` |
+| P1.5 | Seed personas in `services/api/db/seed_mock.py` (upsert by `persona_id`) | DONE | `531ed44` | init+seed on mongomock → 20 personas, idempotent re-seed inserts 0 |
+| P1.6 | Schema test case in `services/api/tests/test_schemas_poc.py` | DONE | `531ed44` | `pytest services/api/tests/test_schemas_poc.py` → 10 passed |
+| P1.7 | Repo accessors `list_personas` / `get_persona` in `services/api/repository.py` | DONE | `3f6dfae` | test_repository green |
+| P1.8 | Pydantic `PersonaSummary` / `PersonaDetail` in `services/api/models.py` | DONE | `3f6dfae` | route returns typed payloads (test_api_personas) |
+| P1.9 | `services/api/routes/personas.py` (`GET /personas`, `GET /personas/{id}`) + register in app | DONE | `3f6dfae` | `GET /personas` → 20; `GET /personas/steve-jobs` → 200 |
+| P1.10 | Route tests in `services/api/tests/` (list + detail + 404) | DONE | `3f6dfae` | `pytest test_api_personas.py` → 5 passed |
+| P1.11 | Add `personas` row to CLAUDE.md POC Data Model table | DONE | `3f6dfae` | `grep personas CLAUDE.md` |
+
+---
+
+## P2 — Acoustic engine (Part B.2–B.3)
+
+*Checkpoint:* a sample clip yields real pace/pause/pitch numbers; mock yields deterministic ones.
+
+| # | Sub-task | Status | Commit | Verify |
+|---|---|---|---|---|
+| P2.1 | `services/api/providers/audio_decode.py` — bytes (webm/opus \| m4a) → mono 16 kHz float32 PCM via PyAV | DONE | `62cdb57` | unit test decodes a tiny fixture to non-empty PCM |
+| P2.2 | `AcousticFeatures` dataclass in `services/api/domain/types.py` (rate, pauses, pitch, energy, syllables, coverage) | DONE | `ffcb02e` | import works; fields per plan B.3 |
+| P2.3 | `AcousticAnalyzer` ABC in `services/api/providers/base.py` — refined to `analyze(audio_ref, *, expected_text, seed)` to mirror `STTProvider` (real impl decodes internally; mock ignores content), so the pipeline never branches on provider type | DONE | `ffcb02e` | import works |
+| P2.4 | Mock acoustic impl (deterministic from expected_text + seed; empty recording → skipped-line zeros) in `services/api/providers/acoustic.py`; syllable estimator added to `domain/text.py` | DONE | `dc0fbaf` | same input → identical features (unit test) |
+| P2.5 | Real librosa impl (speech_rate_sps via syllable-nuclei peaks, pauses via short-window RMS silence runs, pitch via pyin) — kept in its **own** `services/api/providers/acoustic_librosa.py` (top-level `import librosa`; omitted from `.coveragerc` like `audio_decode.py`, since CI lacks the dep) so the mock `acoustic.py` stays fully CI-covered | DONE | `af980c7` | `pytest test_acoustic_librosa.py` on synthetic tone-burst / silence-gap signals (5 passed where librosa installed); key test: faster read → higher measured pace |
+| P2.6 | Wire `provider_acoustic` in `registry.py` (added `acoustic` to `ProviderBundle` + `_build_acoustic`: mock default, lazy-import librosa real, raise on unknown) + `config.py` (`provider_acoustic="mock"`) | DONE | `be55ce9` | `grep provider_acoustic services/api/config.py services/api/providers/registry.py` |
+| P2.7 | Unit tests: syllable-nuclei rate + pause detection (in `test_acoustic_librosa.py`, P2.5) · mock determinism (in `test_acoustic.py`, P2.4) · registry build/raise (added to `test_registry.py` here, coupled to P2.6 wiring) | DONE | `be55ce9` | `make poc-api-test` green (148 passed, 93.26%) |
+| P2.8 | Add `librosa` (+ scipy/soundfile; numpy/PyAV transitive) to `services/api/requirements-local.txt` (NOT CI requirements) | DONE | `c6c9b50` | `grep librosa services/api/requirements-local.txt` |
+
+---
+
+## P3 — Persona scoring + feedback (Part B.4–B.9)
+
+*Checkpoint:* `POST /sessions` (persona) → score + style_match + grounded corrections from real audio.
+
+| # | Sub-task | Status | Commit | Verify |
+|---|---|---|---|---|
+| P3.1 | Carry `AcousticFeatures` on `UtteranceAnalysis`; add `AcousticProfile` aggregate + `style_match` on `ScoreResult`/`PipelineResult` (`types.py`); `PipelineResult.to_dict()` adds persona keys **only when set** so Mode A/B + golden stay byte-identical | DONE | `a500760` | `pytest test_types.py` (6 passed); Mode A/B golden unchanged |
+| P3.2 | Pipeline persona branch: `analyze_utterances_acoustic` (decode → `AcousticAnalyzer` per line, **no STT/align**) + `aggregate_acoustic` (→ `AcousticProfile`) in new `domain/persona.py`. Pace measured over spoken lines; a skip drags coverage. Mode A/B branch untouched | DONE | `211746f` | `pytest test_persona_pipeline.py` (5 passed): spy STT never called; skip lowers coverage not pace |
+| P3.3 | Persona scorer (`PersonaRubric` + `score_persona` in `domain/persona.py`): pace from `speech_rate_sps` vs persona band; fluency from pauses; engagement from pitch/energy; clarity/confidence from coverage/steadiness; apply persona `capability_weights`; `style_match` left `None` (P3.4) | DONE | `b95516e` | `pytest test_persona_scorer.py` (10 passed): same fast read = full marks vs Huang band, docked vs Buffett band |
+| P3.4 | `compute_style_match` (0–1) from band/pause/expressiveness distance — *two-directional*: overshooting the persona docks it | DONE | `54c9c04` | `pytest test_persona_style_match.py` (6 passed): matched → high, far → low, overexpressive lowers match for monotone persona |
+| P3.5 | Persona-flavored, acoustic-grounded per-line corrections via `build_persona_feedback` using `rubric.feedback_notes`; classifies each line's dominant real event (skip/stall/too-fast/too-slow/monotone), caps to top-3 by severity, A/B `corrected_text` = the line | DONE | `af0ba82` | `pytest test_persona_feedback.py` (8 passed): too-fast cites "6.0 syll/s", stall cites "2.4s", skip cites "0 of 5" |
+| P3.6 | Session create + lifecycle: `mode="persona"` + `persona_id` on `CreateSessionRequest`; `_create_persona_session` loads the speech as `expected_units` + stashes the rubric; `process_session` branches to `run_persona` (acoustic, no STT) and persists `style_match`+`acoustic`; `assemble_detail` surfaces persona fields; retry carries persona context | DONE | `b0ad20f` | `POST /sessions {persona_id}` → 201, session carries rubric; full flow → `style_match`+`acoustic`, persona version stamp; retry preserves persona + delta (test_api_sessions: 5 new passed) |
+| P3.7 | Persona version constants + `persona_version_stamp()` in `domain/versions.py` (distinct from Mode A/B so goldens stay independent) | DONE | `25f9888` | `pytest test_versions.py` (3 passed): same 4 keys, all values differ from Mode A/B |
+| P3.8 | **New** persona golden fixtures under `services/api/tests/golden/` (`persona_dataset.json` + `test_persona_golden.py`; `persona_model_quality` floor in `quality-baseline.poc.json`); Mode A/B `dataset.json` untouched | DONE | `ebc1602` | `make poc-api-test` golden green (193 passed, 3 persona cases: jobs-clean 0.93/style 0.81, buffett-clean 0.86/style 0.59, jobs-skip drags coverage); Mode A/B golden byte-unchanged in `git diff` |
+| P3.9 | End-to-end backend test (`test_persona_e2e.py`): inject a rate-pinned `AcousticAnalyzer` (mock is text-derived, can't vary speed), run the whole persona path twice on the same lines vs one fast band — assert fast read separates on pace + style_match, slow read flags a too-slow correction citing the real rate | DONE | `863313c` | `make poc-api-test` green (195 passed, 93.82%): 4.6 sps → pace 1.0 + higher style_match; 2.2 sps → lower pace + "2.2 syll/s"/"Lift the energy" correction |
+
+---
+
+## P4 — Frontend (Part C)
+
+*Checkpoint:* full click-through in the browser (grid → detail → record → feedback).
+
+| # | Sub-task | Status | Commit | Verify |
+|---|---|---|---|---|
+| P4.1 | `app/src/api/types.ts` — `PersonaSummary`, `PersonaDetail` (+ `PersonaReference`, `PersonaRubricView`), `AcousticProfile`; `SessionMode` gains `'persona'`, `CreateSessionRequest` gains `persona_id`; extend `SessionDetail` (persona_id/persona_name/style_match/acoustic) | DONE | `7ed7a68` | `make poc-app-test` green (lint + typecheck + 84 jest) |
+| P4.2 | `app/src/api/client.ts` — `listPersonas()`, `getPersona(id)`; `createSession` already passes through `persona_id` (P4.1 type) | DONE | `7354722` | `make poc-app-test` green (87 jest; 3 new: list /personas, get by encoded id, createSession carries persona_id) |
+| P4.3 | `app/src/app/personas.tsx` — monogram-tile grid (initials via exported `initials()`) → detail (role/archetype, goal_line, signature-quality chips, target-pace band, numbered lines, reference, "Speak as …" Start → createSession persona → /record) | DONE | `9a83399` | lint + typecheck green; full browser render verified in P4.8 |
+| P4.4 | Register `/personas` route in `app/src/app/_layout.tsx` (`Stack.Screen` title "Great Speakers") | DONE | `48e8646` | `make poc-app-test` green; route header titled |
+| P4.5 | `app/src/app/index.tsx` — primary accent-bordered "Practice with a great speaker" card (20 LEGENDS badge) → `/personas`, above Guided Practice | DONE | `cddc4ff` | `make poc-app-test` green. Note: Expo typed-routes file `.expo/types/router.d.ts` is gitignored + regenerated by the dev server — a stale local copy will fail `tsc` on a new route's `Href` until `npx expo start` rewrites it (CI checks out fresh, so it's unaffected) |
+| P4.6 | `PersonaReadout` component + wired into `app/src/app/feedback.tsx` — "Sounded like {name}" style_match headline, acoustic readout (measured pace vs the speaker's target band with in-band ✓, pause count, line coverage). feedback.tsx fetches the persona for the band (optional enrichment; failure never errors). Renders only when `style_match` is set, so Mode A/B is untouched | DONE | `2fe347d` | `make poc-app-test` green (87 jest) |
+| P4.7 | Co-located frontend tests: `PersonaReadout.test.tsx` (6 cases — style-match headline, pace vs band ✓, below-band no-check, no-band, no-acoustic, em-dash). `initials()` moved off the screen into `@/coaching/format` (the `app/src/app/` routes dir can't host test files) with 3 cases in `format.test.ts`. `client.ts` persona methods already covered in P4.2 | DONE | `8d502fa` | `make poc-app-test` green (96 jest) |
+| P4.8a | **Bug found during P4.8:** `practice_sessions` `$jsonSchema` `mode` enum was `[guided, user_script]` — real Mongo rejected `mode:"persona"` with a 500 on session create. mongomock doesn't enforce `$jsonSchema`, so unit tests (and CI) never caught it; only the live demo path hits it. Fix: add `persona` to the enum in `services/api/db/schemas/practice_sessions.json` + update the static guard in `test_schemas_poc.py` that pinned the enum to two values | DONE | `8249e0c` | `make poc-api-test` green (195); persona session creates + scores against real Mongo (style_match 0.77) |
+| P4.8 | Verify web click-through with preview tools. Verified on Expo web (:8081) against the live API (:8090, mock providers): (a) grid renders 20 personas with correct `initials()` monograms; (b) Jensen Huang detail shows goal line, signature chips, "Speaking style 4.2–5 syll/s · high-contrast · brisk pauses", 10 numbered lines; (c) feedback for a real scored persona session shows the `PersonaReadout` — "SOUNDED LIKE JENSEN HUANG" 77%, pace 3.4 syll/s in amber (out-of-band, no ✓) vs target 4.2–5, 19 pauses, 10/10 lines + the acoustic-grounded pace correction. No console errors. Record→processing not driven in-browser (headless = no mic); the scored session was created via the same HTTP API the record screen calls | DONE | `01fcfbf` | screenshot of feedback with style_match ✓ |
+| P4.9 | Confirm Android path. **Deferred — environment-blocked:** no Android SDK/`adb`/emulator/AVD here (`ANDROID_HOME` empty, no `~/Library/Android/sdk`), so the literal emulator click-through can't run in this environment. Verified at code level instead: `config.ts:13` maps `Platform.OS==='android'` → `http://10.0.2.2:8090` (emulator host-loopback alias); persona UI (`personas.tsx`/`feedback.tsx`/`PersonaReadout`) uses only cross-platform RN primitives shared with the web path proven in P4.8; `DEMO_USER_ID` matches the seeded user. Closes on any machine with the Android SDK installed. | DEFERRED | `2745ade` | code-level Android mapping verified; emulator run pending an SDK-equipped machine |
+
+---
+
+## P5 — End-to-end, tests, docs (Part D + Verification)
+
+*Checkpoint:* real-voice run on web (and Android); full suites green; docs updated.
+
+| # | Sub-task | Status | Commit | Verify |
+|---|---|---|---|---|
+| P5.1 | Real-voice run: `PROVIDER_ACOUSTIC=librosa PROVIDER_TTS=macos` — fast vs slow, monotone vs expressive, skip-a-line, retry delta | DONE | `5e94f7f` | **Ran the real librosa engine on real audio** (macOS `say`→WAV→PyAV decode→librosa→persona score) via the live API on :8096. Verified: (a) measured pace tracks the read — slow 2.24 sps → pace correction *"crawled at 2.0 syll/s — below Steve Jobs's 2.8–3.6 band"*, in-band ~3.1 sps → no pace flag; (b) **skip** (expected line, empty audio) → coverage 0.75→0.67 + line-specific *"Only 0 of 10 expected syllables landed"*, transcript-free; (c) every correction carries a macOS-TTS **ideal A/B clip**; (d) **retry** → attempt 2 linked to parent with a real per-capability delta (pace +0.20); (e) real pitch range measured (~7–8 st). **Limits (synthetic audio, not the engine):** `say` is smoother than a human voice → syllable-nuclei undercount at high rate, so a synthetic read can't reach Huang's 4.2+ band and a clean Jobs "too fast" isn't synthesizable; monotone-vs-expressive contrast + in-browser mic/playback/re-speak are mic/browser-bound and are the deterministically pinned cases in the persona suite (`test_persona_{pipeline,scorer,style_match,feedback,e2e}`, persona golden) |
+| P5.2 | Cross-persona check: same fast read suits Huang but is flagged for Buffett (per-persona bands) | DONE | `41ef9f0` | The **identical** read (3.10 sps) scored by 3 personas via the live API → style_match **Buffett 0.75** (band 2.4–3.0, read just above) > **Jobs 0.68** (band 2.8–3.6, in band) > **Huang 0.56** (band 4.2–5.0, read far below): same audio, materially different per-persona verdict + ranking, proving per-persona bands drive scoring. (Direction is inverted from the plan's literal "suits Huang / too fast for Buffett" because synthetic TTS can't reach Huang's high band — see P5.1 limits — but the per-persona differentiation is unambiguous; a real fast human voice lands the exact framing.) |
+| P5.3 | `make poc-api-test` fully green (incl. new persona golden) | DONE | `271e09b` | `make poc-api-test` → **195 passed, 2 deselected, 93.82% coverage** (gate 70%); persona golden suite included |
+| P5.4 | `make poc-app-test` fully green (lint + typecheck + jest) | DONE | `9baf068` | `make poc-app-test` → **expo lint + tsc --noEmit clean; 18 suites, 96 jest passed** |
+| P5.5 | Update CLAUDE.md: `AcousticAnalyzer` + `PROVIDER_ACOUSTIC`, persona version constants + golden, `librosa` note | DONE | `3502f98` | `grep -i acoustic CLAUDE.md` hits: providers (`acoustic`/`acoustic_librosa`/`audio_decode` + `AcousticAnalyzer` ABC), `PROVIDER_ACOUSTIC=librosa` + acoustic-first persona rule (no STT), `persona_version_stamp()`+`persona_dataset.json`, librosa in `requirements-local.txt`; also added `persona` to domain/ + `personas` router |
+| P5.6 | Add this milestone to [`poc-implementation-progress.md`](poc-implementation-progress.md) (mark P0.3 done here) | DONE | `67c8abb` | Milestone present in `poc-implementation-progress.md`: top "▶ Iteration 1 … ✅ functionally complete" pointer (open items: P4.9 Android, P5.7 baseline) + an `It1` row in the Milestone Status table (P0–P5, `96dcc51…3502f98`; `GET /personas`→20, api 195/93.82% + app 96 green, real librosa run verified) |
+| P5.7 | Final: raise coverage baseline if it improved; confirm CI-relevant suites green | DONE | `5f45ad3` | `make poc-api-test` → **195 passed, 2 deselected, 93.82%** (fixed gate 70% reached); `make poc-app-test` → **expo lint + tsc --noEmit clean; 18 suites, 96 jest passed**. Baseline **not** raised by design — the POC floor is a fixed 70% (`.coveragerc` + `quality-baseline.poc.json`), decoupled from the data-foundation ratchet; see Decisions note. **Iteration 1 complete** (modulo env-blocked P4.9 Android emulator). |
+
+---
+
+## Decisions & open notes (carry across sessions)
+
+- **Speeches are original-in-style** (~130–150 words ≈ 60s), zero copyright. `reference.video_url`
+  seeds from the user-provided YouTube links; qualities come from documented analyses + reasoning,
+  **not** video transcription.
+- **Tiles are monograms** (initials + name + role chip), zero image licensing — identical on web/Android.
+- **Distinct target bands make the demo land:** Buffett slow/steady (~2.4–3.0 sps), Huang fast/high
+  (~4.2–5.0), Jobs measured/dramatic, Khan even, Voss calm/low/deliberate, Brené warm/variable.
+- **Reconciliation flag (raised to user):** GPT's POC3 listed "transcript accuracy" as a scored
+  dimension. We deliberately dropped transcript-as-judge of *delivery* to honor the stronger
+  "judge my speech, not the transcript" instruction. Pronunciation (forced alignment) is **Iteration 2**.
+- **Coverage baseline (P5.7) — deliberately not raised.** The POC gate is a *fixed* floor (70%):
+  `services/api/.coveragerc` `fail_under = 70` and `quality-baseline.poc.json` `coverage_floor: 70.0`,
+  explicitly decoupled from the data-foundation ratchet (its own comment). There is no ratchet tool for
+  the POC floor — `make coverage-update-baseline` only moves `quality-baseline.json` (scope
+  `scripts/python/`), which persona work never touched. Actual POC coverage is **93.82%** (wide margin),
+  but pinning the floor at ~94% would turn every minor refactor into a CI failure, so the floor stays 70.

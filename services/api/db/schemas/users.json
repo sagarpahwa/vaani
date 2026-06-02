@@ -1,0 +1,18 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["user_id", "display_name", "created_at", "schema_version"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":            { "bsonType": "objectId" },
+      "user_id":        { "bsonType": "string", "minLength": 1 },
+      "display_name":   { "bsonType": "string", "minLength": 1 },
+      "email":          { "bsonType": ["string", "null"] },
+      "locale":         { "bsonType": "string" },
+      "roles":          { "bsonType": "array", "items": { "bsonType": "string" } },
+      "created_at":     { "bsonType": "date" },
+      "updated_at":     { "bsonType": "date" },
+      "schema_version": { "bsonType": "string" }
+    }
+  }
+}

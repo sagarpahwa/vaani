@@ -53,18 +53,24 @@ vaani/
 │   ├── speakers_100.json   # 102 verified speakers
 │   ├── capability_taxonomy.json  # 25 capabilities
 │   └── profession_taxonomy.json  # 22 professions
+├── services/               # POC backend layer (FastAPI) — see "POC" section below
+│   └── api/                # Coaching API: app, config, db, domain, providers, routes, tests
+├── app/                    # POC universal frontend (Expo + Expo Router; web + Android)
 ├── tests/
 │   ├── unit/               # Fast, no Docker, <5s total
 │   └── integration/        # Require running MongoDB (@pytest.mark.integration)
 ├── .github/
 │   ├── workflows/
-│   │   ├── ci.yml          # Every push: lint + syntax + JSON + unit tests + secrets
+│   │   ├── ci.yml          # Every push: lint + syntax + JSON + unit tests + secrets + api + app
+│   │   ├── reusable-python-api.yml  # Reusable: services/api lint + test + coverage gate
+│   │   ├── reusable-node-app.yml    # Reusable: app/ (Expo) lint + test
 │   │   ├── integration.yml # PRs to main: Docker MongoDB + full seed + verify
 │   │   └── security.yml    # Weekly: pip-audit + npm audit + secret scan
 │   └── dependabot.yml      # Automated dependency updates
 ├── quality-baseline.json   # Committed coverage floor — only moves up
-├── Makefile                # Universal developer interface
-├── docker-compose.yml      # MongoDB 7.0 + mongo-express
+├── Makefile                # Universal developer interface (incl. isolated `poc-*` targets)
+├── docker-compose.yml      # MongoDB 7.0 + mongo-express (real DB, port 27017)
+├── docker-compose.poc.yml  # Isolated POC stack: vaani_poc_mongo (27018) + optional MinIO
 ├── pyproject.toml          # Python project config, pytest, coverage, ruff, black
 └── package.json            # Node.js config + npm scripts
 ```
@@ -107,6 +113,8 @@ vaani/
 | `unit-tests` | Every push | Test failures; coverage < 70% | `make test` |
 | `secret-scan` | Every push | Credentials or API keys committed | Remove the secret, rotate it |
 | `docs-freshness` | PRs only | New source files without CLAUDE.md update | Update this file |
+| `api-tests` | Every push | `services/api` ruff/black violations, FastAPI test failures, coverage < 70% | `make poc-api-lint && make poc-api-test` |
+| `app-tests` | Every push | `app/` (Expo) lint/type/test failures | `make poc-app-test` |
 | `integration-tests` | PRs to main | DB init/seed/verify cycle; idempotency; index enforcement | `make db-up && make db-setup && make test-integration` |
 | `python-audit` | Weekly | Python CVEs | `pip-audit` locally |
 | `node-audit` | Weekly | Node.js CVEs | `npm audit` locally |
@@ -240,6 +248,152 @@ When adding any new technology or service, follow these steps **before writing a
 6. **Write at least one test** before any feature code. The coverage gate enforces no regression from day one.
 
 This is the mechanism: new layers inherit the full quality system at scaffolding time, before features exist.
+
+---
+
+## POC: Universal Coaching App (`services/api` + `app`)
+
+The POC is a real public-speaking coach (Mode A: system-guided script; Mode B: user-provided
+script). It is built on layers added via the New Layer Protocol above. **Implementation progress
+is tracked in [`docs/plans/poc-implementation-progress.md`](docs/plans/poc-implementation-progress.md)
+— that file is the resumable source of truth.**
+
+### Hard isolation rules (never violate)
+
+The POC must never disturb the data-foundation dev environment:
+
+- **DB:** the POC uses an isolated MongoDB — `docker-compose.poc.yml` → container `vaani_poc_mongo`
+  on **port 27018**, database `public_speaking_intelligence_mock`. The real DB
+  (`public_speaking_intelligence`, `vaani_mongo`, port 27017) is never touched.
+- **Python env:** the backend uses a separate **`.venv-poc`** (created by `make poc-api-install`),
+  never `.venv` / `.venv311`.
+- **Audio:** never stored in Mongo documents. Use the `ObjectStore` abstraction
+  (LocalFS adapter by default at `.poc-storage/`; MinIO/S3 adapter pluggable via `OBJECT_STORE`).
+- **Config:** `.env.poc` (copy from `.env.poc.example`). All POC settings are `POC_*` / `PROVIDER_*`.
+
+### Backend (`services/api`, FastAPI)
+
+```
+services/api/
+├── app.py            # create_app() factory
+├── config.py         # pydantic-settings (reads .env.poc; mock defaults)
+├── main.py           # uvicorn entry: services.api.main:app
+├── db/               # mock-DB init + seed (targets public_speaking_intelligence_mock)
+├── domain/           # pure logic: text, types, versions, goal_signature, pipeline, persona
+├── providers/        # base (ABCs incl. AcousticAnalyzer), object_store, analysis (align/
+│                     #   features/score), mock_ai (deterministic STT/TTS/feedback — default,
+│                     #   offline), acoustic (deterministic mock AcousticAnalyzer — default),
+│                     #   acoustic_librosa + audio_decode (real waveform analysis, demo-only),
+│                     #   whisper_stt (real STT via faster-whisper), macos_tts (real TTS
+│                     #   via macOS `say`), registry (build_providers from PROVIDER_*)
+├── routes/           # API routers (sessions, scripts, personas, utterances, retry, audio, ws)
+├── telemetry.py      # release-health event emitters (plan §11.1) → release_health_events
+├── models.py         # Pydantic request/response models (carry *_version fields)
+├── requirements.txt        # mock stack — installed into .venv-poc (lean, offline, CI)
+├── requirements-local.txt  # OPTIONAL demo-machine deps for the REAL providers
+│                           #   (faster-whisper, librosa+scipy+soundfile+PyAV, truststore) — never in CI
+└── tests/            # pytest (unit + @pytest.mark.integration), .coveragerc gate ≥70%
+    └── golden/       # frozen dataset.json + persona_dataset.json + regression tests (drift gate)
+```
+
+### Reliability artifacts (plan §9–§13)
+
+- **Telemetry:** `telemetry.py` emits the 8 plan-§11.1 event types to
+  `release_health_events` (best-effort — a telemetry write never fails a coaching
+  request). Wired into `coaching_service.process_session` (scoring/transcription/latency)
+  and the `/sessions` routes (lifecycle + retry delta).
+- **Golden regression:** `services/api/tests/golden/` pins exact deterministic scores;
+  the test fails CI on any drift beyond tolerance, below the quality floor, or on a
+  version bump without regenerated golden values. Runs automatically via `make poc-api-test`.
+- **Floors + policy:** [`quality-baseline.poc.json`](quality-baseline.poc.json) holds SLO
+  targets + the model-quality floor; [`docs/reliability/slos.md`](docs/reliability/slos.md)
+  and [`docs/reliability/rollback-runbook.md`](docs/reliability/rollback-runbook.md) are
+  the SLO/error-budget and release/rollback/incident/privacy playbooks.
+
+Rules:
+1. AI is accessed only through `providers/` interfaces. Default impls are deterministic mocks so
+   the app runs and tests pass with no cloud credentials. Real providers swap in via `PROVIDER_*`
+   (`PROVIDER_STT=whisper`, `PROVIDER_TTS=macos`, `PROVIDER_ACOUSTIC=librosa`) and need
+   `requirements-local.txt`; the registry raises on an unknown name (no silent fallback). Real STT
+   decodes the learner's *actual* audio and guards against Whisper's silence-hallucination so an
+   unrecorded line scores as missed, not faked. The **persona path is acoustic-first**: it scores the
+   raw waveform via the `AcousticAnalyzer` (pace/pauses/pitch/coverage) and **never runs STT** — judge
+   the speech, not a transcript; Mode A/B keep their transcript path (and goldens) unchanged.
+2. Every scored/feedback output carries version fields: `rubric_version`, `scoring_model_version`,
+   `feature_extractor_version`, `prompt_version` (see `domain/versions.py`).
+3. Separate pure logic (testable) from DB/IO. Co-locate tests in `services/api/tests`.
+4. Run: `make poc-db-up && make poc-db-setup && make poc-api-run` → http://localhost:8090/docs.
+
+### POC Data Model (11 collections, mock DB only)
+
+POC schemas live in **`services/api/db/schemas/`** (deliberately NOT the shared `schemas/`), so the
+data-foundation Node scripts (`scripts/node/*`) and the real DB can never pick them up.
+`services/api/db/init_mock_db.py` creates them with `$jsonSchema` validators + indexes in the mock
+DB; `services/api/db/seed_mock.py` seeds demo data from `services/api/db/seed_data/`. Both refuse to
+run unless the target database name ends in `_mock` and the URI is not on port 27017
+(`assert_mock_target` guard).
+
+| Collection | Upsert key | Purpose |
+|---|---|---|
+| `users` | `user_id` | POC demo accounts |
+| `learner_profiles` | `user_id` | per-user Goal Signature defaults + capability levels |
+| `guided_scripts` | `script_id` | Mode A scripts (seeded from `seed_data/guided_scripts.json`) |
+| `personas` | `persona_id` | 20 Legends: in-style ~60s speech + acoustic rubric (seeded from `seed_data/personas.json`) |
+| `practice_sessions` | `session_id` | one coaching session (Mode A/B); carries the four `*_version` fields |
+| `session_utterances` | `utterance_id` | per-utterance transcript + `audio_key` (object store, not raw audio) |
+| `coaching_feedback` | `feedback_id` | generated feedback + read-aloud text + capability scores |
+| `audio_corrections` | `correction_id` | A/B pairs: user vs ideal-voice `*_audio_key` |
+| `progress_snapshots` | `snapshot_id` | per-user score history + deltas |
+| `model_eval_runs` | `run_id` | golden-dataset regression results |
+| `release_health_events` | `event_id` | telemetry / SLO events |
+
+Every document carries `created_at` / `updated_at` / `schema_version` (same core data-model rules as
+the data foundation).
+
+### Frontend (`app`, Expo + Expo Router)
+
+One universal codebase for **web + Android** (iOS best-effort for the POC). Audio capture/playback
+via `expo-audio`; full-feedback read-aloud via `expo-speech`. API base URL from app config.
+Run: `make poc-app-install && make poc-app-web`.
+
+```
+app/
+├── src/
+│   ├── app/              # Expo Router file-based routes (_layout, index, mode-a, mode-b)
+│   ├── api/              # client.ts (typed fetch wrapper + ApiError), types.ts (wire types)
+│   ├── config.ts         # platform-aware API base URL (Android emulator → 10.0.2.2:8090)
+│   ├── featureFlags.ts   # EXPO_PUBLIC_FLAG_* gates (modeB, liveProgress, readAloud)
+│   └── theme.ts          # shared colors / spacing / radius tokens
+├── eslint.config.js      # flat config via eslint-config-expo/flat
+├── jest.config.js        # jest-expo preset
+└── tsconfig.json         # extends expo/tsconfig.base (strict); @/* → ./src/*
+```
+
+Rules:
+1. The app talks to the backend **only** through `src/api/client.ts`. Never call `fetch`
+   directly from a screen. Backend failures surface as `ApiError` (carries `status` + `detail`).
+2. Read config from `src/config.ts` and gates from `src/featureFlags.ts` — never read
+   `process.env` from a screen. `EXPO_PUBLIC_*` vars are inlined at build time (static access only).
+3. Co-locate logic tests next to the module (`*.test.ts`). Import jest globals explicitly from
+   `@jest/globals` so `tsc --noEmit` stays clean.
+4. Keep `make poc-app-test` green: that runs `lint` + `typecheck` + `jest`.
+
+### Adding POC code
+
+- New backend module in `services/api/`: keep pure logic separate, co-locate a test, keep
+  `make poc-api-lint` + `make poc-api-test` green (coverage ≥70% via `services/api/.coveragerc`).
+- New collection for the POC: add a `services/api/db/schemas/<name>.json` (NOT the shared
+  `schemas/`), register it in `COLLECTION_SPECS` in `services/api/db/init_mock_db.py`, add it to
+  the POC Data Model table above, and add a case to `services/api/tests/test_schemas_poc.py`.
+- New screen in `app/`: co-locate a component/logic test; keep `make poc-app-test` green.
+- Bumping a `*_version` in `domain/versions.py`: regenerate `services/api/tests/golden/dataset.json`
+  (snippet in `test_golden_regression.py`) and the versions in `quality-baseline.poc.json`, else the
+  golden suite fails. A golden diff is a scoring-behavior change and must be reviewed. The **persona**
+  path carries its own stamp (`persona_version_stamp()`) and golden (`persona_dataset.json` via
+  `test_persona_golden.py`) so it stays independent of Mode A/B; bumping a persona version means
+  regenerating that fixture and its `persona_model_quality` floor too.
+- New telemetry event: add an emitter to `services/api/telemetry.py`, cover it in
+  `test_telemetry.py`, and document the SLO it feeds in `docs/reliability/slos.md`.
 
 ---
 

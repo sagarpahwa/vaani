@@ -1,0 +1,31 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["utterance_id", "session_id", "created_at", "schema_version"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":              { "bsonType": "objectId" },
+      "utterance_id":     { "bsonType": "string", "minLength": 1 },
+      "session_id":       { "bsonType": "string", "minLength": 1 },
+      "line_index":       { "bsonType": ["int", "null"] },
+      "audio_key":        { "bsonType": ["string", "null"] },
+      "duration_seconds": { "bsonType": ["double", "null"], "minimum": 0 },
+      "transcript":       { "bsonType": ["string", "null"] },
+      "words": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "object",
+          "properties": {
+            "word":       { "bsonType": "string" },
+            "start":      { "bsonType": "double", "minimum": 0 },
+            "end":        { "bsonType": "double", "minimum": 0 },
+            "confidence": { "bsonType": "double", "minimum": 0, "maximum": 1 }
+          }
+        }
+      },
+      "created_at":       { "bsonType": "date" },
+      "updated_at":       { "bsonType": "date" },
+      "schema_version":   { "bsonType": "string" }
+    }
+  }
+}

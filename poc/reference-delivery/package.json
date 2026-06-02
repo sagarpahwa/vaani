@@ -1,0 +1,22 @@
+{
+  "name": "vaani-reference-delivery-poc",
+  "version": "1.0.0",
+  "description": "Minimal POC: paste speech, hear Steve Jobs-inspired keynote delivery via OpenAI TTS",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node scripts/setup-analysis.js && node --watch server.js",
+    "setup:analysis": "node scripts/setup-analysis.js",
+    "doctor": "node scripts/doctor.js",
+    "test:speech-lab": "node test/test-speech-lab.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "ffmpeg-static": "^5.2.0",
+    "multer": "^1.4.5-lts.1",
+    "openai": "^4.52.7",
+    "uuid": "^9.0.1"
+  }
+}

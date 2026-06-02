@@ -1,0 +1,27 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["user_id", "created_at", "schema_version"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":                    { "bsonType": "objectId" },
+      "user_id":                { "bsonType": "string", "minLength": 1 },
+      "preferred_language":     { "bsonType": "string" },
+      "default_goal_signature": {
+        "bsonType": "object",
+        "properties": {
+          "objective":        { "bsonType": "string" },
+          "occasion":         { "bsonType": "string" },
+          "audience":         { "bsonType": "string" },
+          "style":            { "bsonType": "string" },
+          "language":         { "bsonType": "string" },
+          "duration_seconds": { "bsonType": ["int", "null"] }
+        }
+      },
+      "capability_levels":      { "bsonType": "object" },
+      "created_at":             { "bsonType": "date" },
+      "updated_at":             { "bsonType": "date" },
+      "schema_version":         { "bsonType": "string" }
+    }
+  }
+}

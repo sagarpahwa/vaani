@@ -1,0 +1,47 @@
+# Isolated POC stack for the universal coaching app.
+# Deliberately separate from docker-compose.yml so it NEVER collides with the
+# user's real stack (vaani_mongo on 27017 / public_speaking_intelligence).
+#   - project name:  vaani-poc   (own networks/containers)
+#   - mongo:         vaani_poc_mongo on host port 27018, own volume
+#   - minio:         optional, only with `--profile storage`
+name: vaani-poc
+
+services:
+  mongodb-poc:
+    image: mongo:7.0
+    container_name: vaani_poc_mongo
+    restart: unless-stopped
+    ports:
+      - "27018:27017"          # host 27018 -> container 27017 (real DB stays on 27017)
+    volumes:
+      - vaani_poc_mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')", "--quiet"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # Optional S3-compatible object storage. Backend defaults to LocalFS, so this
+  # is only needed when OBJECT_STORE=minio. Start with:
+  #   docker compose -f docker-compose.poc.yml --profile storage up -d
+  minio-poc:
+    image: minio/minio:latest
+    container_name: vaani_poc_minio
+    profiles: ["storage"]
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${POC_MINIO_USER:-vaani_poc}
+      MINIO_ROOT_PASSWORD: ${POC_MINIO_PASS:-vaani_poc_secret}
+    command: server /data --console-address ":9001"
+    volumes:
+      - vaani_poc_minio_data:/data
+
+volumes:
+  vaani_poc_mongo_data:
+    name: vaani_poc_mongo_data
+  vaani_poc_minio_data:
+    name: vaani_poc_minio_data

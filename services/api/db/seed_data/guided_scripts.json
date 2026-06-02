@@ -1,0 +1,87 @@
+[
+  {
+    "script_id": "self-intro-60s",
+    "title": "The 60-Second Self Introduction",
+    "description": "A warm, confident introduction for a networking event.",
+    "difficulty": "beginner",
+    "language": "en",
+    "estimated_duration_seconds": 40,
+    "goal_profile": {
+      "objective": "introduce yourself memorably",
+      "occasion": "networking event",
+      "audience": "industry peers",
+      "style": "warm and confident"
+    },
+    "target_capabilities": ["clarity", "confidence", "conciseness", "emotional_connection"],
+    "lines": [
+      { "line_index": 0, "text": "Hi, I'm Alex, and I help small teams turn messy data into decisions they can actually trust.", "coaching_focus": ["clarity", "confidence"] },
+      { "line_index": 1, "text": "Three years ago I was the person drowning in spreadsheets, so I know exactly how that feels.", "coaching_focus": ["emotional_connection"] },
+      { "line_index": 2, "text": "Today I get to build the tools I wish I'd had back then.", "coaching_focus": ["conciseness"] },
+      { "line_index": 3, "text": "If you've ever stared at a dashboard wondering what to do next, let's talk.", "coaching_focus": ["confidence", "emotional_connection"] }
+    ]
+  },
+  {
+    "script_id": "product-launch-pitch",
+    "title": "Product Launch Pitch",
+    "description": "An energetic, credible pitch that drives a clear call to action.",
+    "difficulty": "intermediate",
+    "language": "en",
+    "estimated_duration_seconds": 45,
+    "goal_profile": {
+      "objective": "persuade the audience to try a product",
+      "occasion": "product launch",
+      "audience": "prospective customers",
+      "style": "energetic and credible"
+    },
+    "target_capabilities": ["persuasion", "structure", "clarity", "vocal_variety"],
+    "lines": [
+      { "line_index": 0, "text": "Every day, your team loses two hours to status meetings that could have been a single message.", "coaching_focus": ["persuasion", "clarity"] },
+      { "line_index": 1, "text": "We built Pulse so those two hours come back to you.", "coaching_focus": ["structure"] },
+      { "line_index": 2, "text": "One dashboard, every update, zero meetings.", "coaching_focus": ["vocal_variety", "conciseness"] },
+      { "line_index": 3, "text": "Teams using Pulse ship twenty percent faster in their first month.", "coaching_focus": ["persuasion"] },
+      { "line_index": 4, "text": "Start your free trial today, and feel the difference by Friday.", "coaching_focus": ["confidence", "persuasion"] }
+    ]
+  },
+  {
+    "script_id": "team-address-hard-quarter",
+    "title": "Inspirational Team Address",
+    "description": "A sincere, energizing message to rally a team through a tough stretch.",
+    "difficulty": "intermediate",
+    "language": "en",
+    "estimated_duration_seconds": 42,
+    "goal_profile": {
+      "objective": "motivate a team through a hard quarter",
+      "occasion": "all-hands meeting",
+      "audience": "your team",
+      "style": "sincere and energizing"
+    },
+    "target_capabilities": ["emotional_connection", "confidence", "storytelling", "vocal_variety"],
+    "lines": [
+      { "line_index": 0, "text": "This quarter asked more of us than any before it, and you showed up every single day.", "coaching_focus": ["emotional_connection"] },
+      { "line_index": 1, "text": "I won't pretend the road ahead is easy, but I will promise you this: we walk it together.", "coaching_focus": ["confidence", "vocal_variety"] },
+      { "line_index": 2, "text": "Every great team is forged in exactly these moments.", "coaching_focus": ["storytelling"] },
+      { "line_index": 3, "text": "Let's make the next ninety days the ones we look back on with pride.", "coaching_focus": ["confidence", "emotional_connection"] }
+    ]
+  },
+  {
+    "script_id": "wedding-toast",
+    "title": "The Wedding Toast",
+    "description": "A heartfelt, lightly humorous toast that tells a short story.",
+    "difficulty": "beginner",
+    "language": "en",
+    "estimated_duration_seconds": 38,
+    "goal_profile": {
+      "objective": "celebrate the couple and share a story",
+      "occasion": "wedding reception",
+      "audience": "friends and family",
+      "style": "heartfelt and humorous"
+    },
+    "target_capabilities": ["storytelling", "emotional_connection", "pacing", "humor"],
+    "lines": [
+      { "line_index": 0, "text": "For those who don't know me, I'm Sam, and I've had the honor of being Jordan's friend since we were seven.", "coaching_focus": ["storytelling"] },
+      { "line_index": 1, "text": "Back then, Jordan promised to share their snacks forever. Today, they're upgrading that promise.", "coaching_focus": ["humor", "pacing"] },
+      { "line_index": 2, "text": "Watching Jordan and Riley together, I finally understand what people mean by 'better half.'", "coaching_focus": ["emotional_connection"] },
+      { "line_index": 3, "text": "Please raise your glass to a lifetime of shared snacks, shared dreams, and endless love.", "coaching_focus": ["pacing", "emotional_connection"] }
+    ]
+  }
+]

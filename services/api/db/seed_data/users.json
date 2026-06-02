@@ -1,0 +1,9 @@
+[
+  {
+    "user_id": "demo-user",
+    "display_name": "Demo Learner",
+    "email": null,
+    "locale": "en-US",
+    "roles": ["learner"]
+  }
+]

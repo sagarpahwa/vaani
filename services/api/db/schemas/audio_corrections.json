@@ -1,0 +1,22 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": ["correction_id", "session_id", "created_at", "schema_version"],
+    "additionalProperties": true,
+    "properties": {
+      "_id":              { "bsonType": "objectId" },
+      "correction_id":    { "bsonType": "string", "minLength": 1 },
+      "session_id":       { "bsonType": "string", "minLength": 1 },
+      "line_index":       { "bsonType": ["int", "null"] },
+      "focus_capability": { "bsonType": "string" },
+      "original_text":    { "bsonType": "string" },
+      "corrected_text":   { "bsonType": "string" },
+      "user_audio_key":   { "bsonType": ["string", "null"] },
+      "ideal_audio_key":  { "bsonType": ["string", "null"] },
+      "explanation":      { "bsonType": "string" },
+      "created_at":       { "bsonType": "date" },
+      "updated_at":       { "bsonType": "date" },
+      "schema_version":   { "bsonType": "string" }
+    }
+  }
+}
