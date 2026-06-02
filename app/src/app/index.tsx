@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { API_BASE_URL } from '@/config';
@@ -6,6 +6,7 @@ import { flags } from '@/featureFlags';
 import { colors, maxContentWidth, radius, spacing } from '@/theme';
 
 export default function HomeScreen() {
+  const router = useRouter();
   return (
     <ScrollView contentContainerStyle={styles.scroll}>
       <View style={styles.content}>
@@ -17,39 +18,42 @@ export default function HomeScreen() {
         </Text>
 
         <View style={styles.cards}>
-          <Link href="/personas" asChild>
-            <Pressable
-              style={[styles.card, styles.cardPrimary]}
-              accessibilityRole="button"
-              accessibilityLabel="Practice with a great speaker"
-            >
-              <Text style={styles.cardBadge}>20 LEGENDS</Text>
-              <Text style={styles.cardTitle}>Practice with a great speaker</Text>
-              <Text style={styles.cardBody}>
-                Record a one-minute speech in the style of Jobs, Buffett, Huang and more — then
-                hear how close you came to their delivery.
-              </Text>
-            </Pressable>
-          </Link>
+          <Pressable
+            onPress={() => router.push('/personas')}
+            style={[styles.card, styles.cardPrimary]}
+            accessibilityRole="button"
+            accessibilityLabel="Practice with a great speaker"
+          >
+            <Text style={styles.cardBadge}>20 LEGENDS</Text>
+            <Text style={styles.cardTitle}>Practice with a great speaker</Text>
+            <Text style={styles.cardBody}>
+              Record a one-minute speech in the style of Jobs, Buffett, Huang and more — then
+              hear how close you came to their delivery.
+            </Text>
+          </Pressable>
 
-          <Link href="/mode-a" asChild>
-            <Pressable style={styles.card} accessibilityRole="button">
-              <Text style={styles.cardTitle}>Guided Practice</Text>
-              <Text style={styles.cardBody}>
-                Pick a curated script and rehearse it line by line.
-              </Text>
-            </Pressable>
-          </Link>
+          <Pressable
+            onPress={() => router.push('/mode-a')}
+            style={styles.card}
+            accessibilityRole="button"
+          >
+            <Text style={styles.cardTitle}>Guided Practice</Text>
+            <Text style={styles.cardBody}>
+              Pick a curated script and rehearse it line by line.
+            </Text>
+          </Pressable>
 
           {flags.modeB && (
-            <Link href="/mode-b" asChild>
-              <Pressable style={styles.card} accessibilityRole="button">
-                <Text style={styles.cardTitle}>Your Own Script</Text>
-                <Text style={styles.cardBody}>
-                  Paste a speech, toast, or pitch and practice it.
-                </Text>
-              </Pressable>
-            </Link>
+            <Pressable
+              onPress={() => router.push('/mode-b')}
+              style={styles.card}
+              accessibilityRole="button"
+            >
+              <Text style={styles.cardTitle}>Your Own Script</Text>
+              <Text style={styles.cardBody}>
+                Paste a speech, toast, or pitch and practice it.
+              </Text>
+            </Pressable>
           )}
         </View>
 

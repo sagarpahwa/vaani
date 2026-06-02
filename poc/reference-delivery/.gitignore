@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Generated audio & analysis output
+generated/
+uploads/
+
+# Python virtual environment
+.venv/
+__pycache__/
+*.pyc
+
+# Analysis setup marker
+.analysis-ready.json
+
+# Environment secrets
+.env
+
+# Test fixtures (large binary files)
+fixtures/*.webm
+fixtures/*.mp3
+fixtures/*.wav
+fixtures/*.ogg
+fixtures/*.mp4
+
+# OS / editor
+.DS_Store
+*.swp
